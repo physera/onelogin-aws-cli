@@ -3,7 +3,7 @@ import setuptools
 
 setuptools.setup(
     name='onelogin-aws-cli',
-    version='0.1.0',
+    version='0.1.1',
     description='Onelogin assume AWS role through CLI',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -16,7 +16,7 @@ setuptools.setup(
     author='Cameron Marlow',
     author_email='cameron@healthcoda.com',
     url='https://github.com/healthcoda/onelogin-aws-cli',
-    download_url='https://github.com/healthcoda/onelogin-aws-cli/archive/0.1.0.tar.gz',
+    download_url='https://github.com/healthcoda/onelogin-aws-cli/archive/0.1.1.tar.gz',
     py_modules=['onelogin_aws_cli'],
     install_requires=[
         'boto3',
