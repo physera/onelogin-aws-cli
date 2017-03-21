@@ -16,6 +16,7 @@ setuptools.setup(
     author='Cameron Marlow',
     author_email='cameron@healthcoda.com',
     url='https://github.com/healthcoda/onelogin-aws-cli',
+    download_url='https://github.com/healthcoda/onelogin-aws-cli/archive/0.1.0.tar.gz',
     py_modules=['onelogin_aws_cli'],
     install_requires=[
         'boto3',
