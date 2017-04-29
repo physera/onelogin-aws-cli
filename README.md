@@ -18,3 +18,5 @@ To configure the script, simply run the configuration:
 ```shell
 onelogin-aws-login -c
 ```
+
+Note that `onelogin-aws-cli` requires python 3.
