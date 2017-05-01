@@ -71,7 +71,7 @@ class OneloginAWS(object):
         if not self.token:
             self.get_token()
 
-        email = input("Onelogin Username: ")
+        email = raw_input("Onelogin Username: ")
         password = getpass.getpass("Onelogin Password: ")
         params = {
             "app_id": self.config["aws_app_id"],
@@ -98,13 +98,13 @@ class OneloginAWS(object):
             else:
                 device_id = devices[0]["device_id"]
 
-            otp_token = input("OTP Token: ")
+            otp_token = raw_input("OTP Token: ")
 
             params = {
                 "app_id": self.config["aws_app_id"],
                 "device_id": str(device_id),
                 "state_token": state_token,
-                "otp_token": otp_token
+                "otp_token": str(otp_token)
             }
             res = self.request("api/1/saml_assertion/verify_factor",
                                headers, params)
@@ -176,21 +176,21 @@ class OneloginAWS(object):
 
         print("\nOnelogin API credentials. These can be found at:\n"
               "https://admin.us.onelogin.com/api_credentials")
-        default["client_id"] = input("Onelogin API Client ID: ")
-        default["client_secret"] = input("Onelogin API Client Secret: ")
+        default["client_id"] = raw_input("Onelogin API Client ID: ")
+        default["client_secret"] = raw_input("Onelogin API Client Secret: ")
         print("\nOnelogin AWS App ID. This can be found at:\n"
               "https://admin.us.onelogin.com/apps")
-        default["aws_app_id"] = input("Onelogin App ID for AWS: ")
+        default["aws_app_id"] = raw_input("Onelogin App ID for AWS: ")
         print("\nOnelogin subdomain is 'company' for login domain of "
               "'comany.onelogin.com'")
-        default["subdomain"] = input("Onelogin subdomain: ")
+        default["subdomain"] = raw_input("Onelogin subdomain: ")
 
         print("\nAWS Role ARN is the ARN of the role you are logging into."
               "\nhttps://console.aws.amazon.com/iam/home?#/roles")
-        default["aws_role_arn"] = input("AWS Role ARN: ")
+        default["aws_role_arn"] = raw_input("AWS Role ARN: ")
         print("\nAWS Principal ARN is the ARN of the SAML provider."
               "\nhttps://console.aws.amazon.com/iam/home?#/providers")
-        default["aws_principal_arn"] = input("AWS Principal ARN: ")
+        default["aws_principal_arn"] = raw_input("AWS Principal ARN: ")
 
         config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
         with open(config_fn, "w") as config_file:
