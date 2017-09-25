@@ -18,5 +18,21 @@ To configure the script, simply run the configuration:
 ```shell
 onelogin-aws-login -c
 ```
+One installed and configured, just run onelogin-aws-login and you'll be asked for your credentials and to choose which role you want to assume.
 
+```shell
+$ onelogin-aws-login
+Onelogin Username: myuser@mycompany.com
+Onelogin Password:
+OTP Token: 579114
+
+Please choose the role you would like to assume:
+[ 0 ]:  arn:aws:iam::166878887401:role/onelogin-test-ec2
+[ 1 ]:  arn:aws:iam::166878887401:role/onelogin-test-s3
+[ 2 ]:  arn:aws:iam::772123451421:role/onelogin-test-s3
+Selection:
+2
+Credentials cached in '/Users/myuser/.aws/credentials'
+Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.com
+```
 Note that `onelogin-aws-cli` requires python 3.

@@ -4,6 +4,8 @@ import configparser
 import getpass
 import json
 import os
+import base64
+import xml.etree.ElementTree as ET
 
 import requests
 import boto3
@@ -38,6 +40,9 @@ class OneloginAWS(object):
         self.token = None
         self.account_id = None
         self.saml = None
+        self.allroles = None
+        self.role_arn = None
+        self.principal_arn = None
         self.credentials = None
         self.user = None
 
@@ -110,12 +115,64 @@ class OneloginAWS(object):
                                headers, params)
             self.saml = res
 
-    def assume_role(self):
+    def get_arns(self):
         if not self.saml:
             self.get_saml_assertion()
+        # Parse the returned assertion and extract the authorized roles
+        awsroles = []
+        root = ET.fromstring(base64.b64decode(self.saml))
+
+        for saml2attribute in root.iter('{urn:oasis:names:tc:SAML:2.0:assertion}Attribute'):
+             if (saml2attribute.get('Name') == 'https://aws.amazon.com/SAML/Attributes/Role'):
+                 for saml2attributevalue in saml2attribute.iter('{urn:oasis:names:tc:SAML:2.0:assertion}AttributeValue'):
+                     awsroles.append(saml2attributevalue.text)
+
+        # Note the format of the attribute value should be role_arn,principal_arn
+        # but lots of blogs list it as principal_arn,role_arn so let's reverse
+        # them if needed
+        for awsrole in awsroles:
+            chunks = awsrole.split(',')
+            if'saml-provider' in chunks[0]:
+                newawsrole = chunks[1] + ',' + chunks[0]
+                index = awsroles.index(awsrole)
+                awsroles.insert(index, newawsrole)
+                awsroles.remove(awsrole)
+
+        self.allroles = awsroles
+
+    def get_role(self):
+        if not self.allroles:
+            self.get_arns()
+        # If I have more than one role, ask the user which one they want,
+        # otherwise just proceed
+        if len(self.allroles) > 1:
+            i = 0
+            print("Please choose the role you would like to assume:")
+            for awsrole in self.allroles:
+                print('[', i, ']: ', awsrole.split(',')[0])
+                i += 1
+
+            print ("Selection: ")
+            selectedroleindex = input()
+
+            # Basic sanity check of input
+            if int(selectedroleindex) > (len(self.allroles) - 1):
+                print ('You selected an invalid role index, please try again')
+                sys.exit(0)
+
+            self.role_arn = self.allroles[int(selectedroleindex)].split(',')[0]
+            self.principal_arn = self.allroles[int(selectedroleindex)].split(',')[1]
+
+        else:
+            self.role_arn = self.allroles[0].split(',')[0]
+            self.principal_arn = self.allroles[0].split(',')[1]
+
+    def assume_role(self):
+        if not self.role_arn:
+            self.get_role()
         res = self.sts_client.assume_role_with_saml(
-            RoleArn=self.config["aws_role_arn"],
-            PrincipalArn=self.config["aws_principal_arn"],
+            RoleArn=self.role_arn,
+            PrincipalArn=self.principal_arn,
             SAMLAssertion=self.saml
         )
 
@@ -161,6 +218,7 @@ class OneloginAWS(object):
             cred_config.write(cred_config_file)
 
         print("Credentials cached in '{}'".format(cred_file))
+        print("Use aws cli with --profile " + name)
 
     @staticmethod
     def generate_config():
@@ -171,7 +229,7 @@ class OneloginAWS(object):
 
         default["base_uri"] = user_choice("Pick a Onelogin API server:", [
             "https://api.us.onelogin.com/",
-            "https://api.eu.onelogin.com"
+            "https://api.eu.onelogin.com/"
         ])
 
         print("\nOnelogin API credentials. These can be found at:\n"
@@ -184,13 +242,6 @@ class OneloginAWS(object):
         print("\nOnelogin subdomain is 'company' for login domain of "
               "'comany.onelogin.com'")
         default["subdomain"] = input("Onelogin subdomain: ")
-
-        print("\nAWS Role ARN is the ARN of the role you are logging into."
-              "\nhttps://console.aws.amazon.com/iam/home?#/roles")
-        default["aws_role_arn"] = input("AWS Role ARN: ")
-        print("\nAWS Principal ARN is the ARN of the SAML provider."
-              "\nhttps://console.aws.amazon.com/iam/home?#/providers")
-        default["aws_principal_arn"] = input("AWS Principal ARN: ")
 
         config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
         with open(config_fn, "w") as config_file:
