@@ -5,6 +5,7 @@ setuptools.setup(
     name='onelogin_aws_cli',
     packages = ['onelogin_aws_cli'],
     version='0.1.4',
+
     description='Onelogin assume AWS role through CLI',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -15,7 +16,7 @@ setuptools.setup(
     ],
     keywords='onelogin aws cli',
     author='Cameron Marlow',
-    author_email='cameron@healthcoda.com',
+    author_email='cameron@physera.com',
     url='https://github.com/physera/onelogin-aws-cli',
     download_url='https://github.com/physera/onelogin-aws-cli/archive/0.1.4.tar.gz',
     py_modules=['onelogin_aws_cli'],

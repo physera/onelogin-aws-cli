@@ -166,20 +166,6 @@ class OneloginAWS(object):
 
         self.credentials = res
 
-        headers = {
-            "Authorization": "bearer:{}".format(self.token),
-            "Content-Type": "application/json"
-        }
-
-        self.request("api/1/events", headers, {
-            "event_type_id": 8,
-            "account_id": self.account_id,
-            "user_id": self.user["id"],
-            "user_name": "{} {}".format(self.user["firstname"],
-                                        self.user["lastname"]),
-            "app_id": int(self.config["aws_app_id"]),
-        })
-
     def save_credentials(self):
         if not self.credentials:
             self.assume_role()
