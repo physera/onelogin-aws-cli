@@ -40,7 +40,7 @@ class OneloginAWS(object):
         self.token = None
         self.account_id = None
         self.saml = None
-        self.allroles = None
+        self.all_roles = None
         self.role_arn = None
         self.principal_arn = None
         self.credentials = None
@@ -119,53 +119,41 @@ class OneloginAWS(object):
         if not self.saml:
             self.get_saml_assertion()
         # Parse the returned assertion and extract the authorized roles
-        awsroles = []
+        aws_roles = []
         root = ET.fromstring(base64.b64decode(self.saml))
 
         for saml2attribute in root.iter('{urn:oasis:names:tc:SAML:2.0:assertion}Attribute'):
-             if (saml2attribute.get('Name') == 'https://aws.amazon.com/SAML/Attributes/Role'):
-                 for saml2attributevalue in saml2attribute.iter('{urn:oasis:names:tc:SAML:2.0:assertion}AttributeValue'):
-                     awsroles.append(saml2attributevalue.text)
+            if (saml2attribute.get('Name') == 'https://aws.amazon.com/SAML/Attributes/Role'):
+                for saml2attributevalue in saml2attribute.iter('{urn:oasis:names:tc:SAML:2.0:assertion}AttributeValue'):
+                    aws_roles.append(saml2attributevalue.text)
 
         # Note the format of the attribute value should be role_arn,principal_arn
         # but lots of blogs list it as principal_arn,role_arn so let's reverse
         # them if needed
-        for awsrole in awsroles:
-            chunks = awsrole.split(',')
-            if'saml-provider' in chunks[0]:
-                newawsrole = chunks[1] + ',' + chunks[0]
-                index = awsroles.index(awsrole)
-                awsroles.insert(index, newawsrole)
-                awsroles.remove(awsrole)
-
-        self.allroles = awsroles
+        aws_roles = [role.split(",") for role in aws_roles]
+        aws_roles = [(role, principal ) for role, principal in aws_roles]
+        self.all_roles = aws_roles
 
     def get_role(self):
-        if not self.allroles:
+        if not self.all_roles:
             self.get_arns()
         # If I have more than one role, ask the user which one they want,
         # otherwise just proceed
-        if len(self.allroles) > 1:
+        if len(self.all_roles) > 1:
             i = 0
             print("Please choose the role you would like to assume:")
-            for awsrole in self.allroles:
-                print('[', i, ']: ', awsrole.split(',')[0])
-                i += 1
+            for i in range(0, len(self.all_roles)):
+                print("[{}] {}".format(i, self.all_roles[i][0]))
 
-            print ("Selection: ")
-            selectedroleindex = input()
-
-            # Basic sanity check of input
-            if int(selectedroleindex) > (len(self.allroles) - 1):
-                print ('You selected an invalid role index, please try again')
-                sys.exit(0)
-
-            self.role_arn = self.allroles[int(selectedroleindex)].split(',')[0]
-            self.principal_arn = self.allroles[int(selectedroleindex)].split(',')[1]
-
-        else:
-            self.role_arn = self.allroles[0].split(',')[0]
-            self.principal_arn = self.allroles[0].split(',')[1]
+            while True:
+                try:
+                    selected_role = int(input("Selection: "))
+                    if selected_role in range(len(self.all_roles)):
+                        self.role_arn, self.principal_arn = self.all_roles[selected_role]
+                        break
+                except:
+                    pass
+                print("You selected an invalid role index, please try again")
 
     def assume_role(self):
         if not self.role_arn:

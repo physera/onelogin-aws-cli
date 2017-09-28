@@ -18,7 +18,7 @@ To configure the script, simply run the configuration:
 ```shell
 onelogin-aws-login -c
 ```
-One installed and configured, just run onelogin-aws-login and you'll be asked for your credentials and to choose which role you want to assume.
+Once installed and configured, just run onelogin-aws-login and you'll be asked for your credentials and to choose which role you want to assume.
 
 ```shell
 $ onelogin-aws-login
