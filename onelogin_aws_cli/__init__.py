@@ -44,7 +44,6 @@ class OneloginAWS(object):
         self.role_arn = None
         self.principal_arn = None
         self.credentials = None
-        self.user = None
 
     def request(self, path, headers, data):
         res = requests.post(
@@ -89,31 +88,31 @@ class OneloginAWS(object):
             "Content-Type": "application/json"
         }
         res = self.request("api/1/saml_assertion", headers, params)
-        callback = res[0]["callback_url"]
-        state_token = res[0]["state_token"]
-        self.user = res[0]["user"]
-        if callback:
-            devices = res[0]["devices"]
-            device_id = None
-            if len(devices) > 1:
-                for i in range(0, len(devices)):
-                    print("{}. {}".format(i+1, devices[i]["device_type"]))
-                device_num = input("Which OTP Device? ")
-                device_id = devices[int(device_num)-1]["device_id"]
-            else:
-                device_id = devices[0]["device_id"]
+        if isinstance(res, list):
+            callback = res[0]["callback_url"]
+            state_token = res[0]["state_token"]
+            if callback:
+                devices = res[0]["devices"]
+                device_id = None
+                if len(devices) > 1:
+                    for i in range(0, len(devices)):
+                        print("{}. {}".format(i+1, devices[i]["device_type"]))
+                    device_num = input("Which OTP Device? ")
+                    device_id = devices[int(device_num)-1]["device_id"]
+                else:
+                    device_id = devices[0]["device_id"]
 
-            otp_token = input("OTP Token: ")
+                otp_token = input("OTP Token: ")
 
-            params = {
-                "app_id": self.config["aws_app_id"],
-                "device_id": str(device_id),
-                "state_token": state_token,
-                "otp_token": otp_token
-            }
-            res = self.request("api/1/saml_assertion/verify_factor",
-                               headers, params)
-            self.saml = res
+                params = {
+                    "app_id": self.config["aws_app_id"],
+                    "device_id": str(device_id),
+                    "state_token": state_token,
+                    "otp_token": otp_token
+                }
+                res = self.request("api/1/saml_assertion/verify_factor",
+                                   headers, params)
+        self.saml = res
 
     def get_arns(self):
         if not self.saml:
@@ -225,7 +224,10 @@ class OneloginAWS(object):
 
     @staticmethod
     def load_config():
-        config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-        config = configparser.ConfigParser()
-        config.read_file(open(config_fn))
-        return config
+        try:
+            config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
+            config = configparser.ConfigParser()
+            config.read_file(open(config_fn))
+            return config
+        except FileNotFoundError:
+            return None
