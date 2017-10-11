@@ -229,7 +229,10 @@ class OneloginAWS(object):
 
     @staticmethod
     def load_config():
-        config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-        config = configparser.ConfigParser()
-        config.read_file(open(config_fn))
-        return config
+        try:
+            config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
+            config = configparser.ConfigParser()
+            config.read_file(open(config_fn))
+            return config
+        except FileNotFoundError:
+            return None
