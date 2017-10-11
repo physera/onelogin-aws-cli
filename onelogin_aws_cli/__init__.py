@@ -165,11 +165,6 @@ class OneloginAWS(object):
 
         self.credentials = res
 
-        headers = {
-            "Authorization": "bearer:{}".format(self.token),
-            "Content-Type": "application/json"
-        }
-
     def save_credentials(self):
         if not self.credentials:
             self.assume_role()
