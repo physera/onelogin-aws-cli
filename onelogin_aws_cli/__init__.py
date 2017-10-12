@@ -121,38 +121,46 @@ class OneloginAWS(object):
         aws_roles = []
         root = ET.fromstring(base64.b64decode(self.saml))
 
-        for saml2attribute in root.iter('{urn:oasis:names:tc:SAML:2.0:assertion}Attribute'):
-            if (saml2attribute.get('Name') == 'https://aws.amazon.com/SAML/Attributes/Role'):
-                for saml2attributevalue in saml2attribute.iter('{urn:oasis:names:tc:SAML:2.0:assertion}AttributeValue'):
-                    aws_roles.append(saml2attributevalue.text)
+        namespace = "{urn:oasis:names:tc:SAML:2.0:assertion}"
+        role_name = "https://aws.amazon.com/SAML/Attributes/Role"
+        for attr in root.iter(namespace + "Attribute"):
+            if attr.get("Name") == role_name:
+                for val in attr.iter(namespace + "AttributeValue"):
+                    aws_roles.append(val.text)
 
-        # Note the format of the attribute value should be role_arn,principal_arn
-        # but lots of blogs list it as principal_arn,role_arn so let's reverse
-        # them if needed
+        # Note the format of the attribute value should be role_arn,
+        # principal_arn but lots of blogs list it as principal_arn,role_arn so
+        # let's reverse them if needed
         aws_roles = [role.split(",") for role in aws_roles]
-        aws_roles = [(role, principal ) for role, principal in aws_roles]
+        aws_roles = [(role, principal) for role, principal in aws_roles]
         self.all_roles = aws_roles
 
     def get_role(self):
         if not self.all_roles:
             self.get_arns()
+
+        if not self.all_roles:
+            raise Exception("No roles found")
+
+        selected_role = None
+
         # If I have more than one role, ask the user which one they want,
         # otherwise just proceed
+        ind = 0
         if len(self.all_roles) > 1:
-            i = 0
-            print("Please choose the role you would like to assume:")
-            for i in range(0, len(self.all_roles)):
-                print("[{}] {}".format(i, self.all_roles[i][0]))
+            for role, principal in self.all_roles:
+                print("[{}] {}".format(ind, role))
+                ind += 1
+            while not selected_role:
+                choice = int(input("Role Number: "))
+                if choice in range(len(self.all_roles)):
+                    selected_role = choice
+                else:
+                    print("Invalid role index, please try again")
+        else:
+            selected_role = 0
 
-            while True:
-                try:
-                    selected_role = int(input("Selection: "))
-                    if selected_role in range(len(self.all_roles)):
-                        self.role_arn, self.principal_arn = self.all_roles[selected_role]
-                        break
-                except:
-                    pass
-                print("You selected an invalid role index, please try again")
+        self.role_arn, self.principal_arn = self.all_roles[selected_role]
 
     def assume_role(self):
         if not self.role_arn:
@@ -172,6 +180,9 @@ class OneloginAWS(object):
         creds = self.credentials["Credentials"]
 
         cred_file = os.path.expanduser("~/.aws/credentials")
+        cred_dir = os.path.expanduser("~/.aws/")
+        if not os.path.exists(cred_dir):
+            os.makedirs(cred_dir)
         cred_config = configparser.ConfigParser()
         cred_config.read(cred_file)
 
