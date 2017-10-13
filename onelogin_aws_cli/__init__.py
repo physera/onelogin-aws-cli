@@ -146,8 +146,8 @@ class OneloginAWS(object):
 
         # If I have more than one role, ask the user which one they want,
         # otherwise just proceed
-        ind = 0
         if len(self.all_roles) > 1:
+            ind = 0
             for role, principal in self.all_roles:
                 print("[{}] {}".format(ind, role))
                 ind += 1
