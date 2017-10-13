@@ -4,6 +4,8 @@ import configparser
 import getpass
 import json
 import os
+import base64
+import xml.etree.ElementTree as ET
 
 import requests
 import boto3
@@ -38,8 +40,10 @@ class OneloginAWS(object):
         self.token = None
         self.account_id = None
         self.saml = None
+        self.all_roles = None
+        self.role_arn = None
+        self.principal_arn = None
         self.credentials = None
-        self.user = None
 
     def request(self, path, headers, data):
         res = requests.post(
@@ -84,38 +88,86 @@ class OneloginAWS(object):
             "Content-Type": "application/json"
         }
         res = self.request("api/1/saml_assertion", headers, params)
-        callback = res[0]["callback_url"]
-        state_token = res[0]["state_token"]
-        self.user = res[0]["user"]
-        if callback:
-            devices = res[0]["devices"]
-            device_id = None
-            if len(devices) > 1:
-                for i in range(0, len(devices)):
-                    print("{}. {}".format(i+1, devices[i]["device_type"]))
-                device_num = input("Which OTP Device? ")
-                device_id = devices[int(device_num)-1]["device_id"]
-            else:
-                device_id = devices[0]["device_id"]
+        if isinstance(res, list):
+            callback = res[0]["callback_url"]
+            state_token = res[0]["state_token"]
+            if callback:
+                devices = res[0]["devices"]
+                device_id = None
+                if len(devices) > 1:
+                    for i in range(0, len(devices)):
+                        print("{}. {}".format(i+1, devices[i]["device_type"]))
+                    device_num = input("Which OTP Device? ")
+                    device_id = devices[int(device_num)-1]["device_id"]
+                else:
+                    device_id = devices[0]["device_id"]
 
-            otp_token = input("OTP Token: ")
+                otp_token = input("OTP Token: ")
 
-            params = {
-                "app_id": self.config["aws_app_id"],
-                "device_id": str(device_id),
-                "state_token": state_token,
-                "otp_token": otp_token
-            }
-            res = self.request("api/1/saml_assertion/verify_factor",
-                               headers, params)
-            self.saml = res
+                params = {
+                    "app_id": self.config["aws_app_id"],
+                    "device_id": str(device_id),
+                    "state_token": state_token,
+                    "otp_token": otp_token
+                }
+                res = self.request("api/1/saml_assertion/verify_factor",
+                                   headers, params)
+        self.saml = res
 
-    def assume_role(self):
+    def get_arns(self):
         if not self.saml:
             self.get_saml_assertion()
+        # Parse the returned assertion and extract the authorized roles
+        aws_roles = []
+        root = ET.fromstring(base64.b64decode(self.saml))
+
+        namespace = "{urn:oasis:names:tc:SAML:2.0:assertion}"
+        role_name = "https://aws.amazon.com/SAML/Attributes/Role"
+        for attr in root.iter(namespace + "Attribute"):
+            if attr.get("Name") == role_name:
+                for val in attr.iter(namespace + "AttributeValue"):
+                    aws_roles.append(val.text)
+
+        # Note the format of the attribute value should be role_arn,
+        # principal_arn but lots of blogs list it as principal_arn,role_arn so
+        # let's reverse them if needed
+        aws_roles = [role.split(",") for role in aws_roles]
+        aws_roles = [(role, principal) for role, principal in aws_roles]
+        self.all_roles = aws_roles
+
+    def get_role(self):
+        if not self.all_roles:
+            self.get_arns()
+
+        if not self.all_roles:
+            raise Exception("No roles found")
+
+        selected_role = None
+
+        # If I have more than one role, ask the user which one they want,
+        # otherwise just proceed
+        if len(self.all_roles) > 1:
+            ind = 0
+            for role, principal in self.all_roles:
+                print("[{}] {}".format(ind, role))
+                ind += 1
+            while not selected_role:
+                choice = int(input("Role Number: "))
+                if choice in range(len(self.all_roles)):
+                    selected_role = choice
+                else:
+                    print("Invalid role index, please try again")
+        else:
+            selected_role = 0
+
+        self.role_arn, self.principal_arn = self.all_roles[selected_role]
+
+    def assume_role(self):
+        if not self.role_arn:
+            self.get_role()
         res = self.sts_client.assume_role_with_saml(
-            RoleArn=self.config["aws_role_arn"],
-            PrincipalArn=self.config["aws_principal_arn"],
+            RoleArn=self.role_arn,
+            PrincipalArn=self.principal_arn,
             SAMLAssertion=self.saml
         )
 
@@ -128,6 +180,9 @@ class OneloginAWS(object):
         creds = self.credentials["Credentials"]
 
         cred_file = os.path.expanduser("~/.aws/credentials")
+        cred_dir = os.path.expanduser("~/.aws/")
+        if not os.path.exists(cred_dir):
+            os.makedirs(cred_dir)
         cred_config = configparser.ConfigParser()
         cred_config.read(cred_file)
 
@@ -147,6 +202,7 @@ class OneloginAWS(object):
             cred_config.write(cred_config_file)
 
         print("Credentials cached in '{}'".format(cred_file))
+        print("Use aws cli with --profile " + name)
 
     @staticmethod
     def generate_config():
@@ -171,13 +227,6 @@ class OneloginAWS(object):
               "'comany.onelogin.com'")
         default["subdomain"] = input("Onelogin subdomain: ")
 
-        print("\nAWS Role ARN is the ARN of the role you are logging into."
-              "\nhttps://console.aws.amazon.com/iam/home?#/roles")
-        default["aws_role_arn"] = input("AWS Role ARN: ")
-        print("\nAWS Principal ARN is the ARN of the SAML provider."
-              "\nhttps://console.aws.amazon.com/iam/home?#/providers")
-        default["aws_principal_arn"] = input("AWS Principal ARN: ")
-
         config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
         with open(config_fn, "w") as config_file:
             config.write(config_file)
@@ -186,7 +235,10 @@ class OneloginAWS(object):
 
     @staticmethod
     def load_config():
-        config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-        config = configparser.ConfigParser()
-        config.read_file(open(config_fn))
-        return config
+        try:
+            config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
+            config = configparser.ConfigParser()
+            config.read_file(open(config_fn))
+            return config
+        except FileNotFoundError:
+            return None
