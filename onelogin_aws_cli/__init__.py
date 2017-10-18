@@ -151,7 +151,7 @@ class OneloginAWS(object):
             for role, principal in self.all_roles:
                 print("[{}] {}".format(ind, role))
                 ind += 1
-            while not selected_role:
+            while selected_role is None:
                 choice = int(input("Role Number: "))
                 if choice in range(len(self.all_roles)):
                     selected_role = choice
