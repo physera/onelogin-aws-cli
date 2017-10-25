@@ -10,6 +10,8 @@ parser.add_argument("-c", "--configure", dest="configure", action="store_true",
                     help="Configure Onelogin and AWS settings")
 parser.add_argument("-C", "--config_name", default="default",
                     help="Switch configuration name within config file")
+parser.add_argument("--profile", default="",
+                    help="Specify profile name of credential")
 
 args = parser.parse_args()
 
