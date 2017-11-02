@@ -76,7 +76,7 @@ class OneloginAWS(object):
         if not self.token:
             self.get_token()
 
-        email = input("Onelogin Username: ")
+        email = self.args.username or input("Onelogin Username: ")
         password = getpass.getpass("Onelogin Password: ")
         params = {
             "app_id": self.config["aws_app_id"],
