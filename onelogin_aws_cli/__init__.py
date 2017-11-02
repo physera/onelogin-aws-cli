@@ -41,9 +41,10 @@ class OneloginAWS(object):
     DURATION_DAY = DURATION_HOUR * 24
     DURATION_WEEK = DURATION_DAY * 7
 
-    def __init__(self, config):
+    def __init__(self, config, args):
         self.sts_client = boto3.client("sts")
         self.config = config
+        self.args = args
         self.token = None
         self.account_id = None
         self.saml = None
@@ -199,6 +200,8 @@ class OneloginAWS(object):
         if name.startswith("arn:aws:sts::"):
             name = name[13:]
         name = name.replace(":assumed-role", "")
+        if self.args.profile != "":
+            name = self.args.profile
 
         cred_config[name] = {
             "aws_access_key_id": creds["AccessKeyId"],
