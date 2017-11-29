@@ -53,6 +53,9 @@ class OneloginAWS(object):
         self.principal_arn = None
         self.credentials = None
 
+        self.username = self.args.username
+        self.password = None
+
     def request(self, path, headers, data):
         res = requests.post(
             self.config["base_uri"] + path,
@@ -83,12 +86,14 @@ class OneloginAWS(object):
         if not self.token:
             self.get_token()
 
-        email = self.args.username or input("Onelogin Username: ")
-        password = getpass.getpass("Onelogin Password: ")
+        if not self.username:
+            self.username = input("Onelogin Username: ")
+        if not self.password:
+            self.password = getpass.getpass("Onelogin Password: ")
         params = {
             "app_id": self.config["aws_app_id"],
-            "username_or_email": email,
-            "password": password,
+            "username_or_email": self.username,
+            "password": self.password,
             "subdomain": self.config["subdomain"]
         }
         headers = {
