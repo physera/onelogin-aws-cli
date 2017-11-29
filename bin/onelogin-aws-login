@@ -15,8 +15,8 @@ parser.add_argument("--profile", default="",
                     help="Specify profile name of credential")
 parser.add_argument("-u", "--username", default="",
                     help="Specify OneLogin username")
-parser.add_argument("-r", "--renew", action="store_true",
-                    help="Auto-renew credentials while session is active")
+parser.add_argument("-r", "--renewSeconds", type=int,
+                    help="Auto-renew credentials after this many seconds")
 
 args = parser.parse_args()
 
@@ -32,7 +32,7 @@ if not config or args.config_name not in config:
 api = OneloginAWS(config[args.config_name], args)
 api.save_credentials()
 
-if args.renew:
+if args.renewSeconds:
     while True:
-        time.sleep(3540)
+        time.sleep(args.renewSeconds)
         api.save_credentials()
