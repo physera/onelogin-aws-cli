@@ -13,24 +13,37 @@ import boto3
 CONFIG_FILENAME = ".onelogin-aws.config"
 
 
-def user_choice(question, options):
+def user_choice(question, options, index=False):
     print(question + "\n")
+
     option_list = ""
     for i in range(0, len(options)):
         option_list += ("{}. {}\n".format(i+1, options[i]))
     selection = None
     while not selection:
         print(option_list)
-        choice = input("? ")
-        try:
-            val = int(choice) - 1
-            if val in range(0, len(options)):
-                selection = options[val]
+        choice = input("Choice? ")
+
+        val = int(choice) - 1
+        if val in range(0, len(options)):
+            if index:
+                selection = val
             else:
-                print("Invalid option")
-        except ValueError:
+                selection = options[val]
+        else:
             print("Invalid option")
+
     return selection
+
+
+class APIError(Exception):
+    def __init__(self, error):
+        self.code = error["code"]
+        self.type = error["type"]
+        self.message = error["message"]
+
+    def __str__(self):
+        return "\n{} ({}), {}\n".format(self.type, self.code, self.message)
 
 
 class OneloginAWS(object):
@@ -45,6 +58,7 @@ class OneloginAWS(object):
         self.role_arn = None
         self.principal_arn = None
         self.credentials = None
+        self.otp = None
 
         self.username = self.args.username
         self.password = None
@@ -62,7 +76,7 @@ class OneloginAWS(object):
             else:
                 return res.json()
         else:
-            raise Exception("Error: {}".format(res.json()))
+            raise APIError(res.json()["status"])
 
     def get_token(self):
         headers = {
@@ -75,49 +89,83 @@ class OneloginAWS(object):
         self.token = res[0]["access_token"]
         self.account_id = res[0]["account_id"]
 
+    def verify_token(self, state_token, devices, headers):
+        verified = False
+        res = None
+
+        while not verified:
+            if not self.otp:
+                self.otp = {
+                    "state_token": state_token,
+                    "device_id": None,
+                    "token": None,
+                }
+
+                selection = user_choice(
+                    "Which OTP Device? ",
+                    [x["device_type"] for x in devices],
+                    index=True
+                )
+
+                self.otp["device_id"] = devices[selection]["device_id"]
+
+                self.otp["token"] = input("OTP Token: ")
+
+            params = {
+                "app_id": self.config["aws_app_id"],
+                "device_id": str(self.otp["device_id"]),
+                "state_token": self.otp["state_token"],
+                "otp_token": self.otp["token"]
+            }
+            try:
+                res = self.request("api/1/saml_assertion/verify_factor",
+                                   headers, params)
+                verified = True
+            except APIError as e:
+                if e.code == 401:
+                    print(e)
+                    self.otp = {}
+                else:
+                    raise e
+
+        return res
+
     def get_saml_assertion(self):
         if not self.token:
             self.get_token()
 
-        if not self.username:
-            self.username = input("Onelogin Username: ")
-        if not self.password:
-            self.password = getpass.getpass("Onelogin Password: ")
-        params = {
-            "app_id": self.config["aws_app_id"],
-            "username_or_email": self.username,
-            "password": self.password,
-            "subdomain": self.config["subdomain"]
-        }
-        headers = {
-            "Authorization": "bearer:{}".format(self.token),
-            "Content-Type": "application/json"
-        }
-        res = self.request("api/1/saml_assertion", headers, params)
+        res = None
+        while not res:
+            if not self.username:
+                self.username = input("Onelogin Username: ")
+            if not self.password:
+                self.password = getpass.getpass("Onelogin Password: ")
+            params = {
+                "app_id": self.config["aws_app_id"],
+                "username_or_email": self.username,
+                "password": self.password,
+                "subdomain": self.config["subdomain"]
+            }
+            headers = {
+                "Authorization": "bearer:{}".format(self.token),
+                "Content-Type": "application/json"
+            }
+
+            try:
+                res = self.request("api/1/saml_assertion", headers, params)
+            except APIError as e:
+                print(e)
+                self.username = None
+                self.password = None
+
         if isinstance(res, list):
             callback = res[0]["callback_url"]
-            state_token = res[0]["state_token"]
+
             if callback:
-                devices = res[0]["devices"]
-                device_id = None
-                if len(devices) > 1:
-                    for i in range(0, len(devices)):
-                        print("{}. {}".format(i+1, devices[i]["device_type"]))
-                    device_num = input("Which OTP Device? ")
-                    device_id = devices[int(device_num)-1]["device_id"]
-                else:
-                    device_id = devices[0]["device_id"]
+                res = self.verify_token(res[0]["state_token"],
+                                        res[0]["devices"],
+                                        headers)
 
-                otp_token = input("OTP Token: ")
-
-                params = {
-                    "app_id": self.config["aws_app_id"],
-                    "device_id": str(device_id),
-                    "state_token": state_token,
-                    "otp_token": otp_token
-                }
-                res = self.request("api/1/saml_assertion/verify_factor",
-                                   headers, params)
         self.saml = res
 
     def get_arns(self):
@@ -211,6 +259,15 @@ class OneloginAWS(object):
 
         print("Credentials cached in '{}'".format(cred_file))
         print("Use aws cli with --profile " + name)
+
+        # Reset state for next attempt
+        self.token = None
+        self.account_id = None
+        self.saml = None
+        self.all_roles = None
+        self.role_arn = None
+        self.principal_arn = None
+        self.credentials = None
 
     @staticmethod
     def generate_config():
