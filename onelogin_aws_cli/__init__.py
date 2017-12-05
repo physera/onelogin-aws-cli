@@ -220,6 +220,9 @@ class OneloginAWS(object):
         print("Credentials cached in '{}'".format(cred_file))
         print("Use aws cli with --profile " + name)
 
+        # Reset state in the case of another transaction
+        self.token = None
+
     @staticmethod
     def generate_config():
         print("Configure Onelogin and AWS\n\n")
