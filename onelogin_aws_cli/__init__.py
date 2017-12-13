@@ -197,7 +197,9 @@ class OneloginAWS(object):
         if name.startswith("arn:aws:sts::"):
             name = name[13:]
         name = name.replace(":assumed-role", "")
-        if self.args.profile != "":
+        if self.config.get("profile"):
+            name = self.config["profile"]
+        elif self.args.profile != "":
             name = self.args.profile
 
         cred_config[name] = {
@@ -210,10 +212,12 @@ class OneloginAWS(object):
             cred_config.write(cred_config_file)
 
         print("Credentials cached in '{}'".format(cred_file))
+        print("Expires at {}".format(creds["Expiration"]))
         print("Use aws cli with --profile " + name)
 
         # Reset state in the case of another transaction
         self.token = None
+        self.credentials = None
 
     @staticmethod
     def generate_config():
