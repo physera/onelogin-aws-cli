@@ -1,8 +1,25 @@
 language: python
 python: "3.6"
-install:
-  - pip install -r requirements.txt
-  - pip install flake8
-before_script:
-  - flake8 .
-script: python -m unittest -v
+env:
+- TARGET=test
+- TARGET=dist
+- TARGET=inst
+script:
+- |
+  if [ "$TARGET" == "test" ]; then
+    pip install -r requirements.txt
+    pip install flake8
+    flake8 .
+    python -m unittest -v
+  fi
+- |
+  if [ "$TARGET" == "dist" ]; then
+    pip install -r dev-requirements.txt
+    scripts/build.sh
+    dist/onelogin-aws-login -h
+  fi
+- |
+  if [ "$TARGET" == "inst" ]; then
+    pip install -e .
+    onelogin-aws-login -h
+  fi
