@@ -255,13 +255,6 @@ class OneloginAWS(object):
         if len(default['session_duration']) == 0:
             default['session_duration'] = '1h'
 
-        print("\nAWS Role ARN is the ARN of the role you are logging into."
-              "\nhttps://console.aws.amazon.com/iam/home?#/roles")
-        default["aws_role_arn"] = input("AWS Role ARN: ")
-        print("\nAWS Principal ARN is the ARN of the SAML provider."
-              "\nhttps://console.aws.amazon.com/iam/home?#/providers")
-        default["aws_principal_arn"] = input("AWS Principal ARN: ")
-
         config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
         with open(config_fn, "w") as config_file:
             config.write(config_file)
@@ -277,10 +270,6 @@ class OneloginAWS(object):
             return config
         except FileNotFoundError:
             return None
-        config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-        config = configparser.ConfigParser()
-        config.read_file(open(config_fn))
-        return config
 
     @staticmethod
     def convert_duration(duration):
