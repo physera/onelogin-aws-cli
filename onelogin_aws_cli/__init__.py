@@ -7,9 +7,6 @@ import os
 import re
 import base64
 import xml.etree.ElementTree as ET
-import re
-import base64
-import xml.etree.ElementTree as ET
 
 import requests
 import boto3
