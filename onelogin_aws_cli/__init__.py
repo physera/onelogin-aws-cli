@@ -182,7 +182,8 @@ class OneloginAWS(object):
             RoleArn=self.role_arn,
             PrincipalArn=self.principal_arn,
             SAMLAssertion=self.saml,
-            DurationSeconds=self.convert_duration(self.config['session_duration'])
+            DurationSeconds=self.convert_duration(
+                self.config['session_duration'])
         )
 
         self.credentials = res
@@ -288,4 +289,3 @@ class OneloginAWS(object):
                 }[groups['unit'].lower()]
             seconds = int(groups['magnitude']) * multiplier
         return seconds
-
