@@ -7,6 +7,7 @@ import os
 import re
 import base64
 import xml.etree.ElementTree as ET
+import re
 
 import requests
 import boto3
@@ -182,7 +183,7 @@ class OneloginAWS(object):
             RoleArn=self.role_arn,
             PrincipalArn=self.principal_arn,
             SAMLAssertion=self.saml,
-            DurationSeconds = self.convert_duration(self.config['session_duration']),
+            DurationSeconds=self.convert_duration(self.config['session_duration'])
         )
 
         self.credentials = res
@@ -299,3 +300,26 @@ class OneloginAWS(object):
             return config
         except FileNotFoundError:
             return None
+        config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
+        config = configparser.ConfigParser()
+        config.read_file(open(config_fn))
+        return config
+
+    @staticmethod
+    def convert_duration(duration):
+        seconds = -1
+        matches = re.search("(?P<magnitude>\d+)(?P<unit>\w)?", duration)
+        if matches is not None:
+            groups = matches.groupdict()
+            multiplier = OneloginAWS.DURATION_SECOND
+            if groups['unit'] is not None:
+                multiplier = {
+                    's': OneloginAWS.DURATION_SECOND,
+                    'm': OneloginAWS.DURATION_MINUTE,
+                    'h': OneloginAWS.DURATION_HOUR,
+                    'd': OneloginAWS.DURATION_DAY,
+                    'w': OneloginAWS.DURATION_WEEK
+                }[groups['unit'].lower()]
+            seconds = int(groups['magnitude']) * multiplier
+        return seconds
+
