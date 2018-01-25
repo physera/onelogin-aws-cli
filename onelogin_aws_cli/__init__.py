@@ -4,6 +4,7 @@ import configparser
 import getpass
 import json
 import os
+import re
 import base64
 import xml.etree.ElementTree as ET
 
@@ -34,6 +35,12 @@ def user_choice(question, options):
 
 
 class OneloginAWS(object):
+    DURATION_SECOND = 1
+    DURATION_MINUTE = DURATION_SECOND * 60
+    DURATION_HOUR = DURATION_MINUTE * 60
+    DURATION_DAY = DURATION_HOUR * 24
+    DURATION_WEEK = DURATION_DAY * 7
+
     def __init__(self, config, args):
         self.sts_client = boto3.client("sts")
         self.config = config
@@ -174,7 +181,9 @@ class OneloginAWS(object):
         res = self.sts_client.assume_role_with_saml(
             RoleArn=self.role_arn,
             PrincipalArn=self.principal_arn,
-            SAMLAssertion=self.saml
+            SAMLAssertion=self.saml,
+            DurationSeconds=self.convert_duration(
+                self.config['session_duration'])
         )
 
         self.credentials = res
@@ -242,6 +251,11 @@ class OneloginAWS(object):
               "'comany.onelogin.com'")
         default["subdomain"] = input("Onelogin subdomain: ")
 
+        print("\nLength of AWS session. Default is 1h. ")
+        default['session_duration'] = input("Session Duration [1h]: ")
+        if len(default['session_duration']) == 0:
+            default['session_duration'] = '1h'
+
         config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
         with open(config_fn, "w") as config_file:
             config.write(config_file)
@@ -257,3 +271,21 @@ class OneloginAWS(object):
             return config
         except FileNotFoundError:
             return None
+
+    @staticmethod
+    def convert_duration(duration):
+        seconds = -1
+        matches = re.search("(?P<magnitude>\d+)(?P<unit>\w)?", duration)
+        if matches is not None:
+            groups = matches.groupdict()
+            multiplier = OneloginAWS.DURATION_SECOND
+            if groups['unit'] is not None:
+                multiplier = {
+                    's': OneloginAWS.DURATION_SECOND,
+                    'm': OneloginAWS.DURATION_MINUTE,
+                    'h': OneloginAWS.DURATION_HOUR,
+                    'd': OneloginAWS.DURATION_DAY,
+                    'w': OneloginAWS.DURATION_WEEK
+                }[groups['unit'].lower()]
+            seconds = int(groups['magnitude']) * multiplier
+        return seconds
