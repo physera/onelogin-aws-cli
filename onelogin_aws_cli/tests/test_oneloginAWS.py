@@ -7,8 +7,8 @@ from onelogin_aws_cli import OneloginAWS
 
 
 class TestOneloginAWS(TestCase):
-    ROLE_PREFIX = "arn:aws:iam::012345678901:role/OneLogin-MyRole"
-    PRVD_PREFIX = "arn:aws:iam::012345678901:saml-provider/OneLogin-MyProvider"
+    ROLE_PREFIX = "arn:aws:iam::123456789012:role/OneLogin-MyRole"
+    PRVD_PREFIX = "arn:aws:iam::123456789012:saml-provider/OneLogin-MyProvider"
 
     def setUp(self):
         with open('fixtures/SAML_SINGLE_ROLE.xml', 'rb') as fp:
