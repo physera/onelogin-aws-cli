@@ -16,7 +16,6 @@ class TestUser_choice(TestCase):
                 result = user_choice('one', ['hallo', 'world', 'foobar'])
 
         output = mock_stdout.getvalue()
-
         assert result == "world"
         assert "Invalid option" not in output
 
@@ -28,6 +27,5 @@ class TestUser_choice(TestCase):
                 result = user_choice('one', ['hallo', 'world', 'foo'])
 
         output = mock_stdout.getvalue()
-        
         assert result == "world"
         assert "Invalid option" in output
