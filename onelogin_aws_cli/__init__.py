@@ -18,7 +18,7 @@ def user_choice(question, options):
     for i, option in enumerate(options):
         option_list += ("{}. {}\n".format(i + 1, option))
     selection = None
-    while not selection:
+    while selection is None:
         print(option_list)
         choice = input("? ")
         try:
@@ -64,7 +64,7 @@ class OneloginAWS(object):
         saml_resp = self.ol_client.get_saml_assertion(
             self.username,
             self.password,
-            self.config['app_id'],
+            self.config['aws_app_id'],
             self.config['subdomain']
         )
 
@@ -81,7 +81,7 @@ class OneloginAWS(object):
             otp_token = input("OTP Token: ")
 
             saml_resp = self.ol_client.get_saml_assertion_verifying(
-                self.config['app_id'],
+                self.config['aws_app_id'],
                 device.id,
                 saml_resp.mfa.state_token,
                 otp_token
