@@ -6,4 +6,6 @@ install:
   - pip install pytest
 before_script:
   - flake8 .
-script: py.test
+script:
+  - ls -lahR
+  - py.test
