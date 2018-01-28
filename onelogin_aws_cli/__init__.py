@@ -15,8 +15,8 @@ CONFIG_FILENAME = ".onelogin-aws.config"
 def user_choice(question, options):
     print(question + "\n")
     option_list = ""
-    for i in range(0, len(options)):
-        option_list += ("{}. {}\n".format(i + 1, options[i]))
+    for i, option in enumerate(options):
+        option_list += ("{}. {}\n".format(i + 1, option))
     selection = None
     while not selection:
         print(option_list)
