@@ -49,83 +49,54 @@ class OneloginAWS(object):
         self.username = self.args.username
         self.password = None
 
-    def request(self, path, headers, data):
-        res = requests.post(
-            self.config["base_uri"] + path,
-            headers=headers,
-            data=json.dumps(data)
+        base_uri_parts = self.config['base_uri'].split('.')
+        self.ol_client = OneLoginClient(
+            self.config['client_id'],
+            self.config['client_secret'],
+            base_uri_parts[1],
         )
 
-        if res.status_code == 200:
-            if "data" in res.json():
-                return res.json()["data"]
-            else:
-                return res.json()
-        else:
-            raise Exception("Error: {}".format(res.json()))
-
-    def get_token(self):
-        headers = {
-            "Authorization": "client_id:{}, client_secret:{}".format(
-                self.config["client_id"], self.config["client_secret"]),
-            "Content-Type": "application/json"
-        }
-        data = {"grant_type": "client_credentials"}
-        res = self.request("auth/oauth2/token", headers, data)
-        self.token = res[0]["access_token"]
-        self.account_id = res[0]["account_id"]
-
     def get_saml_assertion(self):
-        if not self.token:
-            self.get_token()
 
         if not self.username:
             self.username = input("Onelogin Username: ")
         if not self.password:
             self.password = getpass.getpass("Onelogin Password: ")
-        params = {
-            "app_id": self.config["aws_app_id"],
-            "username_or_email": self.username,
-            "password": self.password,
-            "subdomain": self.config["subdomain"]
-        }
-        headers = {
-            "Authorization": "bearer:{}".format(self.token),
-            "Content-Type": "application/json"
-        }
-        res = self.request("api/1/saml_assertion", headers, params)
-        if isinstance(res, list):
-            callback = res[0]["callback_url"]
-            state_token = res[0]["state_token"]
-            if callback:
-                devices = res[0]["devices"]
-                device_id = None
-                if len(devices) > 1:
-                    for i in range(0, len(devices)):
-                        print("{}. {}".format(i+1, devices[i]["device_type"]))
-                    device_num = input("Which OTP Device? ")
-                    device_id = devices[int(device_num)-1]["device_id"]
-                else:
-                    device_id = devices[0]["device_id"]
+        saml_resp = self.ol_client.get_saml_assertion(
+            self.username,
+            self.password,
+            self.config['app_id'],
+            self.config['subdomain']
+        )
 
-                otp_token = input("OTP Token: ")
+        if saml_resp.mfa:
+            device_id = None
+            devices = saml_resp.mfa.devices
+            if len(devices) > 1:
+                for i, device in enumerate(devices):
+                    print("{}. {}".format(i + 1, device.type))
+                device_num = input("Which OTP Device? ")
+                device_id = devices[int(device_num) - 1].id
+            else:
+                device_id = devices[0].id
 
-                params = {
-                    "app_id": self.config["aws_app_id"],
-                    "device_id": str(device_id),
-                    "state_token": state_token,
-                    "otp_token": otp_token
-                }
-                res = self.request("api/1/saml_assertion/verify_factor",
-                                   headers, params)
-        self.saml = res
+            otp_token = input("OTP Token: ")
+
+            saml_resp = self.ol_client.get_saml_assertion_verifying(
+                self.config['app_id'],
+                device_id,
+                saml_resp.mfa.state_token,
+                otp_token
+            )
+
+        self.saml = saml_resp
 
     def get_arns(self):
         if not self.saml:
             self.get_saml_assertion()
         # Parse the returned assertion and extract the authorized roles
         aws_roles = []
-        root = ET.fromstring(base64.b64decode(self.saml))
+        root = ET.fromstring(base64.b64decode(self.saml.saml_response))
 
         namespace = "{urn:oasis:names:tc:SAML:2.0:assertion}"
         role_name = "https://aws.amazon.com/SAML/Attributes/Role"
@@ -174,7 +145,7 @@ class OneloginAWS(object):
         res = self.sts_client.assume_role_with_saml(
             RoleArn=self.role_arn,
             PrincipalArn=self.principal_arn,
-            SAMLAssertion=self.saml
+            SAMLAssertion=self.saml.saml_response
         )
 
         self.credentials = res

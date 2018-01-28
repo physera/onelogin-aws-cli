@@ -22,7 +22,8 @@ setuptools.setup(
     py_modules=['onelogin_aws_cli'],
     install_requires=[
         'boto3',
-        'requests'
+        'requests',
+        'onelogin'
     ],
     license='MIT License',
     scripts=['bin/onelogin-aws-login'],
