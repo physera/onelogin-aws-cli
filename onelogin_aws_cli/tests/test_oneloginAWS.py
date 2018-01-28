@@ -1,15 +1,18 @@
 import base64
+import os
 from argparse import Namespace
 from unittest import TestCase
 from unittest.mock import patch
 
 from onelogin_aws_cli import OneloginAWS
 
+TEST_ROOT = os.path.join(os.path.dirname(__file__))
+
 
 class TestOneloginAWS(TestCase):
     ROLE_PREFIX = "arn:aws:iam::123456789012:role/OneLogin-MyRole"
     PRVD_PREFIX = "arn:aws:iam::123456789012:saml-provider/OneLogin-MyProvider"
-    FIXTURES = "onelogin_aws_cli/tests/fixtures/"
+    FIXTURES = TEST_ROOT + "/fixtures/"
 
     def setUp(self):
         with open(self.FIXTURES + 'saml_single_role.xml', 'rb') as fp:
