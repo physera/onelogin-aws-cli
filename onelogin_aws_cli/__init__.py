@@ -70,21 +70,20 @@ class OneloginAWS(object):
         )
 
         if saml_resp.mfa:
-            device_id = None
             devices = saml_resp.mfa.devices
             if len(devices) > 1:
                 for i, device in enumerate(devices):
                     print("{}. {}".format(i + 1, device.type))
                 device_num = input("Which OTP Device? ")
-                device_id = devices[int(device_num) - 1].id
+                device = devices[int(device_num) - 1]
             else:
-                device_id = devices[0].id
+                device = devices[0]
 
             otp_token = input("OTP Token: ")
 
             saml_resp = self.ol_client.get_saml_assertion_verifying(
                 self.config['app_id'],
-                device_id,
+                device.id,
                 saml_resp.mfa.state_token,
                 otp_token
             )
