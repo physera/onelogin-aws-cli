@@ -9,11 +9,12 @@ from onelogin_aws_cli import OneloginAWS
 class TestOneloginAWS(TestCase):
     ROLE_PREFIX = "arn:aws:iam::123456789012:role/OneLogin-MyRole"
     PRVD_PREFIX = "arn:aws:iam::123456789012:saml-provider/OneLogin-MyProvider"
+    FIXTURES = "onelogin_aws_cli/tests/fixtures/"
 
     def setUp(self):
-        with open('fixtures/SAML_SINGLE_ROLE.xml', 'rb') as fp:
+        with open(self.FIXTURES + 'saml_single_role.xml', 'rb') as fp:
             self.SAML_SINGLE_ROLE = base64.b64encode(fp.read())
-        with open('fixtures/SAML_MULTI_ROLE.xml', 'rb') as fp:
+        with open(self.FIXTURES + 'saml_multi_role.xml', 'rb') as fp:
             self.SAML_MULTI_ROLE = base64.b64encode(fp.read())
 
     def test_init(self):
