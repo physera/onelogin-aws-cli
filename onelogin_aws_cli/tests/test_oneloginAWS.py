@@ -6,18 +6,17 @@ from unittest.mock import patch
 
 from onelogin_aws_cli import OneloginAWS
 
-TEST_ROOT = os.path.join(os.path.dirname(__file__))
+TEST_ROOT = os.path.join(os.path.dirname(__file__), "fixtures")
 
 
 class TestOneloginAWS(TestCase):
     ROLE_PREFIX = "arn:aws:iam::123456789012:role/OneLogin-MyRole"
     PRVD_PREFIX = "arn:aws:iam::123456789012:saml-provider/OneLogin-MyProvider"
-    FIXTURES = TEST_ROOT + "/fixtures/"
 
     def setUp(self):
-        with open(self.FIXTURES + 'saml_single_role.xml', 'rb') as fp:
+        with open(os.path.join(TEST_ROOT, 'saml_single_role.xml'), 'rb') as fp:
             self.SAML_SINGLE_ROLE = base64.b64encode(fp.read())
-        with open(self.FIXTURES + 'saml_multi_role.xml', 'rb') as fp:
+        with open(os.path.join(TEST_ROOT, 'saml_multi_role.xml'), 'rb') as fp:
             self.SAML_MULTI_ROLE = base64.b64encode(fp.read())
 
     def test_init(self):
