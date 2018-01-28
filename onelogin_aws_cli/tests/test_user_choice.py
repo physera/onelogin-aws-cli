@@ -11,9 +11,9 @@ class TestUser_choice(TestCase):
     def test_user_choice(self):
         mock_stdout = StringIO()
 
-        with patch('builtins.input', side_effect=['2']), \
-             contextlib.redirect_stdout(mock_stdout):
-            result = user_choice('one', ['hallo', 'world', 'foobar'])
+        with patch('builtins.input', side_effect=['2']):
+            with contextlib.redirect_stdout(mock_stdout):
+                result = user_choice('one', ['hallo', 'world', 'foobar'])
 
         output = mock_stdout.getvalue()
         assert result == "world"
@@ -22,9 +22,9 @@ class TestUser_choice(TestCase):
     def test_user_choice_bad(self):
         mock_stdout = StringIO()
 
-        with patch('builtins.input', side_effect=['bar', '2']), \
-             contextlib.redirect_stdout(mock_stdout):
-            result = user_choice('one', ['hallo', 'world', 'foo'])
+        with patch('builtins.input', side_effect=['bar', '2']):
+            with contextlib.redirect_stdout(mock_stdout):
+                result = user_choice('one', ['hallo', 'world', 'foo'])
 
         output = mock_stdout.getvalue()
         assert result == "world"

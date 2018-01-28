@@ -1,0 +1,11 @@
+<samlp:Response xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
+    <saml:Assertion>
+        <saml:AttributeStatement>
+            <saml:Attribute Name="https://aws.amazon.com/SAML/Attributes/Role" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">arn:aws:iam::012345678901:role/OneLogin-MyRole0,arn:aws:iam::012345678901:saml-provider/OneLogin-MyProvider0</saml:AttributeValue>
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">arn:aws:iam::012345678901:role/OneLogin-MyRole1,arn:aws:iam::012345678901:saml-provider/OneLogin-MyProvider1</saml:AttributeValue>
+                <saml:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">arn:aws:iam::012345678901:role/OneLogin-MyRole2,arn:aws:iam::012345678901:saml-provider/OneLogin-MyProvider1</saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>
