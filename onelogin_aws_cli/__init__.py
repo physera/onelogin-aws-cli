@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
+import base64
 import configparser
 import getpass
-import json
 import os
-import base64
 import xml.etree.ElementTree as ET
 
-import requests
 import boto3
+from onelogin.api.client import OneLoginClient
 
 CONFIG_FILENAME = ".onelogin-aws.config"
 
@@ -17,7 +16,7 @@ def user_choice(question, options):
     print(question + "\n")
     option_list = ""
     for i in range(0, len(options)):
-        option_list += ("{}. {}\n".format(i+1, options[i]))
+        option_list += ("{}. {}\n".format(i + 1, options[i]))
     selection = None
     while not selection:
         print(option_list)
