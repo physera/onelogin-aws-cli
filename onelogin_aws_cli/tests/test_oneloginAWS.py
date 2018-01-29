@@ -19,8 +19,18 @@ class TestOneloginAWS(TestCase):
         with open(os.path.join(TEST_ROOT, 'saml_multi_role.xml'), 'rb') as fp:
             self.SAML_MULTI_ROLE = base64.b64encode(fp.read())
 
+        self.ol = OneloginAWS(dict(
+            base_uri="https://api.us.onelogin.com/",
+            client_id='mock-id',
+            client_secret='mock-secret'
+        ), Namespace(username='mock-username'))
+
     def test_init(self):
-        mock_config = dict()
+        mock_config = dict(
+            base_uri="https://api.us.onelogin.com/",
+            client_id='mock-id',
+            client_secret='mock-secret'
+        )
         mock_args = Namespace(username='mock-username')
         ol = OneloginAWS(mock_config, mock_args)
 
@@ -29,37 +39,33 @@ class TestOneloginAWS(TestCase):
         assert 'mock-username' == ol.username
 
     def test_get_arns(self):
-        ol = OneloginAWS(dict(), Namespace(username='mock-username'))
-        ol.saml = self.SAML_SINGLE_ROLE
-        ol.get_arns()
+        self.ol.saml = Namespace(saml_response=self.SAML_SINGLE_ROLE)
+        self.ol.get_arns()
 
-        assert [(self.ROLE_PREFIX, self.PRVD_PREFIX)] == ol.all_roles
+        assert [(self.ROLE_PREFIX, self.PRVD_PREFIX)] == self.ol.all_roles
 
     def test_get_arns_multi(self):
-        ol = OneloginAWS(dict(), Namespace(username='mock-username'))
-        ol.saml = self.SAML_MULTI_ROLE
-        ol.get_arns()
+        self.ol.saml = Namespace(saml_response=self.SAML_MULTI_ROLE)
+        self.ol.get_arns()
 
         assert (self.ROLE_PREFIX + '0',
-                self.PRVD_PREFIX + '0') == ol.all_roles[0]
+                self.PRVD_PREFIX + '0') == self.ol.all_roles[0]
         assert (self.ROLE_PREFIX + '1',
-                self.PRVD_PREFIX + '1') == ol.all_roles[1]
+                self.PRVD_PREFIX + '1') == self.ol.all_roles[1]
         assert (self.ROLE_PREFIX + '2',
-                self.PRVD_PREFIX + '1') == ol.all_roles[2]
+                self.PRVD_PREFIX + '1') == self.ol.all_roles[2]
 
     def test_get_role(self):
-        ol = OneloginAWS(dict(), Namespace(username='mock-username'))
-        ol.saml = self.SAML_SINGLE_ROLE
-        ol.get_role()
+        self.ol.saml = Namespace(saml_response=self.SAML_SINGLE_ROLE)
+        self.ol.get_role()
 
-        assert self.ROLE_PREFIX == ol.role_arn
-        assert self.PRVD_PREFIX == ol.principal_arn
+        assert self.ROLE_PREFIX == self.ol.role_arn
+        assert self.PRVD_PREFIX == self.ol.principal_arn
 
     def test_get_role_multi(self):
-        ol = OneloginAWS(dict(), Namespace(username='mock-username'))
-        ol.saml = self.SAML_MULTI_ROLE
+        self.ol.saml = Namespace(saml_response=self.SAML_MULTI_ROLE)
         with patch('builtins.input', side_effect=['2']):
-            ol.get_role()
+            self.ol.get_role()
 
-        assert self.ROLE_PREFIX + "2" == ol.role_arn
-        assert self.PRVD_PREFIX + "1" == ol.principal_arn
+        assert self.ROLE_PREFIX + "2" == self.ol.role_arn
+        assert self.PRVD_PREFIX + "1" == self.ol.principal_arn
