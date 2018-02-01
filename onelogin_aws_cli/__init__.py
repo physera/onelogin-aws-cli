@@ -9,7 +9,10 @@ import xml.etree.ElementTree as ET
 import boto3
 from onelogin.api.client import OneLoginClient
 
+from onelogin_aws_cli.configuration import ConfigurationFile
+
 CONFIG_FILENAME = ".onelogin-aws.config"
+DEFAULT_CONFIG_PATH = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
 
 
 def user_choice(question, options):
@@ -187,42 +190,3 @@ class OneloginAWS(object):
         # Reset state in the case of another transaction
         self.token = None
         self.credentials = None
-
-    @staticmethod
-    def generate_config():
-        print("Configure Onelogin and AWS\n\n")
-        config = configparser.ConfigParser()
-        config.add_section("default")
-        default = config["default"]
-
-        default["base_uri"] = user_choice("Pick a Onelogin API server:", [
-            "https://api.us.onelogin.com/",
-            "https://api.eu.onelogin.com/"
-        ])
-
-        print("\nOnelogin API credentials. These can be found at:\n"
-              "https://admin.us.onelogin.com/api_credentials")
-        default["client_id"] = input("Onelogin API Client ID: ")
-        default["client_secret"] = input("Onelogin API Client Secret: ")
-        print("\nOnelogin AWS App ID. This can be found at:\n"
-              "https://admin.us.onelogin.com/apps")
-        default["aws_app_id"] = input("Onelogin App ID for AWS: ")
-        print("\nOnelogin subdomain is 'company' for login domain of "
-              "'comany.onelogin.com'")
-        default["subdomain"] = input("Onelogin subdomain: ")
-
-        config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-        with open(config_fn, "w") as config_file:
-            config.write(config_file)
-
-        print("Configuration written to '{}'".format(config_fn))
-
-    @staticmethod
-    def load_config():
-        try:
-            config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-            config = configparser.ConfigParser()
-            config.read_file(open(config_fn))
-            return config
-        except FileNotFoundError:
-            return None
