@@ -8,40 +8,64 @@ class TestConfigurationFile(TestCase):
 
     def test_can_save_password_username_true(self):
         str = StringIO()
-        str.write("""[config onelogin-aws-login]
+        str.write("""[defaults]
 save_username = true
+save_password = false
+
+[profile_test]
 save_password = true""")
         str.seek(0)
         cfg = ConfigurationFile(str)
-        self.assertTrue(cfg.can_save_username)
-        self.assertTrue(cfg.can_save_password)
+        self.assertTrue(cfg.section("profile_test").can_save_username)
+        self.assertTrue(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_false(self):
         str = StringIO()
-        str.write("""[config onelogin-aws-login]
-save_username = true
-save_password = true""")
-        str.seek(0)
-        cfg = ConfigurationFile(str)
-        self.assertFalse(cfg.can_save_username)
-        self.assertFalse(cfg.can_save_password)
-
-    def test_can_save_password_username_xor_1(self):
-        str = StringIO()
-        str.write("""[config onelogin-aws-login]
+        str.write("""[defaults]
 save_username = false
-save_password = true""")
-        str.seek(0)
-        cfg = ConfigurationFile(str)
-        self.assertFalse(cfg.can_save_username)
-        self.assertTrue(cfg.can_save_password)
+save_password = false
 
-    def test_can_save_password_username_xor_2(self):
-        str = StringIO()
-        str.write("""[config onelogin-aws-login]
-save_username = true
+[profile_test]
 save_password = false""")
         str.seek(0)
         cfg = ConfigurationFile(str)
-        self.assertTrue(cfg.can_save_username)
-        self.assertFalse(cfg.can_save_password)
+        self.assertFalse(cfg.section("profile_test").can_save_username)
+        self.assertFalse(cfg.section("profile_test").can_save_password)
+
+    def test_can_save_password_username_xor_1(self):
+        str = StringIO()
+        str.write("""[defaults]
+save_username = false
+save_password = false
+
+[profile_test]
+save_password = true""")
+        str.seek(0)
+        cfg = ConfigurationFile(str)
+        self.assertFalse(cfg.section("profile_test").can_save_username)
+        self.assertTrue(cfg.section("profile_test").can_save_password)
+
+    def test_can_save_password_username_xor_2(self):
+        str = StringIO()
+        str.write("""[defaults]
+save_username = true
+save_password = false
+
+[profile_test]
+save_password = false""")
+        str.seek(0)
+        cfg = ConfigurationFile(str)
+        self.assertTrue(cfg.section("profile_test").can_save_username)
+        self.assertFalse(cfg.section("profile_test").can_save_password)
+
+    def test_can_save_password_username_xor_3(self):
+        str = StringIO()
+        str.write("""[defaults]
+    save_username = true
+    save_password = false
+
+[profile_test]""")
+        str.seek(0)
+        cfg = ConfigurationFile(str)
+        self.assertTrue(cfg.section("profile_test").can_save_username)
+        self.assertFalse(cfg.section("profile_test").can_save_password)

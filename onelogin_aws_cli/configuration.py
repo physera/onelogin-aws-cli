@@ -1,11 +1,12 @@
 import configparser
 
-from onelogin_aws_cli import user_choice
+from onelogin_aws_cli.userquery import user_choice
 
 
 class ConfigurationFile(configparser.ConfigParser):
     def __init__(self, config_file):
-        super().__init__()
+        super().__init__(default_section='defaults')
+
         self.file = config_file
 
         self.read_file(self.file)
@@ -32,24 +33,31 @@ class ConfigurationFile(configparser.ConfigParser):
 
         self.save()
 
-    @property
-    def can_save_password(self):
-        pass
-
-    @property
-    def can_save_username(self):
-        pass
-
-    def get_profile(self, name):
-        if name not in self:
-            return None
-        return self[name]
-
-    def get_config(self, name):
-        config_name = 'config ' + name
-        return self.get_profile(config_name)
-
     def save(self):
         with open(self.file_path, "w") as config_file:
             self.write(config_file)
         print("Configuration written to '{}'".format(self.file_path))
+
+    def section(self, section_name):
+        if self.has_section(section_name):
+            return Section(section_name, self)
+        return None
+
+
+class Section(object):
+    def __init__(self, section_name, config: ConfigurationFile):
+        self.config = config
+        self.section_name = section_name
+
+    @property
+    def can_save_password(self) -> bool:
+        return self.config.getboolean(self.section_name, "save_password")
+
+    @property
+    def can_save_username(self) -> bool:
+        return self.config.getboolean(self.section_name, "save_username")
+
+    def __getattr__(self, item):
+        if self.config.has_option(self.section_name, item):
+            return self.config.get(self.section_name, item)
+        return None

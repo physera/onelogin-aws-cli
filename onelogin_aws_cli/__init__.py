@@ -15,26 +15,6 @@ CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
 
 
-def user_choice(question, options):
-    print(question + "\n")
-    option_list = ""
-    for i, option in enumerate(options):
-        option_list += ("{}. {}\n".format(i + 1, option))
-    selection = None
-    while selection is None:
-        print(option_list)
-        choice = input("? ")
-        try:
-            val = int(choice) - 1
-            if val in range(0, len(options)):
-                selection = options[val]
-            else:
-                print("Invalid option")
-        except ValueError:
-            print("Invalid option")
-    return selection
-
-
 class OneloginAWS(object):
     def __init__(self, config, args):
         self.sts_client = boto3.client("sts")
@@ -51,10 +31,10 @@ class OneloginAWS(object):
         self.username = self.args.username
         self.password = None
 
-        base_uri_parts = self.config['base_uri'].split('.')
+        base_uri_parts = self.config.base_uri.split('.')
         self.ol_client = OneLoginClient(
-            self.config['client_id'],
-            self.config['client_secret'],
+            self.config.client_id,
+            self.config.client_secret,
             base_uri_parts[1],
         )
 
