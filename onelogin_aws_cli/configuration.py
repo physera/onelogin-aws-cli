@@ -60,4 +60,7 @@ class Section(object):
         self.config.set(self.section_name, key, value)
 
     def __getitem__(self, item):
-        self.config.get(self.section_name, item)
+        return self.config.get(self.section_name, item)
+
+    def __contains__(self, item):
+        return self.config.has_option(self.section_name, item)

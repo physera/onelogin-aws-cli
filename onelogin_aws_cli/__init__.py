@@ -29,10 +29,10 @@ class OneloginAWS(object):
         self.username = self.args.username
         self.password = None
 
-        base_uri_parts = self.config.base_uri.split('.')
+        base_uri_parts = self.config['base_uri'].split('.')
         self.ol_client = OneLoginClient(
-            self.config.client_id,
-            self.config.client_secret,
+            self.config['client_id'],
+            self.config['client_secret'],
             base_uri_parts[1],
         )
 
@@ -147,7 +147,7 @@ class OneloginAWS(object):
         if name.startswith("arn:aws:sts::"):
             name = name[13:]
         name = name.replace(":assumed-role", "")
-        if self.config.get("profile"):
+        if "profile" in self.config:
             name = self.config["profile"]
         elif self.args.profile != "":
             name = self.args.profile

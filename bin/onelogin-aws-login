@@ -4,8 +4,9 @@ import argparse
 import sys
 import time
 
-from onelogin_aws_cli import OneloginAWS, ConfigurationFile, \
+from onelogin_aws_cli import OneloginAWS, \
     DEFAULT_CONFIG_PATH
+from onelogin_aws_cli.configuration import ConfigurationFile
 
 parser = argparse.ArgumentParser(description="Login to AWS with Onelogin")
 parser.add_argument("-c", "--configure", dest="configure", action="store_true",
