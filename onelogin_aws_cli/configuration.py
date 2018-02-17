@@ -18,7 +18,6 @@ class ConfigurationFile(configparser.ConfigParser):
 
         self['defaults'] = dict(
             save_password=False,
-            save_username=False
         )
 
         self.file = config_file

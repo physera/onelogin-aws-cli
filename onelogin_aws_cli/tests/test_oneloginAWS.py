@@ -40,7 +40,7 @@ class TestOneloginAWS(TestCase):
 
         assert mock_config == ol.config
         assert mock_args == ol.args
-        assert 'mock-username' == ol.username
+        assert 'mock-username' == ol.user_credentials.username
 
     def test_get_arns(self):
         self.ol.saml = Namespace(saml_response=self.SAML_SINGLE_ROLE)
