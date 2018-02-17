@@ -2,7 +2,7 @@ from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
 
-from onelogin_aws_cli import ConfigurationFile
+from onelogin_aws_cli.configuration import ConfigurationFile
 
 
 class TestConfigurationFile(TestCase):
