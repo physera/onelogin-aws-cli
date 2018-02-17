@@ -6,7 +6,7 @@ import base64
 import configparser
 import getpass
 import os
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ElementTree
 
 import boto3
 from onelogin.api.client import OneLoginClient
@@ -89,7 +89,8 @@ class OneloginAWS(object):
             self.get_saml_assertion()
         # Parse the returned assertion and extract the authorized roles
         aws_roles = []
-        root = ET.fromstring(base64.b64decode(self.saml.saml_response))
+        root = ElementTree.fromstring(
+            base64.b64decode(self.saml.saml_response))
 
         namespace = "{urn:oasis:names:tc:SAML:2.0:assertion}"
         role_name = "https://aws.amazon.com/SAML/Attributes/Role"
