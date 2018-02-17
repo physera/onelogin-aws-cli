@@ -69,3 +69,4 @@ save_password = false""")
         cfg = ConfigurationFile(str)
         self.assertTrue(cfg.section("profile_test").can_save_username)
         self.assertFalse(cfg.section("profile_test").can_save_password)
+

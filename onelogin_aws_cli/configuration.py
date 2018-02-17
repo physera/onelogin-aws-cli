@@ -13,7 +13,7 @@ class ConfigurationFile(configparser.ConfigParser):
 
     def initialise(self):
         print("Configure Onelogin and AWS\n\n")
-        default = self.get_config("default")
+        default = self.section("default")
 
         default["base_uri"] = user_choice("Pick a Onelogin API server:", [
             "https://api.us.onelogin.com/",
@@ -34,9 +34,8 @@ class ConfigurationFile(configparser.ConfigParser):
         self.save()
 
     def save(self):
-        with open(self.file_path, "w") as config_file:
-            self.write(config_file)
-        print("Configuration written to '{}'".format(self.file_path))
+        self.write(self.file)
+        print("Configuration written to '{}'".format(self.file))
 
     def section(self, section_name):
         if self.has_section(section_name):
