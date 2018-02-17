@@ -52,10 +52,6 @@ class Section(object):
     def can_save_password(self) -> bool:
         return self.config.getboolean(self.section_name, "save_password")
 
-    @property
-    def can_save_username(self) -> bool:
-        return self.config.getboolean(self.section_name, "save_username")
-
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
 
