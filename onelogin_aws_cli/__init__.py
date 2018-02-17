@@ -9,8 +9,6 @@ import xml.etree.ElementTree as ET
 import boto3
 from onelogin.api.client import OneLoginClient
 
-from onelogin_aws_cli.configuration import ConfigurationFile
-
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
 
