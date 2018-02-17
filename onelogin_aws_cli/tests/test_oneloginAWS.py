@@ -19,14 +19,14 @@ class TestOneloginAWS(TestCase):
         with open(os.path.join(TEST_ROOT, 'saml_multi_role.xml'), 'rb') as fp:
             self.SAML_MULTI_ROLE = base64.b64encode(fp.read())
 
-        self.ol = OneloginAWS(dict(
+        self.ol = OneloginAWS(Namespace(
             base_uri="https://api.us.onelogin.com/",
             client_id='mock-id',
             client_secret='mock-secret'
         ), Namespace(username='mock-username'))
 
     def test_init(self):
-        mock_config = dict(
+        mock_config = Namespace(
             base_uri="https://api.us.onelogin.com/",
             client_id='mock-id',
             client_secret='mock-secret'
