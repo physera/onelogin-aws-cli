@@ -15,21 +15,21 @@ class ConfigurationFile(configparser.ConfigParser):
         print("Configure Onelogin and AWS\n\n")
         default = self.section("default")
 
-        default["base_uri"] = user_choice("Pick a Onelogin API server:", [
+        default['base_uri'] = user_choice("Pick a Onelogin API server:", [
             "https://api.us.onelogin.com/",
             "https://api.eu.onelogin.com/"
         ])
 
         print("\nOnelogin API credentials. These can be found at:\n"
               "https://admin.us.onelogin.com/api_credentials")
-        default["client_id"] = input("Onelogin API Client ID: ")
-        default["client_secret"] = input("Onelogin API Client Secret: ")
+        default['client_id'] = input("Onelogin API Client ID: ")
+        default['client_secret'] = input("Onelogin API Client Secret: ")
         print("\nOnelogin AWS App ID. This can be found at:\n"
               "https://admin.us.onelogin.com/apps")
-        default["aws_app_id"] = input("Onelogin App ID for AWS: ")
+        default['aws_app_id'] = input("Onelogin App ID for AWS: ")
         print("\nOnelogin subdomain is 'company' for login domain of "
               "'comany.onelogin.com'")
-        default["subdomain"] = input("Onelogin subdomain: ")
+        default['subdomain'] = input("Onelogin subdomain: ")
 
         self.save()
 
@@ -38,9 +38,9 @@ class ConfigurationFile(configparser.ConfigParser):
         print("Configuration written to '{}'".format(self.file))
 
     def section(self, section_name):
-        if self.has_section(section_name):
-            return Section(section_name, self)
-        return None
+        if not self.has_section(section_name):
+            self.add_section(section_name)
+        return Section(section_name, self)
 
 
 class Section(object):
@@ -56,7 +56,8 @@ class Section(object):
     def can_save_username(self) -> bool:
         return self.config.getboolean(self.section_name, "save_username")
 
-    def __getattr__(self, item):
-        if self.config.has_option(self.section_name, item):
-            return self.config.get(self.section_name, item)
-        return None
+    def __setitem__(self, key, value):
+        self.config.set(self.section_name, key, value)
+
+    def __getitem__(self, item):
+        self.config.get(self.section_name, item)

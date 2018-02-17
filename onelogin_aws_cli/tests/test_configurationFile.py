@@ -1,5 +1,6 @@
 from io import StringIO
 from unittest import TestCase
+from unittest.mock import patch
 
 from onelogin_aws_cli import ConfigurationFile
 
@@ -70,3 +71,20 @@ save_password = false""")
         self.assertTrue(cfg.section("profile_test").can_save_username)
         self.assertFalse(cfg.section("profile_test").can_save_password)
 
+    def test_initialise(self):
+        str = StringIO()
+        cfg = ConfigurationFile(str)
+        with patch('builtins.input',
+                   side_effect=['2', 'mock_client_id', 'mock_client_secret',
+                                'mock_aws_app_id', 'mock_subdomain']):
+            cfg.initialise()
+        str.seek(0)
+
+        self.assertEqual("""[default]
+base_uri = https://api.eu.onelogin.com/
+client_id = mock_client_id
+client_secret = mock_client_secret
+aws_app_id = mock_aws_app_id
+subdomain = mock_subdomain
+
+""", str.getvalue())
