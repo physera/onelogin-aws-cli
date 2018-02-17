@@ -19,9 +19,10 @@ class UserCredentials(object):
 
         if not self.username:
             # Try the configuration first
-            if self.configuration['username']:
+            if 'username' in self.configuration:
                 self.username = self.configuration['username']
-            self.username = input("Onelogin Username: ")
+            else:
+                self.username = input("Onelogin Username: ")
 
         if not self.password:
             if self.configuration.can_save_password:
@@ -33,16 +34,14 @@ class UserCredentials(object):
                 self.prompt_password()
 
         if save_password:
+            print("Saving password to keychain...")
             self.save_password_to_keychain()
 
     def prompt_password(self):
         self.password = getpass.getpass("Onelogin Password: ")
 
     def load_password_from_keychain(self) -> typing.Union[str, bool]:
-        password = keyring.get_password(self.SERVICE_NAME, self.username)
-        if self.password is None or len(self.password) == 0:
-            return False
-        return password
+        return keyring.get_password(self.SERVICE_NAME, self.username)
 
     def save_password_to_keychain(self):
-        keyring.set_password(self.SERVICE_NAME, self.username)
+        keyring.set_password(self.SERVICE_NAME, self.username, self.password)
