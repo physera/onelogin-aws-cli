@@ -6,6 +6,9 @@ import time
 
 from onelogin_aws_cli import OneloginAWS
 
+from onelogin_aws_cli import OneloginAWS, \
+    DEFAULT_CONFIG_PATH
+from onelogin_aws_cli.configuration import ConfigurationFile
 
 def main():
     parser = argparse.ArgumentParser(description="Login to AWS with Onelogin")
@@ -23,23 +26,25 @@ def main():
 
     args = parser.parse_args()
 
+    with open(DEFAULT_CONFIG_PATH) as fp:
+        configFile = ConfigurationFile(fp)
+
     if args.configure:
-        OneloginAWS.generate_config()
+        configFile.initialise()
 
-    config = OneloginAWS.load_config()
+    config_section = configFile.section(args.config_name)
 
-    if not config or args.config_name not in config:
+    if config_section is None:
         sys.exit("Configuration '{}' not defined. "
                  "Please run 'onelogin-aws-login -c'".format(args.config_name))
 
-    api = OneloginAWS(config[args.config_name], args)
+    api = OneloginAWS(config_section, args)
     api.save_credentials()
 
     if args.renewSeconds:
         while True:
             time.sleep(args.renewSeconds)
             api.save_credentials()
-
 
 if __name__ == '__main__':
     main()
