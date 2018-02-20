@@ -25,9 +25,7 @@ setuptools.setup(
         'onelogin'
     ],
     license='MIT License',
-    entry_points={
-        "console_scripts": ["onelogin-aws-login = onelogin_aws_cli.main:main"]
-    },
+    scripts=['bin/onelogin-aws-login'],
     test_suite='nose.collector',
     tests_require=['nose', 'nose-cover3'],
     zip_safe=False,
