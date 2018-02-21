@@ -5,7 +5,7 @@ Assume an AWS Role and cache credentials using Onelogin
 
 This package provides a script to login to Onelogin and use a SAML connection
 to AWS to assume a role. More details on setting up SAML for AWS can be found
-at [OneLogin](https://support.onelogin.com/hc/en-us/articles/201174164-Configuring-SAML-for-Amazon-Web-Services-AWS-Single-Role).
+at [Onelogin](https://support.onelogin.com/hc/en-us/articles/201174164-Configuring-SAML-for-Amazon-Web-Services-AWS-Single-Role).
 
 To install, use pip
 
