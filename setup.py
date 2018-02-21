@@ -26,7 +26,11 @@ setuptools.setup(
         'keyring'
     ],
     license='MIT License',
-    scripts=['bin/onelogin-aws-login'],
+    entry_points={
+        "console_scripts": [
+            "onelogin-aws-login = onelogin_aws_cli.cli:login"
+        ]
+    },
     test_suite='nose.collector',
     tests_require=['nose', 'nose-cover3'],
     zip_safe=False,
