@@ -14,6 +14,9 @@ class TestOneloginAWS(TestCase):
     PRVD_PREFIX = "arn:aws:iam::123456789012:saml-provider/OneLogin-MyProvider"
 
     def setUp(self):
+        """
+        Set up mock SAML and base OnloginAWS object
+        """
         with open(os.path.join(TEST_ROOT, 'saml_single_role.xml'), 'rb') as fp:
             self.SAML_SINGLE_ROLE = base64.b64encode(fp.read())
         with open(os.path.join(TEST_ROOT, 'saml_multi_role.xml'), 'rb') as fp:
