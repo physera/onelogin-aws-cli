@@ -1,8 +1,9 @@
-import base64
-import os
 from argparse import Namespace
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+
+import base64
+import os
 
 from onelogin_aws_cli import OneloginAWS
 
@@ -72,3 +73,9 @@ class TestOneloginAWS(TestCase):
 
         assert self.ROLE_PREFIX + "2" == self.ol.role_arn
         assert self.PRVD_PREFIX + "1" == self.ol.principal_arn
+
+    def test_get_role_fail(self):
+        self.ol.all_roles = []
+        self.ol.get_arns = MagicMock()
+        with self.assertRaisesRegex(Exception, r'^No roles found$'):
+            self.ol.get_role()
