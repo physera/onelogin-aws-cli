@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+
+import sys
+
+from onelogin_aws_cli.cli import login
+
+if __name__ == '__main__':
+    login(args=sys.argv[1:])
