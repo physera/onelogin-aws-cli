@@ -22,7 +22,8 @@ setuptools.setup(
     py_modules=['onelogin_aws_cli'],
     install_requires=[
         'boto3',
-        'onelogin'
+        'onelogin',
+        'keyring'
     ],
     entry_points={
         "console_scripts": [
