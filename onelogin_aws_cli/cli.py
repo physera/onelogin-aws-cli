@@ -2,8 +2,9 @@ import argparse
 import sys
 import time
 
-from onelogin_aws_cli import OneloginAWS, \
-    DEFAULT_CONFIG_PATH
+import pkg_resources
+
+from onelogin_aws_cli import OneloginAWS, DEFAULT_CONFIG_PATH
 from onelogin_aws_cli.configuration import ConfigurationFile
 
 
@@ -12,6 +13,8 @@ def login(args=sys.argv[1:]):
     Entrypoint for `onelogin-aws-login`
     :param args:
     """
+    version = pkg_resources.get_distribution('pip').version
+
     parser = argparse.ArgumentParser(description="Login to AWS with Onelogin")
     parser.add_argument("-c", "--configure", dest="configure",
                         action="store_true",
@@ -24,6 +27,8 @@ def login(args=sys.argv[1:]):
                         help="Specify OneLogin username")
     parser.add_argument("-r", "--renewSeconds", type=int,
                         help="Auto-renew credentials after this many seconds")
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s ' + version)
 
     args = parser.parse_args(args)
 
