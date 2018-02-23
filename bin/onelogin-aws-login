@@ -4,7 +4,11 @@ import argparse
 import sys
 import time
 
+import pkg_resources
+
 from onelogin_aws_cli import OneloginAWS
+
+version = pkg_resources.get_distribution('pip').version
 
 parser = argparse.ArgumentParser(description="Login to AWS with Onelogin")
 parser.add_argument("-c", "--configure", dest="configure", action="store_true",
@@ -17,6 +21,8 @@ parser.add_argument("-u", "--username", default="",
                     help="Specify OneLogin username")
 parser.add_argument("-r", "--renewSeconds", type=int,
                     help="Auto-renew credentials after this many seconds")
+parser.add_argument('-v', '--version', action='version',
+                    version='%(prog)s ' + version)
 
 args = parser.parse_args()
 
