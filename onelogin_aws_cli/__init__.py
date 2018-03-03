@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+OneLogin/AWS Business logic
+"""
 
 import base64
 import configparser
@@ -33,6 +35,11 @@ def user_choice(question, options):
 
 
 class OneloginAWS(object):
+    """
+    Handles the authentication between OneLogin SAML Assertion and the AWS
+    identity federation
+    """
+
     def __init__(self, config, args):
         self.sts_client = boto3.client("sts")
         self.config = config
@@ -56,6 +63,10 @@ class OneloginAWS(object):
         )
 
     def get_saml_assertion(self):
+        """
+         Retrieve users credentials and get the SAML assertion from Onelogin,
+         based on the users choice of AWS account to log into
+        """
 
         if not self.username:
             self.username = input("Onelogin Username: ")
@@ -90,6 +101,10 @@ class OneloginAWS(object):
         self.saml = saml_resp
 
     def get_arns(self):
+        """
+        Extract the IAM Role ARNs from the SAML Assertion
+        """
+
         if not self.saml:
             self.get_saml_assertion()
         # Parse the returned assertion and extract the authorized roles
@@ -111,6 +126,10 @@ class OneloginAWS(object):
         self.all_roles = aws_roles
 
     def get_role(self):
+        """
+        Prompt the user to choose a Role ARN if more than one is available
+        """
+
         if not self.all_roles:
             self.get_arns()
 
@@ -138,6 +157,10 @@ class OneloginAWS(object):
         self.role_arn, self.principal_arn = self.all_roles[selected_role]
 
     def assume_role(self):
+        """
+        Perform an AWS SAML role assumption
+        """
+
         if not self.role_arn:
             self.get_role()
         res = self.sts_client.assume_role_with_saml(
@@ -149,6 +172,10 @@ class OneloginAWS(object):
         self.credentials = res
 
     def save_credentials(self):
+        """
+        Save the AWS Federation credentials to disk
+        """
+
         if not self.credentials:
             self.assume_role()
 
