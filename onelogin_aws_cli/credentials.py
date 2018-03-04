@@ -4,10 +4,10 @@ manner
 """
 
 import getpass
-
 import keyring
 
 from onelogin_aws_cli.configuration import Section
+from typing import Optional
 
 
 class UserCredentials(object):
@@ -18,12 +18,12 @@ class UserCredentials(object):
     SERVICE_NAME = "onelogin-aws-cli"
 
     def __init__(self, username, config: Section):
-        self.username = username
-        self.configuration = config
+        self.username: str = username
+        self.configuration: Section = config
 
         # This is `None`, as the password should be be emitted from this class
         # and should never be loaded from any other source outside this class
-        self.password = None
+        self.password: Optional[str] = None
 
     @property
     def has_password(self) -> bool:
