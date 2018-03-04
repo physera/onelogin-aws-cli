@@ -1,0 +1,7 @@
+[paths]
+source =
+    onelogin_aws_cli/*.py
+
+[run]
+omit =
+    */tests/*
