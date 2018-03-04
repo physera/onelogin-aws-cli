@@ -156,7 +156,6 @@ class OneloginAWS(object):
 
     def save_credentials(self):
         """
-        Save the AWS Federation credentials to disc
         Save the AWS Federation credentials to disk
         """
 
