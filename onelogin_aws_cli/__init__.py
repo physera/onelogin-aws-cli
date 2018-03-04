@@ -14,7 +14,7 @@ from onelogin.api.client import OneLoginClient
 from onelogin_aws_cli.configuration import Section
 
 CONFIG_FILENAME = ".onelogin-aws.config"
-DEFAULT_CONFIG_PATH = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
+DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
 
 
 class OneloginAWS(object):
