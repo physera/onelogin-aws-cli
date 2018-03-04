@@ -6,39 +6,15 @@ import base64
 import configparser
 import getpass
 import os
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ElementTree
 
 import boto3
 from onelogin.api.client import OneLoginClient
 
+from onelogin_aws_cli.configuration import Section
+
 CONFIG_FILENAME = ".onelogin-aws.config"
-
-
-def user_choice(question, options):
-    """
-    Prompt a user with a question and a specific set of possible responses
-    :param question: Specifying context for the user to select an option
-    :param options: A list of options for the user to select from
-    :return:
-    """
-
-    print(question + "\n")
-    option_list = ""
-    for i, option in enumerate(options):
-        option_list += ("{}. {}\n".format(i + 1, option))
-    selection = None
-    while selection is None:
-        print(option_list)
-        choice = input("? ")
-        try:
-            val = int(choice) - 1
-            if val in range(0, len(options)):
-                selection = options[val]
-            else:
-                print("Invalid option")
-        except ValueError:
-            print("Invalid option")
-    return selection
+DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
 
 
 class OneloginAWS(object):
@@ -47,7 +23,7 @@ class OneloginAWS(object):
     identity federation
     """
 
-    def __init__(self, config, args):
+    def __init__(self, config: Section, args):
         self.sts_client = boto3.client("sts")
         self.config = config
         self.args = args
@@ -71,8 +47,8 @@ class OneloginAWS(object):
 
     def get_saml_assertion(self):
         """
-         Retrieve users credentials and get the SAML assertion from Onelogin,
-         based on the users choice of AWS account to log into
+        Retrieve users credentials and get the SAML assertion from Onelogin,
+        based on the users choice of AWS account to log into
         """
 
         if not self.username:
@@ -116,7 +92,8 @@ class OneloginAWS(object):
             self.get_saml_assertion()
         # Parse the returned assertion and extract the authorized roles
         aws_roles = []
-        root = ET.fromstring(base64.b64decode(self.saml.saml_response))
+        root = ElementTree.fromstring(
+            base64.b64decode(self.saml.saml_response))
 
         namespace = "{urn:oasis:names:tc:SAML:2.0:assertion}"
         role_name = "https://aws.amazon.com/SAML/Attributes/Role"
@@ -200,7 +177,7 @@ class OneloginAWS(object):
         if name.startswith("arn:aws:sts::"):
             name = name[13:]
         name = name.replace(":assumed-role", "")
-        if self.config.get("profile"):
+        if "profile" in self.config:
             name = self.config["profile"]
         elif self.args.profile != "":
             name = self.args.profile
@@ -221,42 +198,3 @@ class OneloginAWS(object):
         # Reset state in the case of another transaction
         self.token = None
         self.credentials = None
-
-    @staticmethod
-    def generate_config():
-        print("Configure Onelogin and AWS\n\n")
-        config = configparser.ConfigParser()
-        config.add_section("default")
-        default = config["default"]
-
-        default["base_uri"] = user_choice("Pick a Onelogin API server:", [
-            "https://api.us.onelogin.com/",
-            "https://api.eu.onelogin.com/"
-        ])
-
-        print("\nOnelogin API credentials. These can be found at:\n"
-              "https://admin.us.onelogin.com/api_credentials")
-        default["client_id"] = input("Onelogin API Client ID: ")
-        default["client_secret"] = input("Onelogin API Client Secret: ")
-        print("\nOnelogin AWS App ID. This can be found at:\n"
-              "https://admin.us.onelogin.com/apps")
-        default["aws_app_id"] = input("Onelogin App ID for AWS: ")
-        print("\nOnelogin subdomain is 'company' for login domain of "
-              "'comany.onelogin.com'")
-        default["subdomain"] = input("Onelogin subdomain: ")
-
-        config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-        with open(config_fn, "w") as config_file:
-            config.write(config_file)
-
-        print("Configuration written to '{}'".format(config_fn))
-
-    @staticmethod
-    def load_config():
-        try:
-            config_fn = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
-            config = configparser.ConfigParser()
-            config.read_file(open(config_fn))
-            return config
-        except FileNotFoundError:
-            return None

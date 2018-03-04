@@ -3,7 +3,7 @@ from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
 
-from onelogin_aws_cli import user_choice
+from onelogin_aws_cli.userquery import user_choice
 
 
 class TestUser_choice(TestCase):
