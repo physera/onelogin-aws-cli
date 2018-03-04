@@ -1,5 +1,5 @@
 from argparse import Namespace
-from unittest import TestCase
+from unittest import TestCase, mock
 from unittest.mock import MagicMock, patch
 
 from onelogin_aws_cli import OneloginAWS
@@ -25,7 +25,8 @@ class TestOneloginSAML(TestCase):
                 client_id='mock-id',
                 client_secret='mock-secret',
                 aws_app_id='mock-app-id',
-                subdomain='example'
+                subdomain='example',
+                can_save_password=False,
             ),
             Namespace(username='mock-username')
         )
@@ -46,7 +47,9 @@ class TestOneloginSAML(TestCase):
             get_saml_assertion_verifying=self.get_saml_assertion_verifying_mock
         )
 
-    def test_get_saml_assertion_single(self):
+    @mock.patch('getpass.getpass')
+    def test_get_saml_assertion_single(self, getpw):
+        getpw.return_value = 'mock-password'
         with patch('builtins.input', side_effect=['123456']):
             self.ol.get_saml_assertion()
 
@@ -62,7 +65,9 @@ class TestOneloginSAML(TestCase):
             'mock-token', '123456'
         )
 
-    def test_get_saml_assertion_multiple(self):
+    @mock.patch('getpass.getpass')
+    def test_get_saml_assertion_multiple(self, getpw):
+        getpw.return_value = 'mock-password'
         self.get_saml_assertion_mock = MagicMock(return_value=Namespace(
             mfa=Namespace(
                 devices=[
@@ -91,13 +96,15 @@ class TestOneloginSAML(TestCase):
             'mock-token', '123456'
         )
 
-    def test_username_prompt(self):
-        with patch('builtins.input',
-                   side_effect=['mock-password', '2', '123456']):
-            self.ol.username = None
-            self.ol.get_saml_assertion()
+    @patch('builtins.input', side_effect=['123456'])
+    @mock.patch('getpass.getpass')
+    def test_username_prompt(self, getpw, input):
+        getpw.return_value = 'mock-password'
+        self.ol.username = None
+        self.ol.get_saml_assertion()
 
-        self.assertEqual(self.ol.username, 'mock-password')
+        self.assertEqual(self.ol.user_credentials.username, 'mock-username')
+        self.assertEqual(self.ol.user_credentials.password, 'mock-password')
 
     def tearDown(self):
         """
