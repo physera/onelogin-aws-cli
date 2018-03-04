@@ -53,8 +53,10 @@ class ConfigurationFile(configparser.ConfigParser):
 
     def section(self, section_name):
         """
-        Return a single config file section to disk
-        :param section_name:
+        Return a Section object representing a single section within the
+        onelogin config file.
+
+        :param section_name: Name of the section in the config file
         :return:
         """
         if not self.has_section(section_name):
