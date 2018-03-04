@@ -41,7 +41,7 @@ class UserCredentials(object):
         """
 
         self.load_username()
-        self.password = self.load_password()
+        self.load_password()
 
     def load_username(self):
         """
