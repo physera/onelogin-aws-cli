@@ -15,7 +15,6 @@ CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
 
 
-
 class OneloginAWS(object):
     """
     Handles the authentication between OneLogin SAML Assertion and the AWS
