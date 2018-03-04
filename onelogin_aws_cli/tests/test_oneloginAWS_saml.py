@@ -5,13 +5,22 @@ from unittest.mock import MagicMock, patch
 from onelogin_aws_cli import OneloginAWS
 
 
+class _MockSection(Namespace):
+    """
+    Used to mock `onelogin_aws_cli.configuration.Section` objects
+    """
+
+    def __getitem__(self, item):
+        return self.__getattribute__(item)
+
+
 class TestOneloginSAML(TestCase):
     def setUp(self):
         """
         Set up mock SAML and base OneLoginAWS object
         """
         self.ol = OneloginAWS(
-            dict(
+            _MockSection(
                 base_uri="https://api.us.onelogin.com/",
                 client_id='mock-id',
                 client_secret='mock-secret',
