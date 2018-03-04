@@ -2,7 +2,6 @@
 Static User Configuration models
 """
 import configparser
-import typing
 
 from onelogin_aws_cli.userquery import user_choice
 
