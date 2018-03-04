@@ -38,41 +38,50 @@ class TestOneloginAWS(TestCase):
         mock_args = Namespace(username='mock-username')
         ol = OneloginAWS(mock_config, mock_args)
 
-        assert mock_config == ol.config
-        assert mock_args == ol.args
-        assert 'mock-username' == ol.user_credentials.username
+        self.assertEqual(mock_config, ol.config)
+        self.assertEqual(mock_args, ol.args)
+        self.assertEqual('mock-username', ol.user_credentials.username)
 
     def test_get_arns(self):
         self.ol.saml = Namespace(saml_response=self.SAML_SINGLE_ROLE)
         self.ol.get_arns()
 
-        assert [(self.ROLE_PREFIX, self.PRVD_PREFIX)] == self.ol.all_roles
+        self.assertEqual(
+            [(self.ROLE_PREFIX, self.PRVD_PREFIX)],
+            self.ol.all_roles
+        )
 
     def test_get_arns_multi(self):
         self.ol.saml = Namespace(saml_response=self.SAML_MULTI_ROLE)
         self.ol.get_arns()
 
-        assert (self.ROLE_PREFIX + '0',
-                self.PRVD_PREFIX + '0') == self.ol.all_roles[0]
-        assert (self.ROLE_PREFIX + '1',
-                self.PRVD_PREFIX + '1') == self.ol.all_roles[1]
-        assert (self.ROLE_PREFIX + '2',
-                self.PRVD_PREFIX + '1') == self.ol.all_roles[2]
+        self.assertEqual(
+            (self.ROLE_PREFIX + '0', self.PRVD_PREFIX + '0'),
+            self.ol.all_roles[0]
+        )
+        self.assertEqual(
+            (self.ROLE_PREFIX + '1', self.PRVD_PREFIX + '1'),
+            self.ol.all_roles[1]
+        )
+        self.assertEqual(
+            (self.ROLE_PREFIX + '2', self.PRVD_PREFIX + '1'),
+            self.ol.all_roles[2]
+        )
 
     def test_get_role(self):
         self.ol.saml = Namespace(saml_response=self.SAML_SINGLE_ROLE)
         self.ol.get_role()
 
-        assert self.ROLE_PREFIX == self.ol.role_arn
-        assert self.PRVD_PREFIX == self.ol.principal_arn
+        self.assertEqual(self.ROLE_PREFIX, self.ol.role_arn)
+        self.assertEqual(self.PRVD_PREFIX, self.ol.principal_arn)
 
     def test_get_role_multi(self):
         self.ol.saml = Namespace(saml_response=self.SAML_MULTI_ROLE)
         with patch('builtins.input', side_effect=['2']):
             self.ol.get_role()
 
-        assert self.ROLE_PREFIX + "2" == self.ol.role_arn
-        assert self.PRVD_PREFIX + "1" == self.ol.principal_arn
+        self.assertEqual(self.ROLE_PREFIX + "2", self.ol.role_arn)
+        self.assertEqual(self.PRVD_PREFIX + "1", self.ol.principal_arn)
 
     def test_get_role_fail(self):
         self.ol.all_roles = []
