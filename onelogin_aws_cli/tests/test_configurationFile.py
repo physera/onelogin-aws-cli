@@ -7,7 +7,7 @@ from onelogin_aws_cli.configuration import ConfigurationFile
 
 class TestConfigurationFile(TestCase):
 
-    def _helper_build_config(self, config_content:str):
+    def _helper_build_config(self, config_content: str):
         str = StringIO()
         str.write(config_content)
         str.seek(0)
