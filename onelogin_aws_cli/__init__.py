@@ -15,6 +15,7 @@ CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
 
 
+
 class OneloginAWS(object):
     """
     Handles the authentication between OneLogin SAML Assertion and the AWS
@@ -85,6 +86,7 @@ class OneloginAWS(object):
         """
         Extract the IAM Role ARNs from the SAML Assertion
         """
+
         if not self.saml:
             self.get_saml_assertion()
         # Parse the returned assertion and extract the authorized roles
@@ -110,6 +112,7 @@ class OneloginAWS(object):
         """
         Prompt the user to choose a Role ARN if more than one is available
         """
+
         if not self.all_roles:
             self.get_arns()
 
@@ -140,6 +143,7 @@ class OneloginAWS(object):
         """
         Perform an AWS SAML role assumption
         """
+
         if not self.role_arn:
             self.get_role()
         res = self.sts_client.assume_role_with_saml(
@@ -153,7 +157,9 @@ class OneloginAWS(object):
     def save_credentials(self):
         """
         Save the AWS Federation credentials to disc
+        Save the AWS Federation credentials to disk
         """
+
         if not self.credentials:
             self.assume_role()
 
