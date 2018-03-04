@@ -7,59 +7,57 @@ from onelogin_aws_cli.configuration import ConfigurationFile
 
 class TestConfigurationFile(TestCase):
 
-    def test_can_save_password_username_true(self):
+    def _helper_build_config(self, config_content:str):
         str = StringIO()
-        str.write("""[defaults]
+        str.write(config_content)
+        str.seek(0)
+        return ConfigurationFile(str)
+
+    def test_can_save_password_username_true(self):
+        cfg = self._helper_build_config("""[defaults]
 save_password = false
 
 [profile_test]
 save_password = true""")
-        str.seek(0)
-        cfg = ConfigurationFile(str)
         self.assertTrue(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_false(self):
-        str = StringIO()
-        str.write("""[defaults]
+        cfg = self._helper_build_config("""[defaults]
 save_password = false
 
 [profile_test]
 save_password = false""")
-        str.seek(0)
-        cfg = ConfigurationFile(str)
         self.assertFalse(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_xor_1(self):
-        str = StringIO()
-        str.write("""[defaults]
+        cfg = self._helper_build_config("""[defaults]
 save_password = false
 
 [profile_test]
 save_password = true""")
-        str.seek(0)
-        cfg = ConfigurationFile(str)
         self.assertTrue(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_xor_2(self):
-        str = StringIO()
-        str.write("""[defaults]
-save_password = false
+        cfg = self._helper_build_config("""[defaults]
+save_password = true
 
 [profile_test]
 save_password = false""")
-        str.seek(0)
-        cfg = ConfigurationFile(str)
         self.assertFalse(cfg.section("profile_test").can_save_password)
 
-    def test_can_save_password_username_xor_3(self):
-        str = StringIO()
-        str.write("""[defaults]
-    save_password = false
+    def test_can_save_password_username_inherit_true(self):
+        cfg = self._helper_build_config("""[defaults]
+save_password = false
 
 [profile_test]""")
-        str.seek(0)
-        cfg = ConfigurationFile(str)
         self.assertFalse(cfg.section("profile_test").can_save_password)
+
+    def test_can_save_password_username_inherit_false(self):
+        cfg = self._helper_build_config("""[defaults]
+save_password = true
+
+[profile_test]""")
+        self.assertTrue(cfg.section("profile_test").can_save_password)
 
     def test_initialise(self):
         str = StringIO()

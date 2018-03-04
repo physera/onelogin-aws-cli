@@ -2,6 +2,7 @@
 Static User Configuration models
 """
 import configparser
+import typing
 
 from onelogin_aws_cli.userquery import user_choice
 
@@ -51,7 +52,7 @@ class ConfigurationFile(configparser.ConfigParser):
         self.write(self.file)
         print("Configuration written to '{}'".format(self.file))
 
-    def section(self, section_name):
+    def section(self, section_name: str):
         """
         Return a Section object representing a single section within the
         onelogin config file.
@@ -69,7 +70,7 @@ class Section(object):
     Represents a single section in an ini file
     """
 
-    def __init__(self, section_name, config: ConfigurationFile):
+    def __init__(self, section_name: str, config: ConfigurationFile):
         self.config = config
         self.section_name = section_name
 
