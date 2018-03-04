@@ -24,8 +24,12 @@ setuptools.setup(
         'boto3',
         'onelogin'
     ],
+    entry_points={
+        "console_scripts": [
+            "onelogin-aws-login = onelogin_aws_cli.cli:login"
+        ]
+    },
     license='MIT License',
-    scripts=['bin/onelogin-aws-login'],
     test_suite='nose.collector',
     tests_require=['nose', 'nose-cover3'],
     zip_safe=False,
