@@ -11,6 +11,8 @@ import xml.etree.ElementTree as ElementTree
 import boto3
 from onelogin.api.client import OneLoginClient
 
+from onelogin_aws_cli.configuration import Section
+
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.expanduser("~/{}".format(CONFIG_FILENAME))
 
@@ -21,7 +23,7 @@ class OneloginAWS(object):
     identity federation
     """
 
-    def __init__(self, config, args):
+    def __init__(self, config: Section, args):
         self.sts_client = boto3.client("sts")
         self.config = config
         self.args = args
