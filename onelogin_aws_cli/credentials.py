@@ -18,12 +18,12 @@ class UserCredentials(object):
     SERVICE_NAME = "onelogin-aws-cli"
 
     def __init__(self, username, config: Section):
-        self.username: str = username
-        self.configuration: Section = config
+        self.username = username
+        self.configuration = config
 
         # This is `None`, as the password should be be emitted from this class
         # and should never be loaded from any other source outside this class
-        self.password: Optional[str] = None
+        self.password = None
 
     @property
     def has_password(self) -> bool:
