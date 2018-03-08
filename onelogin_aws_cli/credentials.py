@@ -4,10 +4,10 @@ manner
 """
 
 import getpass
+
 import keyring
 
 from onelogin_aws_cli.configuration import Section
-from typing import Optional
 
 
 class UserCredentials(object):
