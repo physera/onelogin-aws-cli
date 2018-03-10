@@ -14,19 +14,19 @@ class ForegroundProcess(Thread):
     def __init__(self, period: int, api: OneloginAWS):
         super().__init__()
 
-        self.period = period
-        self.api = api
+        self._period = period
+        self._api = api
 
-        self.running = True
-        self.sleep = Event()
+        self._running = True
+        self._sleep = Event()
 
     def run(self):
         """
         Create a runtime for the foreground credentials renewal
         """
-        while self.running:
-            self.api.save_credentials()
-            self.sleep.wait(self.period)
+        while self._running:
+            self._api.save_credentials()
+            self._sleep.wait(self._period)
 
     def interrupt(self, signal_num: int, *args):
         """
@@ -36,9 +36,13 @@ class ForegroundProcess(Thread):
         :param args:
         """
 
+        self._sleep.set()
+
         print("Shutting down Credentials refresh process...")
 
-        self.running = False
-        self.sleep.set()
+        self._running = False
+
+        while self.is_alive():
+            self._sleep.wait(1)
 
         print("Shutdown finished.")
