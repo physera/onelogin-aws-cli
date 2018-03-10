@@ -25,8 +25,11 @@ class ForegroundProcess(Thread):
         Create a runtime for the foreground credentials renewal
         """
         while self._running:
-            self._api.save_credentials()
             self._sleep.wait(self._period)
+            # @TODO We should check if the credentials are going to expire
+            # in the immediate future, rather than constantly hitting
+            # the AWS API.
+            self._api.save_credentials()
 
     def interrupt(self, signal_num: int, *args):
         """
