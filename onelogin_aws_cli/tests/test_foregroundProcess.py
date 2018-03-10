@@ -19,6 +19,3 @@ class TestForegroundProcess(TestCase):
         self.assertEqual(process._api, self.api)
         self.assertEqual(process._running, False)
         self.assertIsInstance(process._sleep, Event)
-
-    def test_interrupt(self):
-        process = ForegroundProcess(period=1, api=self.api)
