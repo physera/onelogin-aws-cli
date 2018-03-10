@@ -53,6 +53,7 @@ def login(args=sys.argv[1:]):
         refresh_process = ForegroundProcess(period=args.renewSeconds, api=api)
 
         # Handle sigterms
+        # This must be done here, as signals can't be caught down the stack
         for sig_type in list(SignalRepr):
             signal.signal(sig_type.value, refresh_process.interrupt)
 
