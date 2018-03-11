@@ -1,10 +1,10 @@
 import argparse
-import signal
 import sys
+import signal
 
 import pkg_resources
 
-from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
+from onelogin_aws_cli import OneloginAWS, DEFAULT_CONFIG_PATH
 from onelogin_aws_cli.configuration import ConfigurationFile
 from onelogin_aws_cli.daemon.foreground import ForegroundProcess
 from onelogin_aws_cli.model import SignalRepr
