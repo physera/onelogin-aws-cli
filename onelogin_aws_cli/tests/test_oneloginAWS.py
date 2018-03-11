@@ -1,8 +1,9 @@
-import base64
-import os
 from argparse import Namespace
 from unittest import TestCase
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import base64
+import os
 
 from onelogin_aws_cli import OneloginAWS
 
