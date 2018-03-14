@@ -36,6 +36,6 @@ setuptools.setup(
     },
     license='MIT License',
     test_suite='nose.collector',
-    tests_require=['nose', 'nose-cover3'],
+    tests_require=['coverage', 'nose', 'nose-cover3'],
     zip_safe=False,
 )
