@@ -55,6 +55,7 @@ def login(args=sys.argv[1:]):
 
         def _interrupt_handler(signal_num: int, *args):
             interrupted.set()
+            print("Received {sig}.".format(sig=SignalRepr(signal_num)))
             print("Shutting down Credentials refresh process...")
 
         # Handle sigterms
