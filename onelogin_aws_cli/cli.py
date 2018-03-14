@@ -1,12 +1,12 @@
 import argparse
-import sys
 import signal
+import sys
+from threading import Event
 
 import pkg_resources
 
-from onelogin_aws_cli import OneloginAWS, DEFAULT_CONFIG_PATH
+from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
 from onelogin_aws_cli.configuration import ConfigurationFile
-from onelogin_aws_cli.daemon.foreground import ForegroundProcess
 from onelogin_aws_cli.model import SignalRepr
 
 
@@ -50,11 +50,22 @@ def login(args=sys.argv[1:]):
     api.save_credentials()
 
     if args.renewSeconds:
-        refresh_process = ForegroundProcess(period=args.renewSeconds, api=api)
+
+        running = Event()
+
+        def _interrupt_handler(signal_num: int, *args):
+            running.set()
+            print("Shutting down Credentials refresh process...")
 
         # Handle sigterms
         # This must be done here, as signals can't be caught down the stack
         for sig_type in list(SignalRepr):
-            signal.signal(sig_type.value, refresh_process.interrupt)
+            signal.signal(sig_type.value, _interrupt_handler)
 
-        refresh_process.start()
+        # @TODO We should check if the credentials are going to expire
+        # in the immediate future, rather than constantly hitting
+        # the AWS API.
+        running.clear()
+        while not running.is_set():
+            api.save_credentials()
+            running.wait(args.renewSeconds)
