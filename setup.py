@@ -28,6 +28,7 @@ setuptools.setup(
         'onelogin',
         'keyring'
     ],
+    setup_requires=['nose>=1.0'],
     entry_points={
         "console_scripts": [
             "onelogin-aws-login = onelogin_aws_cli.cli:login"
