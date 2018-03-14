@@ -67,5 +67,5 @@ def login(args=sys.argv[1:]):
         # the AWS API.
         running.clear()
         while not running.is_set():
-            api.save_credentials()
             running.wait(args.renewSeconds)
+            api.save_credentials()
