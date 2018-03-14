@@ -51,10 +51,10 @@ def login(args=sys.argv[1:]):
 
     if args.renewSeconds:
 
-        running = Event()
+        interrupted = Event()
 
         def _interrupt_handler(signal_num: int, *args):
-            running.set()
+            interrupted.set()
             print("Shutting down Credentials refresh process...")
 
         # Handle sigterms
@@ -62,10 +62,11 @@ def login(args=sys.argv[1:]):
         for sig_type in list(SignalRepr):
             signal.signal(sig_type.value, _interrupt_handler)
 
-        # @TODO We should check if the credentials are going to expire
-        # in the immediate future, rather than constantly hitting
-        # the AWS API.
-        running.clear()
-        while not running.is_set():
-            running.wait(args.renewSeconds)
+            # @TODO We should check if the credentials are going to expire
+            # in the immediate future, rather than constantly hitting
+            # the AWS API.
+
+        interrupted.clear()
+        while not interrupted.is_set():
+            interrupted.wait(args.renewSeconds)
             api.save_credentials()
