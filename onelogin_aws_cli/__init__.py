@@ -4,7 +4,6 @@ OneLogin/AWS Business logic
 
 import base64
 import configparser
-import getpass
 import os
 import xml.etree.ElementTree as ElementTree
 
@@ -12,6 +11,7 @@ import boto3
 from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
+from onelogin_aws_cli.credentials import UserCredentials
 
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
@@ -34,9 +34,7 @@ class OneloginAWS(object):
         self.role_arn = None
         self.principal_arn = None
         self.credentials = None
-
-        self.username = self.args.username
-        self.password = None
+        self.user_credentials = UserCredentials(self.args.username, config)
 
         base_uri_parts = self.config['base_uri'].split('.')
         self.ol_client = OneLoginClient(
@@ -51,13 +49,11 @@ class OneloginAWS(object):
         based on the users choice of AWS account to log into
         """
 
-        if not self.username:
-            self.username = input("Onelogin Username: ")
-        if not self.password:
-            self.password = getpass.getpass("Onelogin Password: ")
+        self.user_credentials.load_credentials()
+
         saml_resp = self.ol_client.get_saml_assertion(
-            self.username,
-            self.password,
+            self.user_credentials.username,
+            self.user_credentials.password,
             self.config['aws_app_id'],
             self.config['subdomain']
         )
