@@ -22,7 +22,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         )
 
         self.add_argument(
-            '-C', '--config_name', default='default',
+            '-C', '--config-name', default='default', dest='config_name',
             help='Switch configuration name within config file'
         )
 
@@ -40,7 +40,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         """
 
         self.add_argument(
-            '-r', '--renewSeconds', type=int,
+            '-r', '--renew-seconds', type=int,
             help='Auto-renew credentials after this many seconds'
         )
 
