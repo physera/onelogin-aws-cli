@@ -35,8 +35,10 @@ class TestOneLoginAWSArgumentParser(TestCase):
         # This spits out the nosetest prog name.
         # I'm ok with that, as what is important is that the version is
         # correct
-        self.assertEqual("""_jb_nosetest_runner.py {ver}
-""".format(ver=VERSION), mock_stdout.getvalue())
+        self.assertRegex(
+            mock_stdout.getvalue(),
+            VERSION + r'$'
+        )
 
         self.assertEqual(cm.exception.code, 0)
 
