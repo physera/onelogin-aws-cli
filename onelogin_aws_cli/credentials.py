@@ -2,7 +2,6 @@
 Handles the saving and loading of username and password in a secure
 manner
 """
-
 import getpass
 
 import keyring

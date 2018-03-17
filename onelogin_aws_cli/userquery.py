@@ -1,3 +1,6 @@
+"""
+Interactions with the user through the cli
+"""
 import typing
 
 
