@@ -8,11 +8,13 @@ setuptools.setup(
     python_requires='>=3',
     description='Onelogin assume AWS role through CLI',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3 :: Only'
         'Programming Language :: Python :: 3.6',
-        'Topic :: Security'
+        'Topic :: Security',
+        'Topic :: System :: Systems Administration :: Authentication/Directory'
     ],
     keywords='onelogin aws cli',
     author='Cameron Marlow',
