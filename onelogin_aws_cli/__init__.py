@@ -13,6 +13,8 @@ from onelogin.api.client import OneLoginClient
 from onelogin_aws_cli.configuration import Section
 from onelogin_aws_cli.credentials import UserCredentials
 
+VERSION = "0.1.8"
+
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
 
