@@ -3,10 +3,105 @@ Handles the saving and loading of username and password in a secure
 manner
 """
 import getpass
+from typing import List
 
 import keyring
+from onelogin.api.models.device import Device
 
 from onelogin_aws_cli.configuration import Section
+
+
+class MFACredentials(object):
+    """
+    Class to encapsulate the handling and storage of MFA devices, and
+    retrieving of OTP's
+    """
+
+    def __init__(self):
+        self._interactive = True
+
+        self.reset()
+
+    @property
+    def has_device(self) -> bool:
+        """
+        True is the MFA has an MFA device selected waiting to be used
+        """
+        return (self._device_index is not None) and \
+               (self._device_index < len(self._devices))
+
+    @property
+    def has_otp(self) -> bool:
+        """
+        True if the MFA has an OTP waiting to be used
+        """
+        return self._otp is not None
+
+    @property
+    def device(self) -> Device:
+        """
+        Return the device selected by the user
+
+        :return:
+        """
+        return self._devices[
+            self._device_index
+        ]
+
+    @property
+    def otp(self) -> str:
+        """
+        Return the OTP for the MFA
+
+        :return:
+        """
+        return self._otp
+
+    def ready(self):
+        """
+        If the MFA is ready to be used
+        """
+        return self.has_otp and self.has_device
+
+    def reset(self):
+        """
+        Remove all state from this class
+        """
+
+        self._devices = []
+        self._device_index = None
+
+        self._otp = None
+
+    def select_device(self, devices: List[Device]):
+        """
+        Given a list of MFA devices, select one for use
+        :param devices:
+        """
+
+        self._devices = devices
+
+        if len(self._devices) > 1:
+
+            if not self._interactive:
+                raise MissingMfaDeviceException()
+
+            for i, device in enumerate(self._devices):
+                print(f"{i}. {device.type}")
+
+            device_num = input("Which OTP Device? ")
+            self._device_index = int(device_num) - 1
+        else:
+            self._device_index = 0
+
+    def prompt_token(self):
+        """
+        Ask the user for an OTP token
+        """
+        if not self._interactive:
+            raise MissingMfaOtpException()
+
+        self._otp = input("OTP Token: ")
 
 
 class UserCredentials(object):
@@ -141,3 +236,21 @@ class MissingUsernameException(Exception):
 
     def __init__(self):
         super().__init__("ONELOGIN_USERNAME_MISSING")
+
+
+class MissingMfaDeviceException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_MFA_DEVICE_MISSING")
+
+
+class MissingMfaOtpException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_MFA_OTP_MISSING")
