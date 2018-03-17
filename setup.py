@@ -11,8 +11,9 @@ setuptools.setup(
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3 :: Only'
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Security',
         'Topic :: System :: Systems Administration :: Authentication/Directory'
     ],
