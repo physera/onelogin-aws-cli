@@ -65,6 +65,8 @@ class UserCredentials(object):
             # Try the configurationfile first
             if 'username' in self.configuration:
                 username = self.configuration['username']
+            elif not self._interactive:
+                raise MissingUsernameException()
             else:
                 username = input("Onelogin Username: ")
             self.username = username
@@ -112,6 +114,8 @@ class UserCredentials(object):
                 self._save_password_to_keychain()
 
     def _prompt_user_password(self):
+        if not self._interactive:
+            raise MissingPasswordException()
         self.password = getpass.getpass("Onelogin Password: ")
 
     def _load_password_from_keychain(self):
@@ -119,3 +123,21 @@ class UserCredentials(object):
 
     def _save_password_to_keychain(self):
         keyring.set_password(self.SERVICE_NAME, self.username, self.password)
+
+
+class MissingPasswordException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_PASSWORD_MISSING")
+
+
+class MissingUsernameException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_USERNAME_MISSING")
