@@ -51,11 +51,14 @@ class MFACredentials(object):
     @property
     def otp(self) -> str:
         """
-        Return the OTP for the MFA
+        Return the OTP for the MFA and reset the OTP.
+        OTP's can only be used once, so it will be reset after.
 
         :return:
         """
-        return self._otp
+        result = self._otp
+        self._otp = None
+        return result
 
     def ready(self):
         """
