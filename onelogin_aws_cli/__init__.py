@@ -65,10 +65,10 @@ class OneloginAWS(object):
         self.user_credentials.load_credentials()
 
         saml_resp = self.ol_client.get_saml_assertion(
-            username_or_email=self.user_credentials.username,
-            password=self.user_credentials.password,
-            app_id=self.config['aws_app_id'],
-            subdomain=self.config['subdomain']
+            self.user_credentials.username,
+            self.user_credentials.password,
+            self.config['aws_app_id'],
+            self.config['subdomain']
         )
 
         if saml_resp.mfa:
@@ -78,10 +78,10 @@ class OneloginAWS(object):
                     self.mfa.prompt_token()
 
             saml_resp = self.ol_client.get_saml_assertion_verifying(
-                app_id=self.config['aws_app_id'],
-                state_token=saml_resp.mfa.state_token,
-                device_id=self.mfa.device.id,
-                otp_token=self.mfa.otp
+                self.config['aws_app_id'],
+                self.mfa.device.id,
+                saml_resp.mfa.state_token,
+                self.mfa.otp
             )
 
         self.saml = saml_resp

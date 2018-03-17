@@ -56,13 +56,13 @@ class TestOneloginSAML(TestCase):
         self.assertEqual(self.ol.saml, 'mock-saml-response')
 
         self.get_saml_assertion_mock.assert_called_with(
-            username_or_email='mock-username', password='mock-password',
-            app_id='mock-app-id', subdomain='example'
+            'mock-username', 'mock-password',
+            'mock-app-id', 'example'
         )
 
         self.get_saml_assertion_verifying_mock.assert_called_with(
-            app_id='mock-app-id', device_id='mock-id-1',
-            state_token='mock-token', otp_token='123456'
+            'mock-app-id', 'mock-id-1',
+            'mock-token', '123456'
         )
 
     @mock.patch('getpass.getpass')
@@ -87,13 +87,13 @@ class TestOneloginSAML(TestCase):
         self.assertEqual(self.ol.saml, 'mock-saml-response')
 
         self.get_saml_assertion_mock.assert_called_with(
-            username_or_email='mock-username', password='mock-password',
-            app_id='mock-app-id', subdomain='example'
+            'mock-username', 'mock-password',
+            'mock-app-id', 'example'
         )
 
         self.get_saml_assertion_verifying_mock.assert_called_with(
-            app_id='mock-app-id', device_id='mock-id-2',
-            state_token='mock-token', otp_token='123456'
+            'mock-app-id', 'mock-id-2',
+            'mock-token', '123456'
         )
 
     @patch('builtins.input', side_effect=['123456'])
