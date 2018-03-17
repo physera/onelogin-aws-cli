@@ -43,6 +43,17 @@ class OneloginAWS(object):
             base_uri_parts[1],
         )
 
+        self._interactive = True
+
+    def disable_interactive(self):
+        """
+        Disable all user prompts. In the event there is missing data,
+        an exception will be thrown in place of a user prompt.
+        
+        :return:
+        """
+        self._interactive = False
+
     def get_saml_assertion(self):
         """
         Retrieve users credentials and get the SAML assertion from Onelogin,
