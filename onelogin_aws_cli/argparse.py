@@ -15,12 +15,6 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
     def __init__(self):
         super().__init__(description='Login to AWS with OneLogin')
 
-        version = pkg_resources.get_distribution('onelogin-aws-cli').version
-        self.add_argument(
-            '-v', '--version', action='version',
-            version='%(prog)s ' + version
-        )
-
         self.add_argument(
             '-C', '--config-name', default='default', dest='config_name',
             help='Switch configuration name within config file'
@@ -49,9 +43,10 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             help='Configure OneLogin and AWS settings'
         )
 
-        version = pkg_resources.get_distribution('pip').version
+        version = pkg_resources.get_distribution('onelogin-aws-cli').version
         self.add_argument(
-            '-v', '--version', action='version', version='%(prog)s ' + version
+            '-v', '--version', action='version',
+            version='%(prog)s ' + version
         )
 
         # The `--client` option is a precursor to the daemon process in
