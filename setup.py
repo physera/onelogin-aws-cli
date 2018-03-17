@@ -5,7 +5,7 @@ setuptools.setup(
     name='onelogin_aws_cli',
     packages=['onelogin_aws_cli'],
     version='0.1.8',
-    python_requires='>=3',
+    python_requires='>=3.5',
     description='Onelogin assume AWS role through CLI',
     classifiers=[
         'Development Status :: 4 - Beta',
