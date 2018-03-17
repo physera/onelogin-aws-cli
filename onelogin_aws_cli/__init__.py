@@ -49,10 +49,11 @@ class OneloginAWS(object):
         """
         Disable all user prompts. In the event there is missing data,
         an exception will be thrown in place of a user prompt.
-        
+
         :return:
         """
         self._interactive = False
+        self.user_credentials.disable_interactive()
 
     def get_saml_assertion(self):
         """

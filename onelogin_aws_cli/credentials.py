@@ -24,6 +24,8 @@ class UserCredentials(object):
         # and should never be loaded from any other source outside this class
         self.password = None
 
+        self._interactive = True
+
     @property
     def has_password(self) -> bool:
         """
@@ -33,6 +35,15 @@ class UserCredentials(object):
         """
         return (self.password is not None) and \
                (self.password != "")
+
+    def disable_interactive(self):
+        """
+        Disable all user prompts. In the event there is missing data,
+        an exception will be thrown in place of a user prompt.
+
+        :return:
+        """
+        self._interactive = False
 
     def load_credentials(self):
         """
