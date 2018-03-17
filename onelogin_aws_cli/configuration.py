@@ -21,7 +21,7 @@ class ConfigurationFile(configparser.ConfigParser):
         self.read_file(self.file)
 
     @property
-    def is_initialised(self):
+    def is_initialised(self) -> bool:
         """
         True is there are at least one section
         """
