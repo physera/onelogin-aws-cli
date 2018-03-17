@@ -2,12 +2,12 @@
 OneLogin/AWS Business logic
 """
 
-import base64
 import configparser
-import os
 import xml.etree.ElementTree as ElementTree
 
+import base64
 import boto3
+import os
 from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
