@@ -91,7 +91,7 @@ class MFACredentials(object):
 
             for i, device in enumerate(self._devices):
                 print("{i}. {device}".format(
-                    i=i+1,
+                    i=i + 1,
                     device=device.type
                 ))
 
