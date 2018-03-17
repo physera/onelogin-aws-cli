@@ -11,8 +11,7 @@ import os
 from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
-from onelogin_aws_cli.credentials import MFACredentials, \
-    MissingMfaDeviceException, UserCredentials
+from onelogin_aws_cli.credentials import MFACredentials, UserCredentials
 
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
@@ -74,9 +73,7 @@ class OneloginAWS(object):
 
         if saml_resp.mfa:
             if not self.mfa.ready():
-
                 self.mfa.select_device(saml_resp.mfa.devices)
-
                 if not self.mfa.has_otp:
                     self.mfa.prompt_token()
 

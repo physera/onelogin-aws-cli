@@ -34,7 +34,7 @@ class TestMFACredentials(TestCase):
 
     def test_device(self):
         with self.assertRaises(TypeError):
-            _ = self.mfa.device
+            self.mfa.device
 
         self.mfa._devices = [Device(dict(
             device_id='mock_device_id'
