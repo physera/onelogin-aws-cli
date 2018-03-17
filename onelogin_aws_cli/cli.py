@@ -37,10 +37,11 @@ def login(args=sys.argv[1:]):
 
     args = parser.parse_args(args)
 
-    with open(DEFAULT_CONFIG_PATH) as fp:
+    with open(DEFAULT_CONFIG_PATH, 'a+') as fp:
+        fp.seek(0, 0)
         configFile = ConfigurationFile(fp)
 
-    if args.configure:
+    if args.configure or not configFile.is_initialised:
         configFile.initialise()
 
     config_section = configFile.section(args.config_name)

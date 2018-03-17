@@ -20,6 +20,15 @@ class ConfigurationFile(configparser.ConfigParser):
 
         self.read_file(self.file)
 
+    @property
+    def is_initialised(self):
+        """
+        True is there are at least one section
+        """
+        return len(
+            self.sections()
+        ) > 0
+
     def initialise(self):
         """
         Prompt the user for configurations, and save them to the
