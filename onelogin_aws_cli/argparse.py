@@ -6,8 +6,6 @@ import argparse
 
 import pkg_resources
 
-from onelogin_aws_cli import PACKAGE_NAME
-
 
 class OneLoginAWSArgumentParser(argparse.ArgumentParser):
     """
@@ -45,7 +43,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             help='Configure OneLogin and AWS settings'
         )
 
-        version = pkg_resources.get_distribution(PACKAGE_NAME).version
+        version = pkg_resources.get_distribution(__package__).version
         self.add_argument(
             '-v', '--version', action='version',
             version='%(prog)s ' + version

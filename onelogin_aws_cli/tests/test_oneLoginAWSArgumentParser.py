@@ -1,9 +1,9 @@
 import contextlib
 from unittest import TestCase
 
+import pkg_resources
 from io import StringIO
 
-from onelogin_aws_cli import VERSION
 from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 
 
@@ -35,9 +35,10 @@ class TestOneLoginAWSArgumentParser(TestCase):
         # This spits out the nosetest prog name.
         # I'm ok with that, as what is important is that the version is
         # correct
+        version = pkg_resources.get_distribution('onelogin_aws_cli').version
         self.assertRegex(
             mock_stdout.getvalue(),
-            VERSION + r'$'
+            version + r'$'
         )
 
         self.assertEqual(cm.exception.code, 0)
