@@ -73,7 +73,9 @@ class OneloginAWS(object):
 
         if saml_resp.mfa:
             if not self.mfa.ready():
+
                 self.mfa.select_device(saml_resp.mfa.devices)
+
                 if not self.mfa.has_otp:
                     self.mfa.prompt_token()
 
