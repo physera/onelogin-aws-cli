@@ -15,7 +15,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
     def __init__(self):
         super().__init__(description='Login to AWS with OneLogin')
 
-        version = pkg_resources.get_distribution('pip').version
+        version = pkg_resources.get_distribution('onelogin-aws-cli').version
         self.add_argument(
             '-v', '--version', action='version',
             version='%(prog)s ' + version
