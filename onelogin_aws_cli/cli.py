@@ -1,14 +1,12 @@
 """
 Collections of entrypoints
 """
-import argparse
 import signal
 import sys
 from threading import Event
 
-import pkg_resources
-
 from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
+from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
 from onelogin_aws_cli.model import SignalRepr
 
@@ -18,23 +16,8 @@ def login(args=sys.argv[1:]):
     Entrypoint for `onelogin-aws-login`
     :param args:
     """
-    version = pkg_resources.get_distribution('pip').version
 
-    parser = argparse.ArgumentParser(description="Login to AWS with Onelogin")
-    parser.add_argument("-c", "--configure", dest="configure",
-                        action="store_true",
-                        help="Configure Onelogin and AWS settings")
-    parser.add_argument("-C", "--config_name", default="default",
-                        help="Switch configuration name within config file")
-    parser.add_argument("--profile", default="",
-                        help="Specify profile name of credential")
-    parser.add_argument("-u", "--username", default="",
-                        help="Specify OneLogin username")
-    parser.add_argument("-r", "--renewSeconds", type=int,
-                        help="Auto-renew credentials after this many seconds")
-    parser.add_argument('-v', '--version', action='version',
-                        version='%(prog)s ' + version)
-
+    parser = OneLoginAWSArgumentParser().add_cli_options()
     args = parser.parse_args(args)
 
     with open(DEFAULT_CONFIG_PATH, 'a+') as fp:
@@ -50,10 +33,20 @@ def login(args=sys.argv[1:]):
         sys.exit("Configuration '{}' not defined. "
                  "Please run 'onelogin-aws-login -c'".format(args.config_name))
 
+    # Handle legacy `--renewSeconds` option while it is depecated
+    if args.renew_seconds:
+        renew_seconds = args.renew_seconds
+    elif args.renew_seconds_legacy:
+        print("WARNING: --renewSeconds is depecated in favour of " +
+              "--renew-seconds and be removed in a future version.")
+        renew_seconds = args.renew_seconds_legacy
+    else:
+        renew_seconds = None
+
     api = OneloginAWS(config_section, args)
     api.save_credentials()
 
-    if args.renewSeconds:
+    if renew_seconds:
 
         interrupted = Event()
 
@@ -73,5 +66,5 @@ def login(args=sys.argv[1:]):
 
         interrupted.clear()
         while not interrupted.is_set():
-            interrupted.wait(args.renewSeconds)
+            interrupted.wait(renew_seconds)
             api.save_credentials()
