@@ -46,7 +46,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         version = pkg_resources.get_distribution(__package__).version
         self.add_argument(
             '-v', '--version', action='version',
-            version=f"%(prog)s {version}"
+            version="%(prog)s " + version
         )
 
         # The `--client` option is a precursor to the daemon process in
