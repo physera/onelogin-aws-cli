@@ -22,7 +22,16 @@ class CredentialType(Enum):
     """
     Represent the types of Credentials
     """
-    USERNAME = auto()
+    # Username
+    USERNAME_R = auto()
+    USERNAME_W = auto()
+    USERNAME_RW = USERNAME_R | USERNAME_W
+
+    # Password
     PASSWORD = auto()
+    PASSWORD_R = auto()
+    PASSWORD_W = auto()
+    PASSWORD_RW = PASSWORD_R | PASSWORD_W
+
     MFA_DEVICE = auto()
     MFA_OTP = auto()
