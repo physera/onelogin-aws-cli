@@ -24,7 +24,7 @@ class OsKeychainCredentialsSource(CredentialsSource):
                 CredentialType.USERNAME
             ]
         )
-        
+
         # Used for dependency only
         self._username = None
 
