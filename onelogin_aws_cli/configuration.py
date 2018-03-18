@@ -35,23 +35,23 @@ class ConfigurationFile(configparser.ConfigParser):
         onelogin-aws-cli config file
         """
         print("Configure Onelogin and AWS\n\n")
-        default = self.section(config_name)
+        config_section = self.section(config_name)
 
-        default['base_uri'] = user_choice("Pick a Onelogin API server:", [
+        config_section['base_uri'] = user_choice("Pick a Onelogin API server:", [
             "https://api.us.onelogin.com/",
             "https://api.eu.onelogin.com/"
         ])
 
         print("\nOnelogin API credentials. These can be found at:\n"
               "https://admin.us.onelogin.com/api_credentials")
-        default['client_id'] = input("Onelogin API Client ID: ")
-        default['client_secret'] = input("Onelogin API Client Secret: ")
+        config_section['client_id'] = input("Onelogin API Client ID: ")
+        config_section['client_secret'] = input("Onelogin API Client Secret: ")
         print("\nOnelogin AWS App ID. This can be found at:\n"
               "https://admin.us.onelogin.com/apps")
-        default['aws_app_id'] = input("Onelogin App ID for AWS: ")
+        config_section['aws_app_id'] = input("Onelogin App ID for AWS: ")
         print("\nOnelogin subdomain is 'company' for login domain of "
               "'comany.onelogin.com'")
-        default['subdomain'] = input("Onelogin subdomain: ")
+        config_section['subdomain'] = input("Onelogin subdomain: ")
 
         self.save()
 
