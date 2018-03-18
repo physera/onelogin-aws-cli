@@ -1,7 +1,7 @@
 """
 Handles multiple credentials sources
 """
-from typing import List
+from typing import ClassVar, List, Optional
 
 from onelogin_aws_cli.model import CredentialType
 
@@ -11,8 +11,10 @@ class CredentialsSource(object):
     Base class for objects which are used as sources for credentials
     """
 
-    def __init__(self, supported_cred_types: List[CredentialType] = tuple()):
-        self._cred_types = supported_cred_types
+    def __init__(self, provided_cred_types: List[CredentialType] = tuple(),
+                 dependent_cred_types: List[CredentialType] = tuple()):
+        self._cred_types = provided_cred_types
+        self._dependent_cred_types = dependent_cred_types
 
     def can_handle(self, cred_type: CredentialType) -> bool:
         """
@@ -23,13 +25,23 @@ class CredentialsSource(object):
 
         return cred_type in self._cred_types
 
-    def username(self):
+    def depends_on(self, cred_type: CredentialType) -> bool:
+        """
+        True if the credential source must be provided with credential supplied
+        above.
+
+        :param cred_type:
+        :return:
+        """
+        return cred_type in self._dependent_cred_types
+
+    def username(self, new_password=None) -> Optional[str]:
         """
         Should be overriden. Retrieves a OneLogin username
         """
         raise MissingUsernameException()
 
-    def password(self):
+    def password(self, new_password=None) -> Optional[str]:
         """
         Should be overriden. Retrieves a OneLogin Password
         :return:
@@ -37,7 +49,7 @@ class CredentialsSource(object):
 
         raise MissingPasswordException()
 
-    def mfa_device(self):
+    def mfa_device(self, new_mfa_device=None) -> Optional[str]:
         """
         Should be overriden. Retrieves a OneLogin MFA Device
         :return:
@@ -45,7 +57,7 @@ class CredentialsSource(object):
 
         raise MissingMfaDeviceException()
 
-    def mfa_otp(self):
+    def mfa_otp(self) -> str:
         """
         Should be overriden. Retrieves a OneLogin MFA OTP
         :return:
@@ -58,7 +70,7 @@ class MissingCredentialException(Exception):
     """
     Raised when a credential is missing.
     """
-    TYPE = "error"
+    TYPE: ClassVar[str] = "error"
 
     def __init__(self):
         super().__init__("ONELOGIN_" + self.TYPE + "_MISSING")
@@ -68,25 +80,39 @@ class MissingPasswordException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE = "PASSWORD"
+    TYPE: ClassVar[str] = "PASSWORD"
 
 
 class MissingUsernameException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE = "USERNAME"
+    TYPE: ClassVar[str] = "USERNAME"
 
 
 class MissingMfaDeviceException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE = "MFA_DEVICE"
+    TYPE: ClassVar[str] = "MFA_DEVICE"
 
 
 class MissingMfaOtpException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE = "MFA_OTP"
+    TYPE: ClassVar[str] = "MFA_OTP"
+
+
+class ReadOnlyCredentialTypeException(Exception):
+    """
+    Called when a write operation is performed on a credential source.
+    """
+
+    def __init__(self, source: type, cred_type: CredentialType):
+        super().__init__(
+            "'{source}' is not able to write to '{cred_type}'".format(
+                source=source.__name__,
+                cred_type=cred_type.value
+            )
+        )

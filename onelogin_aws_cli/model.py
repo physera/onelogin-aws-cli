@@ -25,13 +25,21 @@ class CredentialType(Enum):
     # Username
     USERNAME_R = auto()
     USERNAME_W = auto()
-    USERNAME_RW = USERNAME_R | USERNAME_W
+    USERNAME = USERNAME_R | USERNAME_W
 
     # Password
-    PASSWORD = auto()
     PASSWORD_R = auto()
     PASSWORD_W = auto()
-    PASSWORD_RW = PASSWORD_R | PASSWORD_W
+    PASSWORD = PASSWORD_R | PASSWORD_W
 
     MFA_DEVICE = auto()
     MFA_OTP = auto()
+
+
+class CredentialSourceRequirement(Enum):
+    """
+    Defines whether or not a credential source is dependent on having another
+    value set.
+    """
+
+    USERNAME = auto()
