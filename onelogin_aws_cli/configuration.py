@@ -29,13 +29,13 @@ class ConfigurationFile(configparser.ConfigParser):
             self.sections()
         ) > 0
 
-    def initialise(self):
+    def initialise(self, config_name='default'):
         """
         Prompt the user for configurations, and save them to the
         onelogin-aws-cli config file
         """
         print("Configure Onelogin and AWS\n\n")
-        default = self.section("default")
+        default = self.section(config_name)
 
         default['base_uri'] = user_choice("Pick a Onelogin API server:", [
             "https://api.us.onelogin.com/",

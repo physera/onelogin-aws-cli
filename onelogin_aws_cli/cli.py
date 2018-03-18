@@ -42,7 +42,7 @@ def login(args=sys.argv[1:]):
         config_file = ConfigurationFile(fp)
 
     if args.configure or not config_file.is_initialised:
-        config_file.initialise()
+        config_file.initialise(args.config_name)
 
     config_section = config_file.section(args.config_name)
 
