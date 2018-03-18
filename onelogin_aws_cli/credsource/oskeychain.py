@@ -14,6 +14,5 @@ class OsKeychainCredentialsSource(CredentialsSource):
 
     def __init__(self):
         super().__init__(supported_cred_types=[
-            CredentialType.USERNAME,
             CredentialType.PASSWORD,
         ])
