@@ -17,12 +17,8 @@ class OsKeychainCredentialsSource(CredentialsSource):
 
     def __init__(self):
         super().__init__(
-            provided_cred_types=[
-                CredentialType.PASSWORD,
-            ],
-            dependent_cred_types=[
-                CredentialType.USERNAME
-            ]
+            provided_cred_types=[CredentialType.PASSWORD],
+            dependent_cred_types=[CredentialType.USERNAME]
         )
 
         # Used for dependency only
