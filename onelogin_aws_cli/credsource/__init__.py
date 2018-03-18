@@ -19,8 +19,6 @@ class CredentialsSource(object):
     def can_handle(self, cred_type: CredentialType) -> bool:
         """
         True if this credentials source can handle that type of credential
-        :param cred_type:
-        :return:
         """
 
         return cred_type in self._cred_types
@@ -29,9 +27,6 @@ class CredentialsSource(object):
         """
         True if the credential source must be provided with credential supplied
         above.
-
-        :param cred_type:
-        :return:
         """
         return cred_type in self._dependent_cred_types
 
@@ -44,7 +39,6 @@ class CredentialsSource(object):
     def password(self, new_password=None) -> Optional[str]:
         """
         Should be overriden. Retrieves a OneLogin Password
-        :return:
         """
 
         raise MissingPasswordException()
@@ -52,7 +46,6 @@ class CredentialsSource(object):
     def mfa_device(self, new_mfa_device=None) -> Optional[str]:
         """
         Should be overriden. Retrieves a OneLogin MFA Device
-        :return:
         """
 
         raise MissingMfaDeviceException()
@@ -60,7 +53,6 @@ class CredentialsSource(object):
     def mfa_otp(self) -> str:
         """
         Should be overriden. Retrieves a OneLogin MFA OTP
-        :return:
         """
 
         raise MissingMfaOtpException()

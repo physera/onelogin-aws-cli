@@ -39,7 +39,6 @@ class OsKeychainCredentialsSource(CredentialsSource):
     def username(self, new_username=None):
         """
         Used only as a way to get the password in
-        :param new_username:
         """
         if new_username is not None:
             self._username = new_username
