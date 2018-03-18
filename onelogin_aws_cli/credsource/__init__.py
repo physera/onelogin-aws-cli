@@ -70,7 +70,7 @@ class MissingCredentialException(Exception):
     """
     Raised when a credential is missing.
     """
-    TYPE: ClassVar[str] = "error"
+    TYPE = "error"
 
     def __init__(self):
         super().__init__("ONELOGIN_" + self.TYPE + "_MISSING")
@@ -80,28 +80,28 @@ class MissingPasswordException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE: ClassVar[str] = "PASSWORD"
+    TYPE = "PASSWORD"
 
 
 class MissingUsernameException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE: ClassVar[str] = "USERNAME"
+    TYPE = "USERNAME"
 
 
 class MissingMfaDeviceException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE: ClassVar[str] = "MFA_DEVICE"
+    TYPE = "MFA_DEVICE"
 
 
 class MissingMfaOtpException(MissingCredentialException):
     """
     Throw when a required password can not be found
     """
-    TYPE: ClassVar[str] = "MFA_OTP"
+    TYPE = "MFA_OTP"
 
 
 class ReadOnlyCredentialTypeException(Exception):
