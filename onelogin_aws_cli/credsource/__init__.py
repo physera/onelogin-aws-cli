@@ -1,7 +1,7 @@
 """
 Handles multiple credentials sources
 """
-from typing import ClassVar, List, Optional
+from typing import List, Optional
 
 from onelogin_aws_cli.model import CredentialType
 
