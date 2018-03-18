@@ -1,13 +1,11 @@
 import setuptools
 
-PACKAGE_NAME = 'onelogin_aws_cli'
-VERSION = '0.1.8'
 
 setuptools.setup(
-    name=PACKAGE_NAME,
-    packages=[PACKAGE_NAME],
-    version=VERSION,
-    python_requires='>=3',
+    name='onelogin_aws_cli',
+    packages=['onelogin_aws_cli'],
+    version='0.1.8',
+    python_requires='>=3.5',
     description='Onelogin assume AWS role through CLI',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -23,12 +21,8 @@ setuptools.setup(
     author='Cameron Marlow',
     author_email='cameron@physera.com',
     url='https://github.com/physera/onelogin-aws-cli',
-    download_url=(
-            'https://github.com/physera/onelogin-aws-cli/archive/' +
-            VERSION +
-            '.tar.gz'
-    ),
-    py_modules=[PACKAGE_NAME],
+    download_url='https://github.com/physera/onelogin-aws-cli/archive/0.1.8.tar.gz',  # noqa: E501
+    py_modules=['onelogin_aws_cli'],
     install_requires=[
         'boto3',
         'onelogin',
@@ -37,7 +31,7 @@ setuptools.setup(
     setup_requires=['nose>=1.0'],
     entry_points={
         "console_scripts": [
-            "onelogin-aws-login = {pkg}.cli:login".format(pkg=PACKAGE_NAME)
+            "onelogin-aws-login = onelogin_aws_cli.cli:login"
         ]
     },
     license='MIT License',
