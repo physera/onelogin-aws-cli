@@ -90,7 +90,10 @@ class MFACredentials(object):
                 raise MissingMfaDeviceException()
 
             for i, device in enumerate(self._devices):
-                print(f"{i}. {device.type}")
+                print("{i}. {device}".format(
+                    i=i,
+                    device=device.type
+                ))
 
             device_num = input("Which OTP Device? ")
             self._device_index = int(device_num) - 1
