@@ -80,3 +80,13 @@ aws_app_id = mock_aws_app_id
 subdomain = mock_subdomain
 
 """, str.getvalue())
+
+    def test_is_initialised(self):
+
+        content = StringIO()
+        cf = ConfigurationFile(content)
+        self.assertFalse(cf.is_initialised)
+
+        cf = self._helper_build_config("""[section]
+first=foo""")
+        self.assertTrue(cf.is_initialised)
