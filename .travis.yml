@@ -7,8 +7,7 @@ matrix:
   allow_failures:
     - python: 3.7-dev
 install:
-  - pip install -e .
-  - pip install flake8 codecov
+  - pip install flake8
 before_script:
   - flake8 .
 script: python setup.py nosetests
