@@ -2,6 +2,7 @@ import contextlib
 from unittest import TestCase
 
 import pkg_resources
+import re
 from io import StringIO
 
 from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
@@ -38,7 +39,7 @@ class TestOneLoginAWSArgumentParser(TestCase):
         version = pkg_resources.get_distribution('onelogin_aws_cli').version
         self.assertRegex(
             mock_stdout.getvalue(),
-            version + r'$'
+            re.escape(version) + r'$'
         )
 
         self.assertEqual(cm.exception.code, 0)
