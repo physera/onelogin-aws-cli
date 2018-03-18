@@ -37,13 +37,14 @@ def login(args=sys.argv[1:]):
 
     args = parser.parse_args(args)
 
-    with open(DEFAULT_CONFIG_PATH) as fp:
-        configFile = ConfigurationFile(fp)
+    with open(DEFAULT_CONFIG_PATH, 'a+') as fp:
+        fp.seek(0, 0)
+        config_file = ConfigurationFile(fp)
 
-    if args.configure:
-        configFile.initialise()
+    if args.configure or not config_file.is_initialised:
+        config_file.initialise()
 
-    config_section = configFile.section(args.config_name)
+    config_section = config_file.section(args.config_name)
 
     if config_section is None:
         sys.exit("Configuration '{}' not defined. "
