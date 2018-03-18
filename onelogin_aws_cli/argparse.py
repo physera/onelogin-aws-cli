@@ -47,7 +47,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         )
 
         renew_seconds_group.add_argument(
-            # Help is supressed as this is replaced by the POSIX friendlier
+            # Help is suppressed as this is replaced by the POSIX friendlier
             # version above. This is here for legacy compliance and will
             # be deprecated.
             '--renewSeconds', type=int, help=argparse.SUPPRESS,
