@@ -37,6 +37,8 @@ def login(args=sys.argv[1:]):
     if args.renew_seconds:
         renew_seconds = args.renew_seconds
     elif args.renew_seconds_legacy:
+        print("WARNING: --renewSeconds is depecated in favour of " +
+              "--renew-seconds and be removed in a future version.")
         renew_seconds = args.renew_seconds_legacy
     else:
         renew_seconds = None
