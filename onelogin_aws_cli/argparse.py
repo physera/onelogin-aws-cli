@@ -33,9 +33,19 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         Add Argument Parser options only used in the CLI entrypoint
         """
 
-        self.add_argument(
+        renew_seconds_group = self.add_mutually_exclusive_group()
+
+        renew_seconds_group.add_argument(
             '-r', '--renew-seconds', type=int,
             help='Auto-renew credentials after this many seconds'
+        )
+
+        renew_seconds_group.add_argument(
+            # Help is supressed as this is replaced by the POSIX friendlier
+            # version above. This is here for legacy compliance and will
+            # be deprecated.
+            '--renewSeconds', type=int, help=argparse.SUPPRESS,
+            dest='renew_seconds_legacy'
         )
 
         self.add_argument(
