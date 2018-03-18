@@ -28,6 +28,12 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             '-u', '--username', default='', help='Specify OneLogin username'
         )
 
+        version = pkg_resources.get_distribution(__package__).version
+        self.add_argument(
+            '-v', '--version', action='version',
+            version="%(prog)s " + version
+        )
+
     def add_cli_options(self):
         """
         Add Argument Parser options only used in the CLI entrypoint
@@ -51,12 +57,6 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         self.add_argument(
             '-c', '--configure', dest='configure', action='store_true',
             help='Configure OneLogin and AWS settings'
-        )
-
-        version = pkg_resources.get_distribution(__package__).version
-        self.add_argument(
-            '-v', '--version', action='version',
-            version="%(prog)s " + version
         )
 
         # The `--client` option is a precursor to the daemon process in
