@@ -3,7 +3,7 @@ Describes data structures within the project
 """
 import signal
 
-from enum import Enum
+from enum import Enum, auto
 
 
 class SignalRepr(Enum):
@@ -16,3 +16,13 @@ class SignalRepr(Enum):
 
     def __str__(self):
         return str(self._name_)
+
+
+class CredentialType(Enum):
+    """
+    Represent the types of Credentials
+    """
+    USERNAME = auto()
+    PASSWORD = auto()
+    MFA_DEVICE = auto()
+    MFA_OTP = auto()
