@@ -52,10 +52,28 @@ class TestOneLoginAWSArgumentParser(TestCase):
             '--profile', 'my_profile',
             '-u', 'my_username',
             '--renew-seconds', '30',
-            '-c'
+            '-c',
         ])
 
         self.assertEqual(args.config_name, 'my_config')
         self.assertEqual(args.profile, 'my_profile')
         self.assertEqual(args.username, 'my_username')
+        self.assertEqual(args.renew_seconds, 30)
         self.assertTrue(args.configure)
+
+    def test_legacy_renew_seconds(self):
+        parser = OneLoginAWSArgumentParser()
+        parser.add_cli_options()
+        args = parser.parse_args([
+            '--renewSeconds', '30'
+        ])
+
+        self.assertEqual(args.renew_seconds_legacy, 30)
+
+        with self.assertRaises(SystemExit) as cm:
+            parser.parse_args([
+                '--renewSeconds', '30',
+                '--renew-seconds', '30',
+            ])
+
+        self.assertEqual(cm.exception.code, 2)
