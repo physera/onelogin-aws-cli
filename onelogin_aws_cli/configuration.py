@@ -37,10 +37,12 @@ class ConfigurationFile(configparser.ConfigParser):
         print("Configure Onelogin and AWS\n\n")
         config_section = self.section(config_name)
 
-        config_section['base_uri'] = user_choice("Pick a Onelogin API server:", [
-            "https://api.us.onelogin.com/",
-            "https://api.eu.onelogin.com/"
-        ])
+        config_section['base_uri'] = user_choice(
+            "Pick a Onelogin API server:", [
+                "https://api.us.onelogin.com/",
+                "https://api.eu.onelogin.com/"
+            ]
+        )
 
         print("\nOnelogin API credentials. These can be found at:\n"
               "https://admin.us.onelogin.com/api_credentials")
