@@ -1,6 +1,4 @@
-"""
-CLI credentials source. Will prompt the user.
-"""
+"""CLI credentials source. Will prompt the user."""
 from typing import Optional
 
 import keyring
@@ -10,9 +8,7 @@ from onelogin_aws_cli.model import CredentialType
 
 
 class OsKeychainCredentialsSource(CredentialsSource):
-    """
-    Prompts the user for credentials sources
-    """
+    """Prompts the user for credentials sources"""
     SERVICE_NAME = "onelogin-aws-cli"
 
     def __init__(self):
@@ -25,9 +21,7 @@ class OsKeychainCredentialsSource(CredentialsSource):
         self._username = None
 
     def password(self, new_password=None) -> Optional[str]:
-        """
-        Read and write the password to and from the credential source
-        """
+        """Read and write the password to and from the credential source"""
         if new_password is None:
             return keyring.get_password(self.SERVICE_NAME, self._username)
         else:
@@ -37,9 +31,7 @@ class OsKeychainCredentialsSource(CredentialsSource):
                                  new_password)
 
     def username(self, new_username=None):
-        """
-        Used only as a way to get the password in
-        """
+        """Used only as a way to get the password in"""
         if new_username is not None:
             self._username = new_username
         else:

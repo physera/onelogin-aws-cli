@@ -1,15 +1,11 @@
-"""
-Handles multiple credentials sources
-"""
+"""Handles multiple credentials sources"""
 from typing import List, Optional
 
 from onelogin_aws_cli.model import CredentialType
 
 
 class CredentialsSource(object):
-    """
-    Base class for objects which are used as sources for credentials
-    """
+    """Base class for objects which are used as sources for credentials"""
 
     def __init__(self, provided_cred_types: List[CredentialType] = tuple(),
                  dependent_cred_types: List[CredentialType] = tuple()):
@@ -31,37 +27,27 @@ class CredentialsSource(object):
         return cred_type in self._dependent_cred_types
 
     def username(self, new_password=None) -> Optional[str]:
-        """
-        Should be overriden. Retrieves a OneLogin username
-        """
+        """Should be overriden. Retrieves a OneLogin username"""
         raise MissingUsernameException()
 
     def password(self, new_password=None) -> Optional[str]:
-        """
-        Should be overriden. Retrieves a OneLogin Password
-        """
+        """Should be overriden. Retrieves a OneLogin Password"""
 
         raise MissingPasswordException()
 
     def mfa_device(self, new_mfa_device=None) -> Optional[str]:
-        """
-        Should be overriden. Retrieves a OneLogin MFA Device
-        """
+        """Should be overriden. Retrieves a OneLogin MFA Device"""
 
         raise MissingMfaDeviceException()
 
     def mfa_otp(self) -> str:
-        """
-        Should be overriden. Retrieves a OneLogin MFA OTP
-        """
+        """Should be overriden. Retrieves a OneLogin MFA OTP"""
 
         raise MissingMfaOtpException()
 
 
 class MissingCredentialException(Exception):
-    """
-    Raised when a credential is missing.
-    """
+    """Raised when a credential is missing."""
     TYPE = "error"
 
     def __init__(self):
@@ -69,37 +55,27 @@ class MissingCredentialException(Exception):
 
 
 class MissingPasswordException(MissingCredentialException):
-    """
-    Throw when a required password can not be found
-    """
+    """Throw when a required password can not be found"""
     TYPE = "PASSWORD"
 
 
 class MissingUsernameException(MissingCredentialException):
-    """
-    Throw when a required password can not be found
-    """
+    """Throw when a required password can not be found"""
     TYPE = "USERNAME"
 
 
 class MissingMfaDeviceException(MissingCredentialException):
-    """
-    Throw when a required password can not be found
-    """
+    """Throw when a required password can not be found"""
     TYPE = "MFA_DEVICE"
 
 
 class MissingMfaOtpException(MissingCredentialException):
-    """
-    Throw when a required password can not be found
-    """
+    """Throw when a required password can not be found"""
     TYPE = "MFA_OTP"
 
 
 class ReadOnlyCredentialTypeException(Exception):
-    """
-    Called when a write operation is performed on a credential source.
-    """
+    """Called when a write operation is performed on a credential source."""
 
     def __init__(self, source: type, cred_type: CredentialType):
         super().__init__(

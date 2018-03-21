@@ -20,9 +20,7 @@ class SignalRepr(Enum):
 
 @unique
 class CredentialType(Enum):
-    """
-    Represent the types of Credentials
-    """
+    """Represent the types of Credentials"""
     USERNAME = 0b0001
     PASSWORD = 0b0010
     MFA_DEVICE = 0b0100
