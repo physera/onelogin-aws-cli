@@ -3,10 +3,111 @@ Handles the saving and loading of username and password in a secure
 manner
 """
 import getpass
+from typing import List
 
 import keyring
+from onelogin.api.models.device import Device
 
 from onelogin_aws_cli.configuration import Section
+
+
+class MFACredentials(object):
+    """
+    Class to encapsulate the handling and storage of MFA devices, and
+    retrieving of OTP's
+    """
+
+    def __init__(self):
+        self._interactive = True
+
+        self.reset()
+
+    @property
+    def has_device(self) -> bool:
+        """
+        True if the MFA has an MFA device selected waiting to be used
+        """
+        return (self._device_index is not None) and \
+               (self._device_index < len(self._devices))
+
+    @property
+    def has_otp(self) -> bool:
+        """
+        True if the MFA has an OTP waiting to be used
+        """
+        return self._otp is not None
+
+    @property
+    def device(self) -> Device:
+        """
+        Return the device selected by the user
+
+        :return:
+        """
+        return self._devices[
+            self._device_index
+        ]
+
+    @property
+    def otp(self) -> str:
+        """
+        Return the OTP for the MFA and reset the OTP.
+        OTP's can only be used once, so it will be reset after.
+
+        :return:
+        """
+        result = self._otp
+        self._otp = None
+        return result
+
+    def ready(self):
+        """
+        If the MFA is ready to be used
+        """
+        return self.has_otp and self.has_device
+
+    def reset(self):
+        """
+        Remove all state from this class
+        """
+
+        self._devices = []
+        self._device_index = None
+
+        self._otp = None
+
+    def select_device(self, devices: List[Device]):
+        """
+        Given a list of MFA devices, select one for use
+        :param devices:
+        """
+
+        self._devices = devices
+
+        if len(self._devices) > 1:
+
+            if not self._interactive:
+                raise MissingMfaDeviceException()
+
+            for i, device in enumerate(self._devices):
+                print("{i}. {device}".format(
+                    i=i+1,
+                    device=device.type
+                ))
+
+            device_num = input("Which OTP Device? ")
+            self._device_index = int(device_num) - 1
+        else:
+            self._device_index = 0
+
+    def prompt_token(self):
+        """
+        Ask the user for an OTP token
+        """
+        if not self._interactive:
+            raise MissingMfaOtpException()
+
+        self._otp = input("{device} Token: ".format(device=self.device.type))
 
 
 class UserCredentials(object):
@@ -24,6 +125,8 @@ class UserCredentials(object):
         # and should never be loaded from any other source outside this class
         self.password = None
 
+        self._interactive = True
+
     @property
     def has_password(self) -> bool:
         """
@@ -33,6 +136,15 @@ class UserCredentials(object):
         """
         return (self.password is not None) and \
                (self.password != "")
+
+    def disable_interactive(self):
+        """
+        Disable all user prompts. In the event there is missing data,
+        an exception will be thrown in place of a user prompt.
+
+        :return:
+        """
+        self._interactive = False
 
     def load_credentials(self):
         """
@@ -54,6 +166,8 @@ class UserCredentials(object):
             # Try the configurationfile first
             if 'username' in self.configuration:
                 username = self.configuration['username']
+            elif not self._interactive:
+                raise MissingUsernameException()
             else:
                 username = input("Onelogin Username: ")
             self.username = username
@@ -101,6 +215,8 @@ class UserCredentials(object):
                 self._save_password_to_keychain()
 
     def _prompt_user_password(self):
+        if not self._interactive:
+            raise MissingPasswordException()
         self.password = getpass.getpass("Onelogin Password: ")
 
     def _load_password_from_keychain(self):
@@ -108,3 +224,39 @@ class UserCredentials(object):
 
     def _save_password_to_keychain(self):
         keyring.set_password(self.SERVICE_NAME, self.username, self.password)
+
+
+class MissingPasswordException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_PASSWORD_MISSING")
+
+
+class MissingUsernameException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_USERNAME_MISSING")
+
+
+class MissingMfaDeviceException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_MFA_DEVICE_MISSING")
+
+
+class MissingMfaOtpException(Exception):
+    """
+    Throw when a required password can not be found
+    """
+
+    def __init__(self):
+        super().__init__("ONELOGIN_MFA_OTP_MISSING")

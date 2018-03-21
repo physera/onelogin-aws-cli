@@ -11,7 +11,7 @@ import os
 from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
-from onelogin_aws_cli.credentials import UserCredentials
+from onelogin_aws_cli.credentials import MFACredentials, UserCredentials
 
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
@@ -35,6 +35,7 @@ class OneloginAWS(object):
         self.principal_arn = None
         self.credentials = None
         self.user_credentials = UserCredentials(self.args.username, config)
+        self.mfa = MFACredentials()
 
         base_uri_parts = self.config['base_uri'].split('.')
         self.ol_client = OneLoginClient(
@@ -42,6 +43,18 @@ class OneloginAWS(object):
             self.config['client_secret'],
             base_uri_parts[1],
         )
+
+        self._interactive = True
+
+    def disable_interactive(self):
+        """
+        Disable all user prompts. In the event there is missing data,
+        an exception will be thrown in place of a user prompt.
+
+        :return:
+        """
+        self._interactive = False
+        self.user_credentials.disable_interactive()
 
     def get_saml_assertion(self):
         """
@@ -59,22 +72,16 @@ class OneloginAWS(object):
         )
 
         if saml_resp.mfa:
-            devices = saml_resp.mfa.devices
-            if len(devices) > 1:
-                for i, device in enumerate(devices):
-                    print("{}. {}".format(i + 1, device.type))
-                device_num = input("Which OTP Device? ")
-                device = devices[int(device_num) - 1]
-            else:
-                device = devices[0]
-
-            otp_token = input("OTP Token: ")
+            if not self.mfa.ready():
+                self.mfa.select_device(saml_resp.mfa.devices)
+                if not self.mfa.has_otp:
+                    self.mfa.prompt_token()
 
             saml_resp = self.ol_client.get_saml_assertion_verifying(
                 self.config['aws_app_id'],
-                device.id,
+                self.mfa.device.id,
                 saml_resp.mfa.state_token,
-                otp_token
+                self.mfa.otp
             )
 
         self.saml = saml_resp
