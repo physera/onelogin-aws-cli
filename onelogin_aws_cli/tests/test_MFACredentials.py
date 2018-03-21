@@ -104,6 +104,9 @@ class TestMFACredentials(TestCase):
             ])
 
     def test_prompt_token(self):
+        self.mfa.select_device([
+            Device(dict(device_id='1', device_type='mock_device'))
+        ])
         with patch('builtins.input', side_effect=['123456']):
             self.mfa.prompt_token()
 
