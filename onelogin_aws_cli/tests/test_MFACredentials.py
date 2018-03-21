@@ -1,3 +1,5 @@
+import contextlib
+from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -86,14 +88,14 @@ class TestMFACredentials(TestCase):
         self.assertEqual(self.mfa._device_index, 0)
         self.assertEqual(self.mfa.device.id, '1')
 
-        with patch('builtins.input', side_effect=['1']):
+        with patch('builtins.input', side_effect=['3']):
             self.mfa.select_device([
                 Device(dict(device_id='1')),
                 Device(dict(device_id='2')),
                 Device(dict(device_id='3'))
             ])
 
-        self.assertEqual(self.mfa.device.id, '1')
+        self.assertEqual(self.mfa.device.id, '3')
 
         self.mfa._interactive = False
         with self.assertRaises(MissingMfaDeviceException):
@@ -115,3 +117,16 @@ class TestMFACredentials(TestCase):
         with self.assertRaises(MissingMfaOtpException):
             self.mfa._interactive = False
             self.mfa.prompt_token()
+
+    def test_prompt_text(self):
+        self.mfa.select_device([
+            Device(dict(device_id='1', device_type='mock_device'))
+        ])
+
+        mock_stdout = StringIO()
+
+        with patch('builtins.input', side_effect=['1'])as prompt:
+            with contextlib.redirect_stdout(mock_stdout):
+                self.mfa.prompt_token()
+
+        prompt.assert_called_with('mock_device Token: ')
