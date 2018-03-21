@@ -25,7 +25,7 @@ class MFACredentials(object):
     @property
     def has_device(self) -> bool:
         """
-        True is the MFA has an MFA device selected waiting to be used
+        True if the MFA has an MFA device selected waiting to be used
         """
         return (self._device_index is not None) and \
                (self._device_index < len(self._devices))
