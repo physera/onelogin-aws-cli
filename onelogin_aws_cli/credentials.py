@@ -107,7 +107,7 @@ class MFACredentials(object):
         if not self._interactive:
             raise MissingMfaOtpException()
 
-        self._otp = input("OTP Token: ")
+        self._otp = input("{device} Token: ".format(device=self.device.type))
 
 
 class UserCredentials(object):
