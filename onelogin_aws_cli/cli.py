@@ -10,6 +10,16 @@ from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
 from onelogin_aws_cli.model import SignalRepr
 
+def _get_interrupt_handler(interrupted: Event, process_type):
+    def _handler(signal_num: int, *args):
+        interrupted.set()
+        print("Received {sig}.".format(sig=SignalRepr(signal_num)))
+        print("Shutting down {process} process...".format(
+            process=process_type
+        ))
+
+    return _handler
+
 
 def login(args=sys.argv[1:]):
     """
@@ -49,11 +59,9 @@ def login(args=sys.argv[1:]):
     if renew_seconds:
 
         interrupted = Event()
-
-        def _interrupt_handler(signal_num: int, *args):
-            interrupted.set()
-            print("Received {sig}.".format(sig=SignalRepr(signal_num)))
-            print("Shutting down Credentials refresh process...")
+        _interrupt_handler = _get_interrupt_handler(
+            interrupted, "Credentials refresh"
+        )
 
         # Handle sigterms
         # This must be done here, as signals can't be caught down the stack
