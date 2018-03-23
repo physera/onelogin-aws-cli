@@ -10,6 +10,7 @@ from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
 from onelogin_aws_cli.model import SignalRepr
 
+
 def _get_interrupt_handler(interrupted: Event, process_type):
     def _handler(signal_num: int, *args):
         interrupted.set()
