@@ -10,6 +10,7 @@ from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
 from onelogin_aws_cli.model import SignalRepr
 
+
 def _get_interrupt_handler(interrupted: Event, process_type):
     def _handler(signal_num: int, *args):
         interrupted.set()
@@ -21,6 +22,28 @@ def _get_interrupt_handler(interrupted: Event, process_type):
     return _handler
 
 
+def _load_config(parser, interactive=True, args=sys.argv[1:]):
+    cli_args = parser.parse_args(args)
+
+    with open(DEFAULT_CONFIG_PATH, 'a+') as fp:
+        fp.seek(0, 0)
+        config_file = ConfigurationFile(fp)
+
+    if (cli_args.configure or not config_file.is_initialised) and interactive:
+        config_file.initialise(cli_args.config_name)
+
+    config_section = config_file.section(cli_args.config_name)
+
+    if config_section is None:
+        sys.exit(
+            "Configuration '{}' not defined. "
+            "Please run 'onelogin-aws-login -c'".format(
+                cli_args.config_name
+            ))
+
+    return config_section, cli_args
+
+
 def login(args=sys.argv[1:]):
     """
     Entrypoint for `onelogin-aws-login`
@@ -28,20 +51,7 @@ def login(args=sys.argv[1:]):
     """
 
     parser = OneLoginAWSArgumentParser().add_cli_options()
-    args = parser.parse_args(args)
-
-    with open(DEFAULT_CONFIG_PATH, 'a+') as fp:
-        fp.seek(0, 0)
-        config_file = ConfigurationFile(fp)
-
-    if args.configure or not config_file.is_initialised:
-        config_file.initialise(args.config_name)
-
-    config_section = config_file.section(args.config_name)
-
-    if config_section is None:
-        sys.exit("Configuration '{}' not defined. "
-                 "Please run 'onelogin-aws-login -c'".format(args.config_name))
+    config_section, args = _load_config(parser, True, args)
 
     # Handle legacy `--renewSeconds` option while it is depecated
     if args.renew_seconds:
