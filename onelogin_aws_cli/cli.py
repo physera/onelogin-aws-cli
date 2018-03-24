@@ -81,11 +81,11 @@ def login(args=sys.argv[1:]):
         for sig_type in list(SignalRepr):
             signal.signal(sig_type.value, _interrupt_handler)
 
-            # @TODO We should check if the credentials are going to expire
-            # in the immediate future, rather than constantly hitting
-            # the AWS API.
-
         interrupted.clear()
         while not interrupted.is_set():
             interrupted.wait(renew_seconds)
+
+            # @TODO We should check if the credentials are going to expire
+            # in the immediate future, rather than constantly hitting
+            # the AWS API.
             api.save_credentials()
