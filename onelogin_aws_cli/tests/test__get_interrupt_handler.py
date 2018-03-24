@@ -22,7 +22,7 @@ class Test_get_interrupt_handler(TestCase):
         with contextlib.redirect_stdout(mock_stdout):
             handler(signal.SIGTERM)
 
-        method.assert_called_once()
+        method.assert_called_once_with()
         method.assert_called_with()
 
         self.assertEqual("""Received SIGTERM.
