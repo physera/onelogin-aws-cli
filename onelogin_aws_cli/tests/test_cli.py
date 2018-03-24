@@ -11,9 +11,6 @@ from onelogin_aws_cli.cli import _get_interrupt_handler
 
 class TestCli(TestCase):
 
-    def test__load_config(self):
-        self.fail()
-
     def test__get_interrupt_handler(self):
         method = MagicMock()
         handler = _get_interrupt_handler(
