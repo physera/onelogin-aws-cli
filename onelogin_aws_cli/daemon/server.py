@@ -24,7 +24,7 @@ class Server(Thread):
 
         Thread(target=self.server.serve_forever).start()
 
-    def interrupt(self,signal_num: int, *args):
+    def interrupt(self, signal_num: int, *args):
         """
         Shut the server down
         """
