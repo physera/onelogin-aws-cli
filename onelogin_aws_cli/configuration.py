@@ -11,14 +11,15 @@ class ConfigurationFile(configparser.ConfigParser):
     Represents a configuration ini file on disk
     """
 
-    def __init__(self, config_file):
+    def __init__(self, config_file=None):
         super().__init__(default_section='defaults')
 
         self['defaults'] = dict(save_password=False)
 
         self.file = config_file
 
-        self.read_file(self.file)
+        if self.file is not None:
+            self.load()
 
     @property
     def is_initialised(self) -> bool:
@@ -28,6 +29,9 @@ class ConfigurationFile(configparser.ConfigParser):
         return len(
             self.sections()
         ) > 0
+
+    def load(self):
+        self.read_file(self.file)
 
     def initialise(self, config_name='default'):
         """
