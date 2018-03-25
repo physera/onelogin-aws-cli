@@ -12,8 +12,9 @@ from onelogin_aws_cli.daemon.server import Server
 from onelogin_aws_cli.model import SignalRepr
 
 
-def _get_interrupt_handler(process_type, interrupted: Event = None,
+def _set_interrupt_handler(process_type, interrupted: Event = None,
                            interrupt_process=None):
+    # Generate a callback for when the below sig's are called
     def _handler(signal_num: int, *args):
         print("Received {sig}.".format(sig=SignalRepr(signal_num)))
         print("Shutting down {process} process...".format(
@@ -25,6 +26,11 @@ def _get_interrupt_handler(process_type, interrupted: Event = None,
 
         if interrupt_process is not None:
             interrupt_process(signal_num, *args)
+
+    # Handle sigterms
+    # This must be done here, as signals can't be caught down the stack
+    for sig_type in list(SignalRepr):
+        signal.signal(sig_type.value, _handler)
 
     return _handler
 
@@ -66,14 +72,7 @@ def daemon(args=sys.argv[1:]):
     config_section, _ = _load_config(parser, cfg, False, args)
 
     server = Server(config_section)
-    _interrupt_handler = _get_interrupt_handler(
-        "Daemon", interrupt_process=server.interrupt
-    )
-
-    # Handle sigterms
-    # This must be done here, as signals can't be caught down the stack
-    for sig_type in list(SignalRepr):
-        signal.signal(sig_type.value, _interrupt_handler)
+    _set_interrupt_handler("Daemon", interrupt_process=server.interrupt)
 
     server.run()
 
@@ -104,14 +103,9 @@ def login(args=sys.argv[1:]):
     if renew_seconds:
 
         interrupted = Event()
-        _interrupt_handler = _get_interrupt_handler(
+        _set_interrupt_handler(
             "Credentials refresh", interrupted=interrupted
         )
-
-        # Handle sigterms
-        # This must be done here, as signals can't be caught down the stack
-        for sig_type in list(SignalRepr):
-            signal.signal(sig_type.value, _interrupt_handler)
 
         interrupted.clear()
         while not interrupted.is_set():

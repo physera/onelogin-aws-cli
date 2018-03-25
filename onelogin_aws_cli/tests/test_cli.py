@@ -1,19 +1,18 @@
 import contextlib
 import signal
 from argparse import Namespace
+from io import StringIO
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from io import StringIO
-
-from onelogin_aws_cli.cli import _get_interrupt_handler
+from onelogin_aws_cli.cli import _set_interrupt_handler
 
 
 class TestCli(TestCase):
 
     def test__get_interrupt_handler(self):
         method = MagicMock()
-        handler = _get_interrupt_handler(
+        handler = _set_interrupt_handler(
             interrupted=Namespace(set=method),
             process_type="mock"
         )
