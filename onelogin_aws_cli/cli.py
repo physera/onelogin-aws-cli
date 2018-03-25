@@ -22,17 +22,6 @@ def _get_interrupt_handler(interrupted: Event, process_type):
     return _handler
 
 
-def _get_interrupt_handler(interrupted: Event, process_type):
-    def _handler(signal_num: int, *args):
-        interrupted.set()
-        print("Received {sig}.".format(sig=SignalRepr(signal_num)))
-        print("Shutting down {process} process...".format(
-            process=process_type
-        ))
-
-    return _handler
-
-
 def _load_config(parser, config_file: ConfigurationFile, interactive=True,
                  args=sys.argv[1:]):
     cli_args = parser.parse_args(args)
