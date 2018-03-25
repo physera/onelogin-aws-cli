@@ -10,6 +10,7 @@ from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
 from onelogin_aws_cli.credentials import MFACredentials, UserCredentials
+from onelogin_aws_cli.userquery import user_role_prompt
 
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
@@ -119,25 +120,10 @@ class OneloginAWS(object):
         if not self.all_roles:
             raise Exception("No roles found")
 
-        selected_role = None
-
         # If I have more than one role, ask the user which one they want,
         # otherwise just proceed
-        if len(self.all_roles) > 1:
-            ind = 0
-            for role, principal in self.all_roles:
-                print("[{}] {}".format(ind, role))
-                ind += 1
-            while selected_role is None:
-                choice = int(input("Role Number: "))
-                if choice in range(len(self.all_roles)):
-                    selected_role = choice
-                else:
-                    print("Invalid role index, please try again")
-        else:
-            selected_role = 0
 
-        self.role_arn, self.principal_arn = self.all_roles[selected_role]
+        self.role_arn, self.principal_arn = user_role_prompt(self.all_roles)
 
     def assume_role(self):
         """Perform an AWS SAML role assumption"""

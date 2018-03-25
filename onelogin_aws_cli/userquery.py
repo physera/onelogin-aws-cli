@@ -28,3 +28,28 @@ def user_choice(question: str, options: typing.List[str]) -> str:
         except ValueError:
             print("Invalid option")
     return selection
+
+
+def user_role_prompt(all_roles):
+    """
+    Prompt a user with a list of AWS IAM roles to choose from. If only 1 role
+    is available, return that.
+    :return:
+    """
+    selected_role = None
+
+    if len(all_roles) > 1:
+        ind = 0
+        for role, principal in all_roles:
+            print("[{}] {}".format(ind + 1, role))
+            ind += 1
+        while selected_role is None:
+            choice = int(input("Role Number: ")) - 1
+            if choice in range(len(all_roles)):
+                selected_role = choice
+            else:
+                print("Invalid role index, please try again")
+    else:
+        selected_role = 0
+
+    return all_roles[selected_role]
