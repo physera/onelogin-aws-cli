@@ -43,7 +43,7 @@ Shutting down mock process...
         })
 
         open_name = 'onelogin_aws_cli.cli.open'
-        with patch(open_name, mock_open(read_data='foobar')) as m_open:
+        with patch(open_name, mock_open(read_data='foobar')):
             config_section, cli_args = _load_config(
                 parser=parser_mock,
                 config_file=config_mock,
