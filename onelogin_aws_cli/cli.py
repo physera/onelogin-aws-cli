@@ -8,6 +8,7 @@ from threading import Event
 from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
 from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
+from onelogin_aws_cli.daemon.server import Server
 from onelogin_aws_cli.model import SignalRepr
 
 
@@ -45,6 +46,30 @@ def _load_config(parser, config_file: ConfigurationFile, interactive=True,
         )
 
     return config_section, cli_args
+
+
+def daemon(args=sys.argv[1:]):
+    """
+    Entrypoint for `onelogin-aws-daemon`
+    :param args:
+    """
+
+    cfg = ConfigurationFile()
+    parser = OneLoginAWSArgumentParser()
+    config_section = _load_config(parser, cfg, False, args)
+
+    interrupted = Event()
+    _interrupt_handler = _get_interrupt_handler(
+        interrupted, "Daemon"
+    )
+
+    # Handle sigterms
+    # This must be done here, as signals can't be caught down the stack
+    for sig_type in list(SignalRepr):
+        signal.signal(sig_type.value, _interrupt_handler)
+
+    s = Server(config_section)
+    s.run()
 
 
 def login(args=sys.argv[1:]):
