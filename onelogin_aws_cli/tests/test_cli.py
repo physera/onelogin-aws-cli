@@ -13,7 +13,7 @@ class TestCli(TestCase):
     def test__get_interrupt_handler(self):
         method = MagicMock()
         handler = _set_interrupt_handler(
-            interrupted=Namespace(set=method),
+            event=Namespace(set=method),
             process_type="mock"
         )
 

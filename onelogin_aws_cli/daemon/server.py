@@ -36,7 +36,7 @@ class Server(Thread):
         Find a free port to listen on
         :return:
         """
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s = socket.socket()
         s.bind(("", 0))
         s.listen(1)
         port = s.getsockname()[1]
