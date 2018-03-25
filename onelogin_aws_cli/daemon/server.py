@@ -1,24 +1,19 @@
-import socketserver
+import socket
+from socketserver import BaseRequestHandler, TCPServer
 from threading import Thread
 
 from onelogin_aws_cli.configuration import Section
 
 
-class Server(Thread, socketserver.TCPServer):
+class Server(Thread):
     """Start server in thread"""
     HOST = "localhost"
-    PORT = 9999
 
     def __init__(self, config: Section):
-        super().__init__()
-        self.config = config
-
-        super(socketserver.TCPServer, self).__init__(
-            (self.HOST, self.PORT),
-            ServerHandler
-        )
-
-        self.setDaemon(True)
+        super().__init__(daemon=True)
+ 
+        self.server = TCPServer((self.HOST, self.find_free_port()),
+                                ServerHandler)
 
     def run(self):
         """
@@ -26,10 +21,23 @@ class Server(Thread, socketserver.TCPServer):
         program with Ctrl-C
         """
 
-        self.serve_forever()
+        self.server.serve_forever()
+
+    @staticmethod
+    def find_free_port() -> int:
+        """
+        Find a free port to listen on
+        :return:
+        """
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(("", 0))
+        s.listen(1)
+        port = s.getsockname()[1]
+        s.close()
+        return port
 
 
-class ServerHandler(socketserver.BaseRequestHandler):
+class ServerHandler(BaseRequestHandler):
     """Handle server requests. Currently performs an echo."""
 
     def handle(self):
