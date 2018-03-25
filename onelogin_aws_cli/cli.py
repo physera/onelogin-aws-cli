@@ -32,8 +32,9 @@ def _load_config(parser, config_file: ConfigurationFile, interactive=True,
         config_file.file = fp
         config_file.load()
 
-    if (cli_args.configure or not config_file.is_initialised) and interactive:
-        config_file.initialise(cli_args.config_name)
+    if interactive:
+        if (cli_args.configure or not config_file.is_initialised):
+            config_file.initialise(cli_args.config_name)
 
     config_section = config_file.section(cli_args.config_name)
 
