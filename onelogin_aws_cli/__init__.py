@@ -1,6 +1,4 @@
-"""
-OneLogin/AWS Business logic
-"""
+"""OneLogin/AWS Business logic"""
 
 import configparser
 import xml.etree.ElementTree as ElementTree
@@ -87,9 +85,7 @@ class OneloginAWS(object):
         self.saml = saml_resp
 
     def get_arns(self):
-        """
-        Extract the IAM Role ARNs from the SAML Assertion
-        """
+        """Extract the IAM Role ARNs from the SAML Assertion"""
 
         if not self.saml:
             self.get_saml_assertion()
@@ -144,9 +140,7 @@ class OneloginAWS(object):
         self.role_arn, self.principal_arn = self.all_roles[selected_role]
 
     def assume_role(self):
-        """
-        Perform an AWS SAML role assumption
-        """
+        """Perform an AWS SAML role assumption"""
 
         if not self.role_arn:
             self.get_role()
@@ -159,9 +153,7 @@ class OneloginAWS(object):
         self.credentials = res
 
     def save_credentials(self):
-        """
-        Save the AWS Federation credentials to disk
-        """
+        """Save the AWS Federation credentials to disk"""
 
         if not self.credentials:
             self.assume_role()

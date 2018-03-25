@@ -7,9 +7,7 @@ from enum import Enum
 
 
 class SignalRepr(Enum):
-    """
-    Represent the signal types
-    """
+    """Represent the signal types"""
 
     SIGTERM = signal.SIGTERM
     SIGINT = signal.SIGINT

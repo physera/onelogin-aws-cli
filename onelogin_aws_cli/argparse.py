@@ -8,9 +8,7 @@ import pkg_resources
 
 
 class OneLoginAWSArgumentParser(argparse.ArgumentParser):
-    """
-    Argument Parser separated into daemon and cli tool
-    """
+    """Argument Parser separated into daemon and cli tool"""
 
     def __init__(self):
         super().__init__(description='Login to AWS with OneLogin')
@@ -35,9 +33,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         )
 
     def add_cli_options(self):
-        """
-        Add Argument Parser options only used in the CLI entrypoint
-        """
+        """Add Argument Parser options only used in the CLI entrypoint"""
 
         renew_seconds_group = self.add_mutually_exclusive_group()
 
