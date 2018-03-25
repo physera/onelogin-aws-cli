@@ -57,7 +57,7 @@ def daemon(args=sys.argv[1:]):
 
     cfg = ConfigurationFile()
     parser = OneLoginAWSArgumentParser()
-    config_section = _load_config(parser, cfg, False, args)
+    config_section, _ = _load_config(parser, cfg, False, args)
 
     interrupted = Event()
     _interrupt_handler = _get_interrupt_handler(
