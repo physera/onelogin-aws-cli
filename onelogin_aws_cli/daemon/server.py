@@ -10,8 +10,9 @@ class Server(Thread):
     HOST = "localhost"
 
     def __init__(self, config: Section):
-        super().__init__(daemon=True)
- 
+        super().__init__()
+
+        self.config = config
         self.server = TCPServer((self.HOST, self.find_free_port()),
                                 ServerHandler)
 
@@ -21,7 +22,13 @@ class Server(Thread):
         program with Ctrl-C
         """
 
-        self.server.serve_forever()
+        Thread(target=self.server.serve_forever).start()
+
+    def interrupt(self,signal_num: int, *args):
+        """
+        Shut the server down
+        """
+        self.server.shutdown()
 
     @staticmethod
     def find_free_port() -> int:

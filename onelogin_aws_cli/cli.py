@@ -12,13 +12,19 @@ from onelogin_aws_cli.daemon.server import Server
 from onelogin_aws_cli.model import SignalRepr
 
 
-def _get_interrupt_handler(interrupted: Event, process_type):
+def _get_interrupt_handler(process_type, interrupted: Event = None,
+                           interrupt_process=None):
     def _handler(signal_num: int, *args):
-        interrupted.set()
         print("Received {sig}.".format(sig=SignalRepr(signal_num)))
         print("Shutting down {process} process...".format(
             process=process_type
         ))
+
+        if interrupted is not None:
+            interrupted.set()
+
+        if interrupt_process is not None:
+            interrupt_process(signal_num, *args)
 
     return _handler
 
@@ -59,9 +65,9 @@ def daemon(args=sys.argv[1:]):
     parser = OneLoginAWSArgumentParser()
     config_section, _ = _load_config(parser, cfg, False, args)
 
-    interrupted = Event()
+    server = Server(config_section)
     _interrupt_handler = _get_interrupt_handler(
-        interrupted, "Daemon"
+        "Daemon", interrupt_process=server.interrupt
     )
 
     # Handle sigterms
@@ -69,8 +75,7 @@ def daemon(args=sys.argv[1:]):
     for sig_type in list(SignalRepr):
         signal.signal(sig_type.value, _interrupt_handler)
 
-    s = Server(config_section)
-    s.run()
+    server.run()
 
 
 def login(args=sys.argv[1:]):
@@ -100,7 +105,7 @@ def login(args=sys.argv[1:]):
 
         interrupted = Event()
         _interrupt_handler = _get_interrupt_handler(
-            interrupted, "Credentials refresh"
+            "Credentials refresh", interrupted=interrupted
         )
 
         # Handle sigterms
