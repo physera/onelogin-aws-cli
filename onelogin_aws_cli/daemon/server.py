@@ -4,7 +4,7 @@ from threading import Thread
 from onelogin_aws_cli.configuration import Section
 
 
-class Server(Thread):
+class Server(Thread, socketserver.TCPServer):
     """Start server in thread"""
     HOST = "localhost"
     PORT = 9999
@@ -13,15 +13,20 @@ class Server(Thread):
         super().__init__()
         self.config = config
 
-    def run(self):
-        """Start our server on specificed port"""
+        super(socketserver.TCPServer, self).__init__(
+            (self.HOST, self.PORT),
+            ServerHandler
+        )
 
-        # Create the server, binding to localhost on port 9999
-        with socketserver.TCPServer((self.HOST, self.PORT),
-                                    ServerHandler) as server:
-            # Activate the server; this will keep running until you
-            # interrupt the program with Ctrl-C
-            server.serve_forever()
+        self.setDaemon(True)
+
+    def run(self):
+        """
+        Activate the server; this will keep running until you interrupt the
+        program with Ctrl-C
+        """
+
+        self.serve_forever()
 
 
 class ServerHandler(socketserver.BaseRequestHandler):
