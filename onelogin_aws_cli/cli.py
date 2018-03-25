@@ -8,16 +8,36 @@ from threading import Event
 from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
 from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
+from onelogin_aws_cli.daemon.server import Server
 from onelogin_aws_cli.model import SignalRepr
 
 
-def _get_interrupt_handler(interrupted: Event, process_type):
+def _set_interrupt_handler(process_type, event: Event = None,
+                           process: callable = None):
+    """
+    Create handlers for SIG events
+    :param process_type: name of the process to kill
+    :param event: Set this event during the sig handling
+    :param process: call this process to perform another interrupt action
+    """
+
+    # Generate a callback for when the below sig's are called
     def _handler(signal_num: int, *args):
-        interrupted.set()
         print("Received {sig}.".format(sig=SignalRepr(signal_num)))
         print("Shutting down {process} process...".format(
             process=process_type
         ))
+
+        if event is not None:
+            event.set()
+
+        if process is not None:
+            process(signal_num, *args)
+
+    # Handle sigterms
+    # This must be done here, as signals can't be caught down the stack
+    for sig_type in list(SignalRepr):
+        signal.signal(sig_type.value, _handler)
 
     return _handler
 
@@ -31,8 +51,9 @@ def _load_config(parser, config_file: ConfigurationFile, interactive=True,
         config_file.file = fp
         config_file.load()
 
-    if (cli_args.configure or not config_file.is_initialised) and interactive:
-        config_file.initialise(cli_args.config_name)
+    if interactive:
+        if cli_args.configure or not config_file.is_initialised:
+            config_file.initialise(cli_args.config_name)
 
     config_section = config_file.section(cli_args.config_name)
 
@@ -45,6 +66,22 @@ def _load_config(parser, config_file: ConfigurationFile, interactive=True,
         )
 
     return config_section, cli_args
+
+
+def daemon(args=sys.argv[1:]):
+    """
+    Entrypoint for `onelogin-aws-daemon`
+    :param args:
+    """
+
+    cfg = ConfigurationFile()
+    parser = OneLoginAWSArgumentParser()
+    config_section, _ = _load_config(parser, cfg, False, args)
+
+    server = Server(config_section)
+    _set_interrupt_handler("Daemon", process=server.interrupt)
+
+    server.run()
 
 
 def login(args=sys.argv[1:]):
@@ -73,14 +110,7 @@ def login(args=sys.argv[1:]):
     if renew_seconds:
 
         interrupted = Event()
-        _interrupt_handler = _get_interrupt_handler(
-            interrupted, "Credentials refresh"
-        )
-
-        # Handle sigterms
-        # This must be done here, as signals can't be caught down the stack
-        for sig_type in list(SignalRepr):
-            signal.signal(sig_type.value, _interrupt_handler)
+        _set_interrupt_handler("Credentials refresh", event=interrupted)
 
         interrupted.clear()
         while not interrupted.is_set():

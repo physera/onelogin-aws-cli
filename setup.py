@@ -37,7 +37,8 @@ setuptools.setup(
     setup_requires=['nose>=1.0'],
     entry_points={
         "console_scripts": [
-            "onelogin-aws-login = {pkg}.cli:login".format(pkg=PACKAGE_NAME)
+            "onelogin-aws-login = {pkg}.cli:login".format(pkg=PACKAGE_NAME),
+            "onelogin-aws-daemon = {pkg}.cli:daemon".format(pkg=PACKAGE_NAME)
         ]
     },
     license='MIT License',
