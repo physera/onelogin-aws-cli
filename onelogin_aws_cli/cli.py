@@ -12,8 +12,15 @@ from onelogin_aws_cli.daemon.server import Server
 from onelogin_aws_cli.model import SignalRepr
 
 
-def _set_interrupt_handler(process_type, interrupted: Event = None,
-                           interrupt_process=None):
+def _set_interrupt_handler(process_type, event: Event = None,
+                           process: callable = None):
+    """
+    Create handlers for SIG events
+    :param process_type: name of the process to kill
+    :param event: Set this event during the sig handling
+    :param process: call this process to perform another interrupt action
+    """
+
     # Generate a callback for when the below sig's are called
     def _handler(signal_num: int, *args):
         print("Received {sig}.".format(sig=SignalRepr(signal_num)))
@@ -21,11 +28,11 @@ def _set_interrupt_handler(process_type, interrupted: Event = None,
             process=process_type
         ))
 
-        if interrupted is not None:
-            interrupted.set()
+        if event is not None:
+            event.set()
 
-        if interrupt_process is not None:
-            interrupt_process(signal_num, *args)
+        if process is not None:
+            process(signal_num, *args)
 
     # Handle sigterms
     # This must be done here, as signals can't be caught down the stack
@@ -72,7 +79,7 @@ def daemon(args=sys.argv[1:]):
     config_section, _ = _load_config(parser, cfg, False, args)
 
     server = Server(config_section)
-    _set_interrupt_handler("Daemon", interrupt_process=server.interrupt)
+    _set_interrupt_handler("Daemon", process=server.interrupt)
 
     server.run()
 
@@ -104,7 +111,7 @@ def login(args=sys.argv[1:]):
 
         interrupted = Event()
         _set_interrupt_handler(
-            "Credentials refresh", interrupted=interrupted
+            "Credentials refresh", event=interrupted
         )
 
         interrupted.clear()
