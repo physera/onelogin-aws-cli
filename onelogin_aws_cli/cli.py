@@ -110,9 +110,7 @@ def login(args=sys.argv[1:]):
     if renew_seconds:
 
         interrupted = Event()
-        _set_interrupt_handler(
-            "Credentials refresh", event=interrupted
-        )
+        _set_interrupt_handler("Credentials refresh", event=interrupted)
 
         interrupted.clear()
         while not interrupted.is_set():
