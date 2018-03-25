@@ -1,15 +1,16 @@
 """
 Interactions with the user through the cli
 """
-import typing
+from typing import List, Tuple
+
+RolePrincipalPair = Tuple
 
 
-def user_choice(question: str, options: typing.List[str]) -> str:
+def user_choice(question: str, options: List[str]) -> str:
     """
     Prompt a user with a question and a specific set of possible responses
     :param question: Specifying context for the user to select an option
     :param options: A list of options for the user to select from
-    :return:
     """
     print(question + "\n")
     option_list = ""
@@ -30,11 +31,10 @@ def user_choice(question: str, options: typing.List[str]) -> str:
     return selection
 
 
-def user_role_prompt(all_roles):
+def user_role_prompt(all_roles: List[RolePrincipalPair]) -> RolePrincipalPair:
     """
     Prompt a user with a list of AWS IAM roles to choose from. If only 1 role
     is available, return that.
-    :return:
     """
     selected_role = None
 
