@@ -7,9 +7,7 @@ from onelogin_aws_cli.userquery import user_choice
 
 
 class ConfigurationFile(configparser.ConfigParser):
-    """
-    Represents a configuration ini file on disk
-    """
+    """Represents a configuration ini file on disk"""
 
     def __init__(self, config_file=None):
         super().__init__(default_section='defaults')
@@ -23,9 +21,7 @@ class ConfigurationFile(configparser.ConfigParser):
 
     @property
     def is_initialised(self) -> bool:
-        """
-        True if there is at least one section
-        """
+        """True if there is at least one section"""
         return len(
             self.sections()
         ) > 0
@@ -62,9 +58,7 @@ class ConfigurationFile(configparser.ConfigParser):
         self.save()
 
     def save(self):
-        """
-        Save this config to disk
-        """
+        """Save this config to disk"""
         self.write(self.file)
         print("Configuration written to '{}'".format(self.file))
 
@@ -82,9 +76,7 @@ class ConfigurationFile(configparser.ConfigParser):
 
 
 class Section(object):
-    """
-    Represents a single section in an ini file
-    """
+    """Represents a single section in an ini file"""
 
     def __init__(self, section_name: str, config: ConfigurationFile):
         self.config = config

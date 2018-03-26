@@ -19,22 +19,21 @@ class MFACredentials(object):
 
     def __init__(self):
         self._interactive = True
+        self._device_index = None
+        self._devices = []
+        self._otp = None
 
         self.reset()
 
     @property
     def has_device(self) -> bool:
-        """
-        True if the MFA has an MFA device selected waiting to be used
-        """
+        """True if the MFA has an MFA device selected waiting to be used"""
         return (self._device_index is not None) and \
                (self._device_index < len(self._devices))
 
     @property
     def has_otp(self) -> bool:
-        """
-        True if the MFA has an OTP waiting to be used
-        """
+        """True if the MFA has an OTP waiting to be used"""
         return self._otp is not None
 
     @property
@@ -44,9 +43,7 @@ class MFACredentials(object):
 
         :return:
         """
-        return self._devices[
-            self._device_index
-        ]
+        return self._devices[self._device_index]
 
     @property
     def otp(self) -> str:
@@ -61,15 +58,11 @@ class MFACredentials(object):
         return result
 
     def ready(self):
-        """
-        If the MFA is ready to be used
-        """
+        """If the MFA is ready to be used"""
         return self.has_otp and self.has_device
 
     def reset(self):
-        """
-        Remove all state from this class
-        """
+        """Remove all state from this class"""
 
         self._devices = []
         self._device_index = None
@@ -101,9 +94,7 @@ class MFACredentials(object):
             self._device_index = 0
 
     def prompt_token(self):
-        """
-        Ask the user for an OTP token
-        """
+        """Ask the user for an OTP token"""
         if not self._interactive:
             raise MissingMfaOtpException()
 
@@ -141,15 +132,11 @@ class UserCredentials(object):
         """
         Disable all user prompts. In the event there is missing data,
         an exception will be thrown in place of a user prompt.
-
-        :return:
         """
         self._interactive = False
 
     def load_credentials(self):
-        """
-        Load the username and password
-        """
+        """Load the username and password"""
 
         self.load_username()
         self.load_password()
@@ -158,8 +145,6 @@ class UserCredentials(object):
         """
         Either load the username from configfile or prompt the user to supply
         one interactively
-
-        :return: username
         """
 
         if not self.username:
@@ -177,8 +162,6 @@ class UserCredentials(object):
         Load the password from keychain if we expect to be able to save the
         password in a keychain, or prompt the user for a password through
         stdin.
-
-        :return: user password
         """
 
         save_password = False
@@ -226,37 +209,29 @@ class UserCredentials(object):
         keyring.set_password(self.SERVICE_NAME, self.username, self.password)
 
 
-class MissingPasswordException(Exception):
-    """
-    Throw when a required password can not be found
-    """
+class MissingCredentials(Exception):
+    """Superclass for missing credentials"""
+    TYPE = "DEFAULT"
 
     def __init__(self):
-        super().__init__("ONELOGIN_PASSWORD_MISSING")
+        super().__init__("ONELOGIN_" + self.TYPE + "_MISSING")
+
+
+class MissingPasswordException(Exception):
+    """Throw when a required password can not be found"""
+    TYPE = "PASSWORD"
 
 
 class MissingUsernameException(Exception):
-    """
-    Throw when a required password can not be found
-    """
-
-    def __init__(self):
-        super().__init__("ONELOGIN_USERNAME_MISSING")
+    """Throw when a required password can not be found"""
+    TYPE = "USERNAME"
 
 
 class MissingMfaDeviceException(Exception):
-    """
-    Throw when a required password can not be found
-    """
-
-    def __init__(self):
-        super().__init__("ONELOGIN_MFA_DEVICE_MISSING")
+    """Throw when a required password can not be found"""
+    TYPE = "MFA_DEVICE"
 
 
 class MissingMfaOtpException(Exception):
-    """
-    Throw when a required password can not be found
-    """
-
-    def __init__(self):
-        super().__init__("ONELOGIN_MFA_OTP_MISSING")
+    """Throw when a required password can not be found"""
+    TYPE = "MFA_OTP"
