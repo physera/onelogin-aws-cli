@@ -160,10 +160,8 @@ class OneloginAWS(object):
 
         creds = self.credentials["Credentials"]
 
-        cred_file = os.path.expanduser("~/.aws/credentials")
-        cred_dir = os.path.expanduser("~/.aws/")
-        if not os.path.exists(cred_dir):
-            os.makedirs(cred_dir)
+        cred_file = self._initialize_credentials()
+
         cred_config = configparser.ConfigParser()
         cred_config.read(cred_file)
 
@@ -193,3 +191,14 @@ class OneloginAWS(object):
         # Reset state in the case of another transaction
         self.token = None
         self.credentials = None
+
+    def _initialize_credentials(self):
+        cred_file = os.environ.get('AWS_SHARED_CREDENTIALS_FILE', None)
+
+        if cred_file is None:
+            cred_file = os.path.expanduser("~/.aws/credentials")
+            cred_dir = os.path.expanduser("~/.aws/")
+            if not os.path.exists(cred_dir):
+                os.makedirs(cred_dir)
+
+        return cred_file

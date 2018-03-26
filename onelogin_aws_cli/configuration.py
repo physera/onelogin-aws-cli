@@ -1,6 +1,4 @@
-"""
-Static User Configuration models
-"""
+"""Static User Configuration models"""
 import configparser
 
 from onelogin_aws_cli.userquery import user_choice
