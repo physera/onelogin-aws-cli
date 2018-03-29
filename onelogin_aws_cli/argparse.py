@@ -1,8 +1,9 @@
 """
-CLI Argument Parser
+Argument Parser
 """
 
 import argparse
+import os
 
 import pkg_resources
 
@@ -13,17 +14,41 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
     def __init__(self):
         super().__init__(description='Login to AWS with OneLogin')
 
+        env_config_name = os.getenv('ONELOGIN_AWS_CLI_CONFIG_NAME')
+        if env_config_name is not None:
+            default_config_name = env_config_name
+        else:
+            default_config_name = 'default'
+
         self.add_argument(
-            '-C', '--config-name', default='default', dest='config_name',
+            '-C', '--config-name',
+            default=default_config_name,
+            dest='config_name',
             help='Switch configuration name within config file'
         )
 
-        self.add_argument(
-            '--profile', default='', help='Specify profile name of credential'
-        )
+        env_profile = os.getenv('ONELOGIN_AWS_CLI_PROFILE')
+        if env_profile is not None:
+            default_profile = env_profile
+        else:
+            default_profile = ''
 
         self.add_argument(
-            '-u', '--username', default='', help='Specify OneLogin username'
+            '--profile',
+            default=default_profile,
+            help='Specify profile name of credential',
+        )
+
+        env_username = os.getenv('ONELOGIN_AWS_CLI_USERNAME')
+        if env_username is not None:
+            default_username = env_username
+        else:
+            default_username = ''
+
+        self.add_argument(
+            '-u', '--username',
+            default=default_username,
+            help='Specify OneLogin username'
         )
 
         version = pkg_resources.get_distribution(__package__).version
