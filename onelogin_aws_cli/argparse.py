@@ -86,11 +86,6 @@ class EnvDefault(argparse.Action):
             if 'type' in kwargs and default is not None:
                 default = kwargs['type'](default)
 
-        if required and default:
-            # If the arg is required, and we found an argument
-            # in the environment variables.
-            required = False
-
         super().__init__(default=default, required=required, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
