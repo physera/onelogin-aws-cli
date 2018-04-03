@@ -53,6 +53,7 @@ class TestOneLoginAWSArgumentParser(TestCase):
             '-u', 'my_username',
             '--renew-seconds', '30',
             '-c',
+            '-d', '43200',
         ])
 
         self.assertEqual(args.config_name, 'my_config')
@@ -60,6 +61,7 @@ class TestOneLoginAWSArgumentParser(TestCase):
         self.assertEqual(args.username, 'my_username')
         self.assertEqual(args.renew_seconds, 30)
         self.assertTrue(args.configure)
+        self.assertEqual(args.duration_seconds, 43200)
 
     def test_legacy_renew_seconds(self):
         parser = OneLoginAWSArgumentParser()
