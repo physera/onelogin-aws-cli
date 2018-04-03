@@ -56,7 +56,7 @@ def login(args=sys.argv[1:]):
     parser = OneLoginAWSArgumentParser()
     config_section, args = _load_config(parser, cfg, args)
 
-    # Handle legacy `--renewSeconds` option while it is depecated
+    # Handle legacy `--renewSeconds` option while it is deprecated
     if args.renew_seconds:
         renew_seconds = args.renew_seconds
     elif args.renew_seconds_legacy:
