@@ -50,6 +50,11 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
                  '/03/longer-role-sessions/'
         )
 
+        self.add_argument(
+            '-d', '--duration-seconds', type=int, default=3600, dest='duration_seconds',
+            help='Specify duration seconds which depend on IAM role session duration: https://aws.amazon.com/about-aws/whats-new/2018/03/longer-role-sessions/'
+        )
+
         version = pkg_resources.get_distribution(__package__).version
         self.add_argument(
             '-v', '--version', action='version',
