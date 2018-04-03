@@ -26,12 +26,9 @@ class OneloginAWS(object):
         self.sts_client = boto3.client("sts")
         self.config = config
         self.args = args
-        self.token = None
-        self.account_id = None
         self.saml = None
         self.all_roles = None
         self.role_arn = None
-        self.principal_arn = None
         self.credentials = None
         self.user_credentials = UserCredentials(self.args.username, config)
         self.mfa = MFACredentials()
@@ -163,7 +160,6 @@ class OneloginAWS(object):
         print("Use aws cli with --profile " + name)
 
         # Reset state in the case of another transaction
-        self.token = None
         self.credentials = None
 
     def _initialize_credentials(self):
