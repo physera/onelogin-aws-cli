@@ -33,6 +33,7 @@ class OneloginAWS(object):
         self.role_arn = None
         self.principal_arn = None
         self.credentials = None
+        self.duration_seconds = args.duration_seconds
         self.user_credentials = UserCredentials(self.args.username, config)
         self.mfa = MFACredentials()
 
@@ -133,7 +134,8 @@ class OneloginAWS(object):
         res = self.sts_client.assume_role_with_saml(
             RoleArn=self.role_arn,
             PrincipalArn=self.principal_arn,
-            SAMLAssertion=self.saml.saml_response
+            SAMLAssertion=self.saml.saml_response,
+            DurationSeconds=self.duration_seconds
         )
 
         self.credentials = res

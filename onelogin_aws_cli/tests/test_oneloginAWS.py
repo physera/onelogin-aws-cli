@@ -1,9 +1,8 @@
+import base64
+import os
 from argparse import Namespace
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-
-import base64
-import os
 
 from onelogin_aws_cli import OneloginAWS
 
@@ -27,7 +26,10 @@ class TestOneloginAWS(TestCase):
             base_uri="https://api.us.onelogin.com/",
             client_id='mock-id',
             client_secret='mock-secret'
-        ), Namespace(username='mock-username'))
+        ), Namespace(
+            username='mock-username',
+            duration_seconds=2600
+        ))
 
     def test_init(self):
         mock_config = dict(
@@ -35,7 +37,10 @@ class TestOneloginAWS(TestCase):
             client_id='mock-id',
             client_secret='mock-secret'
         )
-        mock_args = Namespace(username='mock-username')
+        mock_args = Namespace(
+            username='mock-username',
+            duration_seconds=2600
+        )
         ol = OneloginAWS(mock_config, mock_args)
 
         self.assertEqual(mock_config, ol.config)
