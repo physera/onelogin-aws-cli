@@ -77,7 +77,7 @@ class TestOneloginAWS(TestCase):
 
     def test_get_role_multi(self):
         self.ol.saml = Namespace(saml_response=self.SAML_MULTI_ROLE)
-        with patch('builtins.input', side_effect=['2']):
+        with patch('builtins.input', side_effect=['3']):
             self.ol.get_role()
 
         self.assertEqual(self.ROLE_PREFIX + "2", self.ol.role_arn)
