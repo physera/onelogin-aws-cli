@@ -47,9 +47,6 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             version="%(prog)s " + version
         )
 
-    def add_cli_options(self):
-        """Add Argument Parser options only used in the CLI entrypoint"""
-
         renew_seconds_group = self.add_mutually_exclusive_group()
 
         renew_seconds_group.add_argument(
