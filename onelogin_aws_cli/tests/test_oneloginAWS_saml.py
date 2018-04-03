@@ -28,7 +28,10 @@ class TestOneloginSAML(TestCase):
                 subdomain='example',
                 can_save_password=False,
             ),
-            Namespace(username='mock-username')
+            Namespace(
+                username='mock-username',
+                duration_seconds=2600
+            )
         )
 
         self.ol.password = "mock-password"
