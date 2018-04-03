@@ -54,7 +54,7 @@ def login(args=sys.argv[1:]):
 
     cfg = ConfigurationFile()
     parser = OneLoginAWSArgumentParser().add_cli_options()
-    config_section, args = _load_config(parser, cfg, True, args)
+    config_section, args = _load_config(parser, cfg, args)
 
     # Handle legacy `--renewSeconds` option while it is depecated
     if args.renew_seconds:
