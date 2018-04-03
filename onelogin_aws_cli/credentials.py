@@ -38,11 +38,7 @@ class MFACredentials(object):
 
     @property
     def device(self) -> Device:
-        """
-        Return the device selected by the user
-
-        :return:
-        """
+        """Return the device selected by the user"""
         return self._devices[self._device_index]
 
     @property
@@ -50,8 +46,6 @@ class MFACredentials(object):
         """
         Return the OTP for the MFA and reset the OTP.
         OTP's can only be used once, so it will be reset after.
-
-        :return:
         """
         result = self._otp
         self._otp = None
@@ -70,10 +64,7 @@ class MFACredentials(object):
         self._otp = None
 
     def select_device(self, devices: List[Device]):
-        """
-        Given a list of MFA devices, select one for use
-        :param devices:
-        """
+        """Given a list of MFA devices, select one for use"""
 
         self._devices = devices
 
@@ -123,7 +114,7 @@ class UserCredentials(object):
         """
         True if the class has a password.
 
-        :return:Whether we have set a password or not, yet
+        :return: Whether we have set a password or not, yet
         """
         return (self.password is not None) and \
                (self.password != "")
