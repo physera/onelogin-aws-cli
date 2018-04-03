@@ -16,29 +16,20 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
 
         self.add_argument(
             '-C', '--config-name',
-            default=os.getenv(
-                'ONELOGIN_AWS_CLI_CONFIG_NAME',
-                default='default',
-            ),
+            variable_name='ONELOGIN_AWS_CLI_CONFIG_NAME', action=EnvDefault,
             dest='config_name',
             help='Switch configuration name within config file'
         )
 
         self.add_argument(
             '--profile',
-            default=os.getenv(
-                'ONELOGIN_AWS_CLI_PROFILE',
-                default='',
-            ),
+            variable_name='ONELOGIN_AWS_CLI_PROFILE', action=EnvDefault,
             help='Specify profile name of credential',
         )
 
         self.add_argument(
             '-u', '--username',
-            default=os.getenv(
-                'ONELOGIN_AWS_CLI_USERNAME',
-                default='',
-            ),
+            variable_name='ONELOGIN_AWS_CLI_USERNAME', action=EnvDefault,
             help='Specify OneLogin username'
         )
 
@@ -79,9 +70,22 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             help='Configure OneLogin and AWS settings'
         )
 
-        # The `--client` option is a precursor to the daemon process in
-        # https://github.com/physera/onelogin-aws-cli/issues/36
-        # self.add_argument("--client", dest="client_mode",
-        #                   action='store_true')
-
         return self
+
+
+class EnvDefault(argparse.Action):
+    """
+    Allow argparse values to be pulled from environment variables
+    """
+
+    def __init__(self, variable_name, required=True, default=None, **kwargs):
+        if not default and variable_name:
+            if variable_name in os.environ:
+                default = os.environ[variable_name]
+        if required and default:
+            required = False
+        super(EnvDefault, self).__init__(default=default, required=required,
+                                         **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
