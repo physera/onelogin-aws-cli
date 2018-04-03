@@ -16,26 +16,27 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
 
         self.add_argument(
             '-C', '--config-name',
-            variable_name='ONELOGIN_AWS_CLI_CONFIG_NAME', action=EnvDefault,
+            action=EnvDefault, required=False,
             dest='config_name',
             help='Switch configuration name within config file'
         )
 
         self.add_argument(
             '--profile',
-            variable_name='ONELOGIN_AWS_CLI_PROFILE', action=EnvDefault,
+            action=EnvDefault, required=False,
             help='Specify profile name of credential',
         )
 
         self.add_argument(
             '-u', '--username',
-            variable_name='ONELOGIN_AWS_CLI_USERNAME', action=EnvDefault,
+            action=EnvDefault, required=False,
             help='Specify OneLogin username'
         )
 
         self.add_argument(
             '-d', '--duration-seconds', type=int, default=3600,
             dest='duration_seconds',
+            action=EnvDefault, required=False,
             help='Specify duration seconds which depend on IAM role session '
                  'duration: https://aws.amazon.com/about-aws/whats-new/2018'
                  '/03/longer-role-sessions/'
@@ -51,6 +52,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
 
         renew_seconds_group.add_argument(
             '-r', '--renew-seconds', type=int,
+            action=EnvDefault, required=False,
             help='Auto-renew credentials after this many seconds'
         )
 
@@ -59,6 +61,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             # version above. This is here for legacy compliance and will
             # be deprecated.
             '--renewSeconds', type=int, help=argparse.SUPPRESS,
+            action=EnvDefault, required=False,
             dest='renew_seconds_legacy'
         )
 
@@ -67,22 +70,28 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             help='Configure OneLogin and AWS settings'
         )
 
-        return self
-
 
 class EnvDefault(argparse.Action):
     """
     Allow argparse values to be pulled from environment variables
     """
 
-    def __init__(self, variable_name, required=True, default=None, **kwargs):
-        if not default and variable_name:
-            if variable_name in os.environ:
-                default = os.environ[variable_name]
+    def __init__(self, required=True, default=None, **kwargs):
+
+        if 'dest' in kwargs:
+            default = os.environ.get(
+                'ONELOGIN_AWS_CLI_' + kwargs['dest'].upper(),
+                None
+            )
+            if 'type' in kwargs and default is not None:
+                default = kwargs['type'](default)
+
         if required and default:
+            # If the arg is required, and we found an argument
+            # in the environment variables.
             required = False
-        super(EnvDefault, self).__init__(default=default, required=required,
-                                         **kwargs)
+
+        super().__init__(default=default, required=required, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values)
