@@ -18,7 +18,6 @@ class MFACredentials(object):
     """
 
     def __init__(self):
-        self._interactive = True
         self._device_index = None
         self._devices = []
         self._otp = None
@@ -70,9 +69,6 @@ class MFACredentials(object):
 
         if len(self._devices) > 1:
 
-            if not self._interactive:
-                raise MissingMfaDeviceException()
-
             for i, device in enumerate(self._devices):
                 print("{i}. {device}".format(
                     i=i + 1,
@@ -86,9 +82,6 @@ class MFACredentials(object):
 
     def prompt_token(self):
         """Ask the user for an OTP token"""
-        if not self._interactive:
-            raise MissingMfaOtpException()
-
         self._otp = input("{device} Token: ".format(device=self.device.type))
 
 
@@ -107,8 +100,6 @@ class UserCredentials(object):
         # and should never be loaded from any other source outside this class
         self.password = None
 
-        self._interactive = True
-
     @property
     def has_password(self) -> bool:
         """
@@ -118,13 +109,6 @@ class UserCredentials(object):
         """
         return (self.password is not None) and \
                (self.password != "")
-
-    def disable_interactive(self):
-        """
-        Disable all user prompts. In the event there is missing data,
-        an exception will be thrown in place of a user prompt.
-        """
-        self._interactive = False
 
     def load_credentials(self):
         """Load the username and password"""
@@ -139,11 +123,9 @@ class UserCredentials(object):
         """
 
         if not self.username:
-            # Try the configurationfile first
+            # Try the configuration file first
             if 'username' in self.configuration:
                 username = self.configuration['username']
-            elif not self._interactive:
-                raise MissingUsernameException()
             else:
                 username = input("Onelogin Username: ")
             self.username = username
@@ -189,8 +171,6 @@ class UserCredentials(object):
                 self._save_password_to_keychain()
 
     def _prompt_user_password(self):
-        if not self._interactive:
-            raise MissingPasswordException()
         self.password = getpass.getpass("Onelogin Password: ")
 
     def _load_password_from_keychain(self):
@@ -198,31 +178,3 @@ class UserCredentials(object):
 
     def _save_password_to_keychain(self):
         keyring.set_password(self.SERVICE_NAME, self.username, self.password)
-
-
-class MissingCredentials(Exception):
-    """Superclass for missing credentials"""
-    TYPE = "DEFAULT"
-
-    def __init__(self):
-        super().__init__("ONELOGIN_" + self.TYPE + "_MISSING")
-
-
-class MissingPasswordException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "PASSWORD"
-
-
-class MissingUsernameException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "USERNAME"
-
-
-class MissingMfaDeviceException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "MFA_DEVICE"
-
-
-class MissingMfaOtpException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "MFA_OTP"

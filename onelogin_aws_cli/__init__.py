@@ -26,12 +26,9 @@ class OneloginAWS(object):
         self.sts_client = boto3.client("sts")
         self.config = config
         self.args = args
-        self.token = None
-        self.account_id = None
         self.saml = None
         self.all_roles = None
         self.role_arn = None
-        self.principal_arn = None
         self.credentials = None
         self.duration_seconds = args.duration_seconds
         self.user_credentials = UserCredentials(self.args.username, config)
@@ -43,18 +40,6 @@ class OneloginAWS(object):
             self.config['client_secret'],
             base_uri_parts[1],
         )
-
-        self._interactive = True
-
-    def disable_interactive(self):
-        """
-        Disable all user prompts. In the event there is missing data,
-        an exception will be thrown in place of a user prompt.
-
-        :return:
-        """
-        self._interactive = False
-        self.user_credentials.disable_interactive()
 
     def get_saml_assertion(self):
         """
@@ -177,7 +162,6 @@ class OneloginAWS(object):
         print("Use aws cli with --profile " + name)
 
         # Reset state in the case of another transaction
-        self.token = None
         self.credentials = None
 
     def _initialize_credentials(self):

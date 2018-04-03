@@ -6,8 +6,6 @@ from unittest.mock import patch
 from onelogin.api.models.device import Device
 
 from onelogin_aws_cli import MFACredentials
-from onelogin_aws_cli.credentials import MissingMfaDeviceException, \
-    MissingMfaOtpException
 
 
 class TestMFACredentials(TestCase):
@@ -97,14 +95,6 @@ class TestMFACredentials(TestCase):
 
         self.assertEqual(self.mfa.device.id, '3')
 
-        self.mfa._interactive = False
-        with self.assertRaises(MissingMfaDeviceException):
-            self.mfa.select_device([
-                Device(dict(device_id='1')),
-                Device(dict(device_id='2')),
-                Device(dict(device_id='3'))
-            ])
-
     def test_prompt_token(self):
         self.mfa.select_device([
             Device(dict(device_id='1', device_type='mock_device'))
@@ -113,10 +103,6 @@ class TestMFACredentials(TestCase):
             self.mfa.prompt_token()
 
         self.assertEqual(self.mfa.otp, '123456')
-
-        with self.assertRaises(MissingMfaOtpException):
-            self.mfa._interactive = False
-            self.mfa.prompt_token()
 
     def test_prompt_text(self):
         self.mfa.select_device([

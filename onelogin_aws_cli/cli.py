@@ -22,8 +22,7 @@ def _get_interrupt_handler(interrupted: Event, process_type):
     return _handler
 
 
-def _load_config(parser, config_file: ConfigurationFile, interactive=True,
-                 args=sys.argv[1:]):
+def _load_config(parser, config_file: ConfigurationFile, args=sys.argv[1:]):
     cli_args = parser.parse_args(args)
 
     with open(DEFAULT_CONFIG_PATH, 'a+') as fp:
@@ -31,7 +30,7 @@ def _load_config(parser, config_file: ConfigurationFile, interactive=True,
         config_file.file = fp
         config_file.load()
 
-    if (cli_args.configure or not config_file.is_initialised) and interactive:
+    if (cli_args.configure or not config_file.is_initialised):
         config_file.initialise(cli_args.config_name)
 
     config_section = config_file.section(cli_args.config_name)
@@ -55,7 +54,7 @@ def login(args=sys.argv[1:]):
 
     cfg = ConfigurationFile()
     parser = OneLoginAWSArgumentParser().add_cli_options()
-    config_section, args = _load_config(parser, cfg, True, args)
+    config_section, args = _load_config(parser, cfg, args)
 
     # Handle legacy `--renewSeconds` option while it is depecated
     if args.renew_seconds:
