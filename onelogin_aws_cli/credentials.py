@@ -187,31 +187,3 @@ class UserCredentials(object):
 
     def _save_password_to_keychain(self):
         keyring.set_password(self.SERVICE_NAME, self.username, self.password)
-
-
-class MissingCredentials(Exception):
-    """Superclass for missing credentials"""
-    TYPE = "DEFAULT"
-
-    def __init__(self):
-        super().__init__("ONELOGIN_" + self.TYPE + "_MISSING")
-
-
-class MissingPasswordException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "PASSWORD"
-
-
-class MissingUsernameException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "USERNAME"
-
-
-class MissingMfaDeviceException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "MFA_DEVICE"
-
-
-class MissingMfaOtpException(Exception):
-    """Throw when a required password can not be found"""
-    TYPE = "MFA_OTP"
