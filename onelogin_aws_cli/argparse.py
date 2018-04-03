@@ -72,9 +72,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
 
 
 class EnvDefault(argparse.Action):
-    """
-    Allow argparse values to be pulled from environment variables
-    """
+    """Allow argparse values to be pulled from environment variables"""
 
     def __init__(self, required=True, default=None, **kwargs):
 
