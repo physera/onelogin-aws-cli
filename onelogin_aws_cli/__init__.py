@@ -1,11 +1,11 @@
 """OneLogin/AWS Business logic"""
 
+import base64
 import configparser
+import os
 import xml.etree.ElementTree as ElementTree
 
-import base64
 import boto3
-import os
 from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
@@ -42,18 +42,6 @@ class OneloginAWS(object):
             self.config['client_secret'],
             base_uri_parts[1],
         )
-
-        self._interactive = True
-
-    def disable_interactive(self):
-        """
-        Disable all user prompts. In the event there is missing data,
-        an exception will be thrown in place of a user prompt.
-
-        :return:
-        """
-        self._interactive = False
-        self.user_credentials.disable_interactive()
 
     def get_saml_assertion(self):
         """
