@@ -25,7 +25,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
 
     def test_version(self):
         parser = OneLoginAWSArgumentParser()
-        parser.add_cli_options()
         mock_stdout = StringIO()
 
         with self.assertRaises(SystemExit) as cm:
@@ -47,7 +46,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
 
     def test_add_cli_options(self):
         parser = OneLoginAWSArgumentParser()
-        parser.add_cli_options()
         args = parser.parse_args([
             '-C', 'my_config',
             '--profile', 'my_profile',
@@ -66,7 +64,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
 
     def test_legacy_renew_seconds(self):
         parser = OneLoginAWSArgumentParser()
-        parser.add_cli_options()
         args = parser.parse_args([
             '--renewSeconds', '30'
         ])
