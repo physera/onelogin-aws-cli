@@ -1,4 +1,5 @@
 import contextlib
+from os import environ
 from unittest import TestCase
 
 import pkg_resources
@@ -24,7 +25,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
 
     def test_version(self):
         parser = OneLoginAWSArgumentParser()
-        parser.add_cli_options()
         mock_stdout = StringIO()
 
         with self.assertRaises(SystemExit) as cm:
@@ -46,7 +46,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
 
     def test_add_cli_options(self):
         parser = OneLoginAWSArgumentParser()
-        parser.add_cli_options()
         args = parser.parse_args([
             '-C', 'my_config',
             '--profile', 'my_profile',
@@ -65,7 +64,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
 
     def test_legacy_renew_seconds(self):
         parser = OneLoginAWSArgumentParser()
-        parser.add_cli_options()
         args = parser.parse_args([
             '--renewSeconds', '30'
         ])
@@ -79,3 +77,26 @@ class TestOneLoginAWSArgumentParser(TestCase):
             ])
 
         self.assertEqual(cm.exception.code, 2)
+
+    def test_environment_variable(self):
+        environ['ONELOGIN_AWS_CLI_CONFIG_NAME'] = 'mock-config'
+        environ['ONELOGIN_AWS_CLI_PROFILE'] = 'mock-profile'
+        environ['ONELOGIN_AWS_CLI_USERNAME'] = 'mock-username'
+        environ['ONELOGIN_AWS_CLI_DURATION_SECONDS'] = '10'
+        environ['ONELOGIN_AWS_CLI_RENEW_SECONDS'] = '10'
+
+        parser = OneLoginAWSArgumentParser()
+
+        args = parser.parse_args([])
+
+        self.assertEqual('mock-config', args.config_name)
+        self.assertEqual('mock-profile', args.profile)
+        self.assertEqual('mock-username', args.username)
+        self.assertEqual(10, args.renew_seconds)
+        self.assertEqual(10, args.duration_seconds)
+
+        del environ['ONELOGIN_AWS_CLI_CONFIG_NAME']
+        del environ['ONELOGIN_AWS_CLI_PROFILE']
+        del environ['ONELOGIN_AWS_CLI_USERNAME']
+        del environ['ONELOGIN_AWS_CLI_DURATION_SECONDS']
+        del environ['ONELOGIN_AWS_CLI_RENEW_SECONDS']

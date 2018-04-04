@@ -44,8 +44,15 @@ Note that `onelogin-aws-cli` requires python 3.
  file to write credentials out to. See
  [Environment Variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html)
  for more information.
+ - `ONELOGIN_AWS_CLI_CONFIG_NAME` - `onelogin-aws-cli` config section to use
+ - `ONELOGIN_AWS_CLI_PROFILE` - Inject the credentials into an section with
+ this title.
  - `ONELOGIN_AWS_CLI_USERNAME` - Username to be used to authenticate against
  OneLogin with.
+ - `ONELOGIN_AWS_CLI_DURATION_SECONDS` - Length of the IAM STS Session in
+ seconds.
+ - `ONELOGIN_AWS_CLI_RENEW_SECONDS` - How often to re-authenticate the session
+ in seconds.
  
 ## Configuration File
 
