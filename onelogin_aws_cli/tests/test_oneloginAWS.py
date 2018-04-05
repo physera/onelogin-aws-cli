@@ -26,8 +26,8 @@ class TestOneloginAWS(TestCase):
             base_uri="https://api.us.onelogin.com/",
             client_id='mock-id',
             client_secret='mock-secret',
-            username = 'mock-username',
-           duration_seconds = 2600
+            username='mock-username',
+            duration_seconds=2600
         ))
 
     def test_init(self):
@@ -35,8 +35,8 @@ class TestOneloginAWS(TestCase):
             base_uri="https://api.us.onelogin.com/",
             client_id='mock-id',
             client_secret='mock-secret',
-            username = 'mock-username',
-           duration_seconds = 2600
+            username='mock-username',
+            duration_seconds=2600
         )
         ol = OneloginAWS(mock_config)
 
