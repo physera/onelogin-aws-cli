@@ -49,5 +49,7 @@ def login(args=sys.argv[1:]):
         print("These options will be removed completely in a future version.")
         sys.exit(1)
 
-    api = OneloginAWS(config_section, args)
+    config_section.set_overrides(vars(args))
+
+    api = OneloginAWS(config_section)
     api.save_credentials()

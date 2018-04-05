@@ -27,11 +27,9 @@ class TestOneloginSAML(TestCase):
                 aws_app_id='mock-app-id',
                 subdomain='example',
                 can_save_password=False,
-            ),
-            Namespace(
                 username='mock-username',
                 duration_seconds=2600
-            )
+            ),
         )
 
         self.ol.password = "mock-password"

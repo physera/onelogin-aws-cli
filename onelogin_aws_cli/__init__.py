@@ -22,16 +22,15 @@ class OneloginAWS(object):
     identity federation
     """
 
-    def __init__(self, config: Section, args):
+    def __init__(self, config: Section):
         self.sts_client = boto3.client("sts")
         self.config = config
-        self.args = args
         self.saml = None
         self.all_roles = None
         self.role_arn = None
         self.credentials = None
-        self.duration_seconds = args.duration_seconds
-        self.user_credentials = UserCredentials(self.args.username, config)
+        self.duration_seconds = config['duration_seconds']
+        self.user_credentials = UserCredentials(config)
         self.mfa = MFACredentials()
 
         base_uri_parts = self.config['base_uri'].split('.')
@@ -145,8 +144,6 @@ class OneloginAWS(object):
         name = name.replace(":assumed-role", "")
         if "profile" in self.config:
             name = self.config["profile"]
-        elif self.args.profile != "":
-            name = self.args.profile
 
         cred_config[name] = {
             "aws_access_key_id": creds["AccessKeyId"],
