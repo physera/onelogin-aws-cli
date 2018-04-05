@@ -1,25 +1,11 @@
 """
 Collections of entrypoints
 """
-import signal
 import sys
-from threading import Event
 
 from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
 from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
-from onelogin_aws_cli.model import SignalRepr
-
-
-def _get_interrupt_handler(interrupted: Event, process_type):
-    def _handler(signal_num: int, *args):
-        interrupted.set()
-        print("Received {sig}.".format(sig=SignalRepr(signal_num)))
-        print("Shutting down {process} process...".format(
-            process=process_type
-        ))
-
-    return _handler
 
 
 def _load_config(parser, config_file: ConfigurationFile, args=sys.argv[1:]):
@@ -57,35 +43,10 @@ def login(args=sys.argv[1:]):
     config_section, args = _load_config(parser, cfg, args)
 
     # Handle legacy `--renewSeconds` option while it is deprecated
-    if args.renew_seconds:
-        renew_seconds = args.renew_seconds
-    elif args.renew_seconds_legacy:
-        print("WARNING: --renewSeconds is depecated in favour of " +
-              "--renew-seconds and be removed in a future version.")
-        renew_seconds = args.renew_seconds_legacy
-    else:
-        renew_seconds = None
+    if args.renew_seconds or args.renew_seconds_legacy:
+        print("ERROR: --renewSeconds  and --renew-seconds have been deprecated due to longer AWS STS sessions.")
+        print("These options will be removed completely in a future version.")
+        sys.exit(1)
 
     api = OneloginAWS(config_section, args)
     api.save_credentials()
-
-    if renew_seconds:
-
-        interrupted = Event()
-        _interrupt_handler = _get_interrupt_handler(
-            interrupted, "Credentials refresh"
-        )
-
-        # Handle sigterms
-        # This must be done here, as signals can't be caught down the stack
-        for sig_type in list(SignalRepr):
-            signal.signal(sig_type.value, _interrupt_handler)
-
-        interrupted.clear()
-        while not interrupted.is_set():
-            interrupted.wait(renew_seconds)
-
-            # @TODO We should check if the credentials are going to expire
-            # in the immediate future, rather than constantly hitting
-            # the AWS API.
-            api.save_credentials()
