@@ -44,7 +44,8 @@ def login(args=sys.argv[1:]):
 
     # Handle legacy `--renewSeconds` option while it is deprecated
     if args.renew_seconds or args.renew_seconds_legacy:
-        print("ERROR: --renewSeconds  and --renew-seconds have been deprecated due to longer AWS STS sessions.")
+        print("ERROR: --renewSeconds  and --renew-seconds have been "
+              "deprecated due to longer AWS STS sessions.")
         print("These options will be removed completely in a future version.")
         sys.exit(1)
 
