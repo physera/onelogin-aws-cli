@@ -92,8 +92,8 @@ class UserCredentials(object):
     """
     SERVICE_NAME = "onelogin-aws-cli"
 
-    def __init__(self, username, config: Section):
-        self.username = username
+    def __init__(self, config: Section):
+        self.username = config['username']
         self.configuration = config
 
         # This is `None`, as the password should be be emitted from this class

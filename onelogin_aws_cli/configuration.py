@@ -79,6 +79,7 @@ class Section(object):
     def __init__(self, section_name: str, config: ConfigurationFile):
         self.config = config
         self.section_name = section_name
+        self._overrides = {}
 
     @property
     def can_save_password(self) -> bool:
@@ -89,10 +90,20 @@ class Section(object):
         """
         return self.config.getboolean(self.section_name, "save_password")
 
+    def set_overrides(self, overrides: dict):
+        """
+        Specify a dictionary values which take precedence over the existing
+        values, but will not overwrite them in the config file.
+        :param overrides:
+        """
+        self._overrides = overrides
+
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
 
     def __getitem__(self, item):
+        if item in self._overrides:
+            return self._overrides[item]
         return self.config.get(self.section_name, item)
 
     def __contains__(self, item):

@@ -66,7 +66,9 @@ def login(args=sys.argv[1:]):
     else:
         renew_seconds = None
 
-    api = OneloginAWS(config_section, args)
+    config_section.set_overrides(vars(args))
+
+    api = OneloginAWS(config_section)
     api.save_credentials()
 
     if renew_seconds:

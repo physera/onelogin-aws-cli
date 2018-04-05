@@ -25,26 +25,22 @@ class TestOneloginAWS(TestCase):
         self.ol = OneloginAWS(dict(
             base_uri="https://api.us.onelogin.com/",
             client_id='mock-id',
-            client_secret='mock-secret'
-        ), Namespace(
-            username='mock-username',
-            duration_seconds=2600
+            client_secret='mock-secret',
+            username = 'mock-username',
+           duration_seconds = 2600
         ))
 
     def test_init(self):
         mock_config = dict(
             base_uri="https://api.us.onelogin.com/",
             client_id='mock-id',
-            client_secret='mock-secret'
+            client_secret='mock-secret',
+            username = 'mock-username',
+           duration_seconds = 2600
         )
-        mock_args = Namespace(
-            username='mock-username',
-            duration_seconds=2600
-        )
-        ol = OneloginAWS(mock_config, mock_args)
+        ol = OneloginAWS(mock_config)
 
         self.assertEqual(mock_config, ol.config)
-        self.assertEqual(mock_args, ol.args)
         self.assertEqual('mock-username', ol.user_credentials.username)
 
     def test_get_arns(self):
