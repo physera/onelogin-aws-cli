@@ -79,9 +79,10 @@ class EnvDefault(argparse.Action):
         if 'dest' in kwargs:
             name = 'ONELOGIN_AWS_CLI_' + kwargs['dest'].upper()
             # Fall back to the explicit command line default.
-            default = os.environ.get(name, default)
-            if 'type' in kwargs and default is not None:
-                default = kwargs['type'](default)
+            if name in os.environ:
+                default = os.environ[name]
+                if 'type' in kwargs and default is not None:
+                    default = kwargs['type'](default)
 
         super().__init__(default=default, required=required, **kwargs)
 

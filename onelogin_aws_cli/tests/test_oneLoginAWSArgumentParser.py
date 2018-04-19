@@ -105,3 +105,19 @@ class TestOneLoginAWSArgumentParser(TestCase):
         del environ['ONELOGIN_AWS_CLI_USERNAME']
         del environ['ONELOGIN_AWS_CLI_DURATION_SECONDS']
         del environ['ONELOGIN_AWS_CLI_RENEW_SECONDS']
+
+
+    def test_defaults(self):
+
+        del environ['ONELOGIN_AWS_CLI_CONFIG_NAME']
+        del environ['ONELOGIN_AWS_CLI_PROFILE']
+        del environ['ONELOGIN_AWS_CLI_USERNAME']
+        del environ['ONELOGIN_AWS_CLI_DURATION_SECONDS']
+        del environ['ONELOGIN_AWS_CLI_RENEW_SECONDS']
+
+        parser = OneLoginAWSArgumentParser()
+
+        args = parser.parse_args([])
+
+        self.assertEqual(args.config_name, 'default')
+        self.assertEqual(args.duration_seconds, 3600)
