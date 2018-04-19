@@ -106,7 +106,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
         del environ['ONELOGIN_AWS_CLI_DURATION_SECONDS']
         del environ['ONELOGIN_AWS_CLI_RENEW_SECONDS']
 
-
     def test_defaults(self):
 
         del environ['ONELOGIN_AWS_CLI_CONFIG_NAME']
