@@ -22,7 +22,7 @@ class ConfigurationFile(configparser.ConfigParser):
     @property
     def has_defaults(self) -> bool:
         """True if the defaults section has settings beyond our defaults"""
-        return len(self.defaults()) > len(self.DEFAULTS)
+        return len(self[self.default_section]) > len(self.DEFAULTS)
 
     @property
     def is_initialised(self) -> bool:

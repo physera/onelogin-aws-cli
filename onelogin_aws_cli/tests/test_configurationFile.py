@@ -117,16 +117,15 @@ first=foo""")
 
         cf = self._helper_build_config("""[defaults]
 first=foo""")
-        self.assertIn("first", cf.defaults())
+        self.assertEqual("defaults", cf.default_section)
 
         cf = self._helper_build_config("""[default]
 second=bar""")
-        self.assertIn("second", cf.defaults())
+        self.assertEqual("default", cf.default_section)
 
         cf = self._helper_build_config("""[defaults]
 first=foo
 
 [default]
 second=bar""")
-        self.assertIn("first", cf.defaults())
-        self.assertNotIn("second", cf.defaults())
+        self.assertEqual("defaults", cf.default_section)
