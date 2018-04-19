@@ -7,10 +7,12 @@ from onelogin_aws_cli.userquery import user_choice
 class ConfigurationFile(configparser.ConfigParser):
     """Represents a configuration ini file on disk"""
 
+    DEFAULTS = dict(save_password=False)
+
     def __init__(self, config_file=None):
         super().__init__(default_section='defaults')
 
-        self['defaults'] = dict(save_password=False)
+        self[self.default_section] = self.DEFAULTS
 
         self.file = config_file
 
@@ -18,21 +20,36 @@ class ConfigurationFile(configparser.ConfigParser):
             self.load()
 
     @property
+    def has_defaults(self) -> bool:
+        """True if the defaults section has settings beyond our defaults"""
+        return len(self.defaults()) > len(self.DEFAULTS)
+
+    @property
     def is_initialised(self) -> bool:
-        """True if there is at least one section"""
+        """True if there is at least one section or a defaults section"""
         return len(
             self.sections()
-        ) > 0
+        ) > 0 or self.has_defaults
 
     def load(self):
         self.read_file(self.file)
+        # For backwards compatibility, we check if they have a default
+        # section instead of a defaults section and do a little switcheroo as
+        # needed.
+        if self.has_section('default') and not self.has_defaults:
+            print("It looks like you're using a the deprecated 'default' "
+                  "section.\nConsider renaming the section to 'defaults'.")
+            self.default_section = 'default'
 
-    def initialise(self, config_name='default'):
+    def initialise(self, config_name=None):
         """
         Prompt the user for configurations, and save them to the
         onelogin-aws-cli config file
         """
         print("Configure Onelogin and AWS\n\n")
+        if not config_name:
+            config_name = self.default_section
+
         config_section = self.section(config_name)
 
         config_section['base_uri'] = user_choice(
@@ -68,7 +85,10 @@ class ConfigurationFile(configparser.ConfigParser):
         :param section_name: Name of the section in the config file
         :return:
         """
-        if not self.has_section(section_name):
+        if not section_name:
+            section_name = self.default_section
+        if section_name != self.default_section and \
+                not self.has_section(section_name):
             self.add_section(section_name)
         return Section(section_name, self)
 
