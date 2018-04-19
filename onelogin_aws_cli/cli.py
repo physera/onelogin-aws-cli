@@ -21,12 +21,17 @@ def _load_config(parser, config_file: ConfigurationFile, args=sys.argv[1:]):
 
     config_section = config_file.section(cli_args.config_name)
 
-    if config_section is None:
+    if config_section is None and cli_args.config_name:
         sys.exit(
             "Configuration '{}' not defined. "
             "Please run 'onelogin-aws-login -c'".format(
                 cli_args.config_name
             )
+        )
+    elif config_section is None:
+        sys.exit(
+            "No default configuration section found. "
+            "Please run 'onelogin-aws-login -c"
         )
 
     return config_section, cli_args
