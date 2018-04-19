@@ -12,7 +12,7 @@ class ConfigurationFile(configparser.ConfigParser):
     def __init__(self, config_file=None):
         super().__init__(default_section='defaults')
 
-        self[self.default_section] = self.DEFAULTS
+        self[self.default_section] = dict(self.DEFAULTS)
 
         self.file = config_file
 
