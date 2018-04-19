@@ -108,11 +108,10 @@ class TestOneLoginAWSArgumentParser(TestCase):
 
     def test_defaults(self):
 
-        del environ['ONELOGIN_AWS_CLI_CONFIG_NAME']
-        del environ['ONELOGIN_AWS_CLI_PROFILE']
-        del environ['ONELOGIN_AWS_CLI_USERNAME']
-        del environ['ONELOGIN_AWS_CLI_DURATION_SECONDS']
-        del environ['ONELOGIN_AWS_CLI_RENEW_SECONDS']
+        for name in ['ONELOGIN_AWS_CLI_CONFIG_NAME',
+                     'ONELOGIN_AWS_CLI_DURATION_SECONDS']:
+            if name in environ:
+                del environ[name]
 
         parser = OneLoginAWSArgumentParser()
 
