@@ -17,7 +17,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         self.add_argument(
             '-C', '--config-name',
             action=EnvDefault, required=False,
-            dest='config_name', default='default',
+            dest='config_name', default='defaults',
             help='Switch configuration name within config file'
         )
 
