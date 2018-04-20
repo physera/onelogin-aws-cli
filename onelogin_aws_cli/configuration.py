@@ -20,11 +20,6 @@ class ConfigurationFile(configparser.ConfigParser):
             self.load()
 
     @property
-    def has_defaults(self) -> bool:
-        """True if the defaults section has settings beyond our defaults"""
-        return len(self[self.default_section]) > len(self.DEFAULTS)
-
-    @property
     def is_initialised(self) -> bool:
         """True if there is at least one section"""
         return len(
