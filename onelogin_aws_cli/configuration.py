@@ -34,6 +34,9 @@ class ConfigurationFile(configparser.ConfigParser):
         """
         print("Configure Onelogin and AWS\n\n")
         config_section = self.section(config_name)
+        if config_section is None:
+            self.add_section(config_name)
+            config_section = self.section(config_name)
 
         config_section['base_uri'] = user_choice(
             "Pick a Onelogin API server:", [
@@ -69,7 +72,7 @@ class ConfigurationFile(configparser.ConfigParser):
         :return:
         """
         if not self.has_section(section_name):
-            self.add_section(section_name)
+            return None
         return Section(section_name, self)
 
 
