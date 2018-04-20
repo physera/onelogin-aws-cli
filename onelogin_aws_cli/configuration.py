@@ -7,15 +7,22 @@ from onelogin_aws_cli.userquery import user_choice
 class ConfigurationFile(configparser.ConfigParser):
     """Represents a configuration ini file on disk"""
 
+    DEFAULTS = dict(save_password=False)
+
     def __init__(self, config_file=None):
         super().__init__(default_section='defaults')
 
-        self['defaults'] = dict(save_password=False)
+        self[self.default_section] = dict(self.DEFAULTS)
 
         self.file = config_file
 
         if self.file is not None:
             self.load()
+
+    @property
+    def has_defaults(self) -> bool:
+        """True if the defaults section has settings beyond our defaults"""
+        return len(self[self.default_section]) > len(self.DEFAULTS)
 
     @property
     def is_initialised(self) -> bool:
@@ -72,7 +79,8 @@ class ConfigurationFile(configparser.ConfigParser):
         :return:
         """
         if not self.has_section(section_name):
-            return None
+            if (section_name == self.default_section) and (not self.has_defaults):
+                return None
         return Section(section_name, self)
 
 
