@@ -79,14 +79,10 @@ class ConfigurationFile(configparser.ConfigParser):
         :return:
         """
         section_missing = not self.has_section(section_name)
-        not_default = not self.is_default_section(section_name)
+        not_default = self.default_section != section_name
         if section_missing and not_default:
             return None
         return Section(section_name, self)
-
-    def is_default_section(self, section_name) -> bool:
-        """ Check if the provided config is the default one"""
-        return self.default_section == section_name
 
 
 class Section(object):
