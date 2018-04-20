@@ -88,3 +88,13 @@ subdomain = mock_subdomain
         cf = self._helper_build_config("""[section]
 first=foo""")
         self.assertTrue(cf.is_initialised)
+
+    def test_has_defaults(self):
+
+        content = StringIO()
+        cf = ConfigurationFile(content)
+        self.assertFalse(cf.has_defaults)
+
+        cf = self._helper_build_config("""[defaults]
+first=foo""")
+        self.assertTrue(cf.has_defaults)
