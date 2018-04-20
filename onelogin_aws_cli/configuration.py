@@ -34,7 +34,7 @@ class ConfigurationFile(configparser.ConfigParser):
     def load(self):
         self.read_file(self.file)
 
-    def initialise(self, config_name='default'):
+    def initialise(self, config_name='defaults'):
         """
         Prompt the user for configurations, and save them to the
         onelogin-aws-cli config file
@@ -78,11 +78,14 @@ class ConfigurationFile(configparser.ConfigParser):
         :param section_name: Name of the section in the config file
         :return:
         """
-        if not self.has_section(section_name):
-            if (section_name == self.default_section) and \
-                    (not self.has_defaults):
-                return None
+        if not self.has_section(section_name) and \
+            not self.is_default_section(section_name):
+            return None
         return Section(section_name, self)
+
+    def is_default_section(self, section_name) -> bool:
+        """ Check if the provided config is the default one"""
+        return self.default_section == section_name
 
 
 class Section(object):
