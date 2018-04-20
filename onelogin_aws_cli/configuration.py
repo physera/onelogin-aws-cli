@@ -78,8 +78,9 @@ class ConfigurationFile(configparser.ConfigParser):
         :param section_name: Name of the section in the config file
         :return:
         """
-        if not self.has_section(section_name) and \
-            not self.is_default_section(section_name):
+        section_missing = not self.has_section(section_name)
+        not_default = not self.is_default_section(section_name)
+        if section_missing and not_default:
             return None
         return Section(section_name, self)
 
