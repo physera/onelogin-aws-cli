@@ -79,7 +79,8 @@ class ConfigurationFile(configparser.ConfigParser):
         :return:
         """
         if not self.has_section(section_name):
-            if (section_name == self.default_section) and (not self.has_defaults):
+            if (section_name == self.default_section) and \
+                    (not self.has_defaults):
                 return None
         return Section(section_name, self)
 
