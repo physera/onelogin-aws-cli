@@ -7,10 +7,12 @@ from onelogin_aws_cli.userquery import user_choice
 class ConfigurationFile(configparser.ConfigParser):
     """Represents a configuration ini file on disk"""
 
+    DEFAULTS = dict(save_password=False)
+
     def __init__(self, config_file=None):
         super().__init__(default_section='defaults')
 
-        self['defaults'] = dict(save_password=False)
+        self[self.default_section] = dict(self.DEFAULTS)
 
         self.file = config_file
 
@@ -27,13 +29,16 @@ class ConfigurationFile(configparser.ConfigParser):
     def load(self):
         self.read_file(self.file)
 
-    def initialise(self, config_name='default'):
+    def initialise(self, config_name='defaults'):
         """
         Prompt the user for configurations, and save them to the
         onelogin-aws-cli config file
         """
         print("Configure Onelogin and AWS\n\n")
         config_section = self.section(config_name)
+        if config_section is None:
+            self.add_section(config_name)
+            config_section = self.section(config_name)
 
         config_section['base_uri'] = user_choice(
             "Pick a Onelogin API server:", [
@@ -68,8 +73,10 @@ class ConfigurationFile(configparser.ConfigParser):
         :param section_name: Name of the section in the config file
         :return:
         """
-        if not self.has_section(section_name):
-            self.add_section(section_name)
+        section_missing = not self.has_section(section_name)
+        not_default = self.default_section != section_name
+        if section_missing and not_default:
+            return None
         return Section(section_name, self)
 
 
