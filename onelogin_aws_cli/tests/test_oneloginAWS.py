@@ -91,7 +91,8 @@ class TestOneloginAWS(TestCase):
             self.ol.get_role()
 
     def test__initialize_credentials(self):
-        with patch('os.path.expanduser', side_effect=['/home/.aws/credentials', '/home/.aws/']):
+        with patch('os.path.expanduser', side_effect=[
+             '/home/.aws/credentials', '/home/.aws/']):
             with patch('os.path.exists', side_effect=[True]):
                 cred_file = self.ol._initialize_credentials()
                 self.assertEqual('/home/.aws/credentials', cred_file)
