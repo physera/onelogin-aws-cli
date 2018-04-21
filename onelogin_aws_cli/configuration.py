@@ -32,8 +32,7 @@ class ConfigurationFile(configparser.ConfigParser):
     @property
     def is_initialised(self) -> bool:
         """True if there is at least one section"""
-        return (len(self.sections()) > 0) or \
-               self.has_defaults
+        return (len(self.sections()) > 0) or self.has_defaults
 
     def load(self):
         self.read_file(self.file)
