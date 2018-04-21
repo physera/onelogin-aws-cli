@@ -103,7 +103,7 @@ class Section(object):
         values, but will not overwrite them in the config file.
         :param overrides:
         """
-        self._overrides = overrides
+        self._overrides = {k: v for k, v in overrides.items() if v is not None}
 
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
