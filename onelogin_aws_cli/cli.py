@@ -51,7 +51,8 @@ def login(args=sys.argv[1:]):
         if args.renew_seconds or args.renew_seconds_legacy:
             print("ERROR: --renewSeconds  and --renew-seconds have been "
                   "deprecated due to longer AWS STS sessions.")
-            print("These options will be removed completely in a future version.")
+            print("These options will be removed completely in "
+                  "a future version.")
             sys.exit(1)
 
         config_section.set_overrides(vars(args))
