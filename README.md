@@ -53,6 +53,7 @@ Note that `onelogin-aws-cli` requires python 3.
  seconds.
  - `ONELOGIN_AWS_CLI_RENEW_SECONDS` - How often to re-authenticate the session
  in seconds.
+ - `ONELOGIN_AWS_CLI_DEBUG` - Turn on debug mode
  
 ## Configuration File
 
