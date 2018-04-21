@@ -20,8 +20,9 @@ class TestSection(TestCase):
         self.assertFalse('mock' in sec)
 
     def test_set_overrides(self):
-        sec = Section('mock-section', Namespace(
-            get=MagicMock(return_value='world')
+        sec = Section('mock-section', MagicMock(
+            get=MagicMock(return_value='world'),
+            has_option=MagicMock(return_value=True)
         ))
 
         self.assertEqual(sec['foo'], 'world')

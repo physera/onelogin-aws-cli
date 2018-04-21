@@ -70,8 +70,6 @@ save_password = true
         str.seek(0)
 
         self.assertEqual("""[defaults]
-save_password = False
-duration_seconds = 3600
 base_uri = https://api.eu.onelogin.com/
 client_id = mock_client_id
 client_secret = mock_client_secret
