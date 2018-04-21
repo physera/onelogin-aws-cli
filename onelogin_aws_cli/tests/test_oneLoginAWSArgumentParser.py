@@ -62,11 +62,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
         self.assertTrue(args.configure)
         self.assertEqual(args.duration_seconds, 43200)
 
-    def test_default_duration(self):
-        parser = OneLoginAWSArgumentParser()
-        args = parser.parse_args([])
-        self.assertEqual(args.duration_seconds, 3600)
-
     def test_legacy_renew_seconds(self):
         parser = OneLoginAWSArgumentParser()
         args = parser.parse_args([
