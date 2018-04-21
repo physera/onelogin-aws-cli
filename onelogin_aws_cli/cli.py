@@ -3,6 +3,8 @@ Collections of entrypoints
 """
 import sys
 
+from os import environ
+
 from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
 from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
@@ -38,18 +40,29 @@ def login(args=sys.argv[1:]):
     :param args:
     """
 
-    cfg = ConfigurationFile()
-    parser = OneLoginAWSArgumentParser()
-    config_section, args = _load_config(parser, cfg, args)
+    debug = environ.get('ONELOGIN_AWS_CLI_DEBUG', '0') == '1'
+    try:
 
-    # Handle legacy `--renewSeconds` option while it is deprecated
-    if args.renew_seconds or args.renew_seconds_legacy:
-        print("ERROR: --renewSeconds  and --renew-seconds have been "
-              "deprecated due to longer AWS STS sessions.")
-        print("These options will be removed completely in a future version.")
+        cfg = ConfigurationFile()
+        parser = OneLoginAWSArgumentParser()
+        config_section, args = _load_config(parser, cfg, args)
+
+        # Handle legacy `--renewSeconds` option while it is deprecated
+        if args.renew_seconds or args.renew_seconds_legacy:
+            print("ERROR: --renewSeconds  and --renew-seconds have been "
+                  "deprecated due to longer AWS STS sessions.")
+            print("These options will be removed completely in "
+                  "a future version.")
+            sys.exit(1)
+
+        config_section.set_overrides(vars(args))
+
+        api = OneloginAWS(config_section)
+        api.save_credentials()
+
+    except Exception as e:
+        if debug:
+            raise e
+
+        print(str(e))
         sys.exit(1)
-
-    config_section.set_overrides(vars(args))
-
-    api = OneloginAWS(config_section)
-    api.save_credentials()
