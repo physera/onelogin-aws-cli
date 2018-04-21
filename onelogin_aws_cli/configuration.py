@@ -15,7 +15,6 @@ class ConfigurationFile(configparser.ConfigParser):
     def __init__(self, config_file=None):
         super().__init__(
             default_section='defaults',
-            defaults=dict(self.DEFAULTS)
         )
 
         self.file = config_file
@@ -119,7 +118,11 @@ class Section(object):
     def __getitem__(self, item):
         if item in self._overrides:
             return self._overrides[item]
-        return self.config.get(self.section_name, item)
+
+        if item in self:
+            return self.config.get(self.section_name, item)
+
+        return self.config.DEFAULTS[item]
 
     def __contains__(self, item):
         return self.config.has_option(self.section_name, item)
