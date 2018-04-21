@@ -29,7 +29,7 @@ class OneloginAWS(object):
         self.all_roles = None
         self.role_arn = None
         self.credentials = None
-        self.duration_seconds = config['duration_seconds']
+        self.duration_seconds = int(config['duration_seconds'])
         self.user_credentials = UserCredentials(config)
         self.mfa = MFACredentials()
 
