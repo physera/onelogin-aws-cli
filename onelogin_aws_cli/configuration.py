@@ -7,12 +7,15 @@ from onelogin_aws_cli.userquery import user_choice
 class ConfigurationFile(configparser.ConfigParser):
     """Represents a configuration ini file on disk"""
 
-    DEFAULTS = dict(save_password=False)
+    DEFAULTS = dict(
+        save_password=False,
+        duration_seconds=3600
+    )
 
     def __init__(self, config_file=None):
-        super().__init__(default_section='defaults')
-
-        self[self.default_section] = dict(self.DEFAULTS)
+        super().__init__(
+            default_section='defaults',
+        )
 
         self.file = config_file
 
@@ -26,10 +29,8 @@ class ConfigurationFile(configparser.ConfigParser):
 
     @property
     def is_initialised(self) -> bool:
-        """True if there is at least one section or a defaults section"""
-        return len(
-            self.sections()
-        ) > 0 or self.has_defaults
+        """True if there is at least one section"""
+        return (len(self.sections()) > 0)
 
     def load(self):
         self.read_file(self.file)
@@ -41,7 +42,7 @@ class ConfigurationFile(configparser.ConfigParser):
                   "section.\nConsider renaming the section to 'defaults'.")
             self.default_section = 'default'
 
-    def initialise(self, config_name=None):
+    def initialise(self, config_name='defaults'):
         """
         Prompt the user for configurations, and save them to the
         onelogin-aws-cli config file
@@ -51,6 +52,9 @@ class ConfigurationFile(configparser.ConfigParser):
             config_name = self.default_section
 
         config_section = self.section(config_name)
+        if config_section is None:
+            self.add_section(config_name)
+            config_section = self.section(config_name)
 
         config_section['base_uri'] = user_choice(
             "Pick a Onelogin API server:", [
@@ -85,11 +89,10 @@ class ConfigurationFile(configparser.ConfigParser):
         :param section_name: Name of the section in the config file
         :return:
         """
-        if not section_name:
-            section_name = self.default_section
-        if section_name != self.default_section and \
-                not self.has_section(section_name):
-            self.add_section(section_name)
+        section_missing = not self.has_section(section_name)
+        not_default = self.default_section != section_name
+        if section_missing and not_default:
+            return None
         return Section(section_name, self)
 
 
@@ -116,7 +119,7 @@ class Section(object):
         values, but will not overwrite them in the config file.
         :param overrides:
         """
-        self._overrides = overrides
+        self._overrides = {k: v for k, v in overrides.items() if v is not None}
 
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
@@ -124,7 +127,11 @@ class Section(object):
     def __getitem__(self, item):
         if item in self._overrides:
             return self._overrides[item]
-        return self.config.get(self.section_name, item)
+
+        if item in self:
+            return self.config.get(self.section_name, item)
+
+        return self.config.DEFAULTS[item]
 
     def __contains__(self, item):
         return self.config.has_option(self.section_name, item)
