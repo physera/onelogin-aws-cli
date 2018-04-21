@@ -63,4 +63,6 @@ def login(args=sys.argv[1:]):
     except Exception as e:
         if debug:
             raise e
+
         print(str(e))
+        sys.exit(1)
