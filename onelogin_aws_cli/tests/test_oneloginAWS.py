@@ -1,8 +1,9 @@
-import base64
-import os
 from argparse import Namespace
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
+
+import base64
+import os
 
 from onelogin_aws_cli import OneloginAWS
 
@@ -89,3 +90,13 @@ class TestOneloginAWS(TestCase):
         self.ol.get_arns = MagicMock()
         with self.assertRaisesRegex(Exception, r'^No roles found$'):
             self.ol.get_role()
+
+    def test__initialize_credentials(self):
+
+    def test__initialize_credentials_env_var(self):
+        os.environ['AWS_SHARED_CREDENTIALS_FILE'] = 'mock-file'
+
+        cred_file = self.ol._initialize_credentials()
+        self.assertEqual('mock-file', cred_file)
+
+        del os.environ['AWS_SHARED_CREDENTIALS_FILE']
