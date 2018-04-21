@@ -17,7 +17,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         self.add_argument(
             '-C', '--config-name',
             action=EnvDefault, required=False,
-            dest='config_name',
+            dest='config_name', default='defaults',
             help='Switch configuration name within config file'
         )
 
@@ -34,7 +34,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         )
 
         self.add_argument(
-            '-d', '--duration-seconds', type=int, default=3600,
+            '-d', '--duration-seconds', type=int,
             dest='duration_seconds',
             action=EnvDefault, required=False,
             help='Specify duration seconds which depend on IAM role session '
@@ -67,7 +67,7 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
 
         self.add_argument(
             '-c', '--configure', dest='configure', action='store_true',
-            help='Configure OneLogin and AWS settings'
+            help='Configure OneLogin and AWS settings', default=False
         )
 
 

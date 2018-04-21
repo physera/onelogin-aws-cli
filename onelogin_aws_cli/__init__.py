@@ -29,7 +29,7 @@ class OneloginAWS(object):
         self.all_roles = None
         self.role_arn = None
         self.credentials = None
-        self.duration_seconds = config['duration_seconds']
+        self.duration_seconds = int(config['duration_seconds'])
         self.user_credentials = UserCredentials(config)
         self.mfa = MFACredentials()
 
@@ -55,6 +55,11 @@ class OneloginAWS(object):
             self.config['subdomain']
         )
 
+        if saml_resp is None:
+            raise Exception("Onelogin Error: '{error}' '{desc}'".format(
+                error=self.ol_client.error,
+                desc=self.ol_client.error_description
+            ))
         if saml_resp.mfa:
             if not self.mfa.ready():
                 self.mfa.select_device(saml_resp.mfa.devices)

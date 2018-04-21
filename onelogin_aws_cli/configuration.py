@@ -7,12 +7,15 @@ from onelogin_aws_cli.userquery import user_choice
 class ConfigurationFile(configparser.ConfigParser):
     """Represents a configuration ini file on disk"""
 
-    DEFAULTS = dict(save_password=False)
+    DEFAULTS = dict(
+        save_password=False,
+        duration_seconds=3600
+    )
 
     def __init__(self, config_file=None):
-        super().__init__(default_section='defaults')
-
-        self[self.default_section] = dict(self.DEFAULTS)
+        super().__init__(
+            default_section='defaults',
+        )
 
         self.file = config_file
 
@@ -22,9 +25,7 @@ class ConfigurationFile(configparser.ConfigParser):
     @property
     def is_initialised(self) -> bool:
         """True if there is at least one section"""
-        return len(
-            self.sections()
-        ) > 0
+        return (len(self.sections()) > 0)
 
     def load(self):
         self.read_file(self.file)
@@ -103,7 +104,7 @@ class Section(object):
         values, but will not overwrite them in the config file.
         :param overrides:
         """
-        self._overrides = overrides
+        self._overrides = {k: v for k, v in overrides.items() if v is not None}
 
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
@@ -111,7 +112,11 @@ class Section(object):
     def __getitem__(self, item):
         if item in self._overrides:
             return self._overrides[item]
-        return self.config.get(self.section_name, item)
+
+        if item in self:
+            return self.config.get(self.section_name, item)
+
+        return self.config.DEFAULTS[item]
 
     def __contains__(self, item):
         return self.config.has_option(self.section_name, item)
