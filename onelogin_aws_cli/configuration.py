@@ -48,9 +48,6 @@ class ConfigurationFile(configparser.ConfigParser):
         onelogin-aws-cli config file
         """
         print("Configure Onelogin and AWS\n\n")
-        if not config_name:
-            config_name = self.default_section
-
         config_section = self.section(config_name)
         if config_section is None:
             self.add_section(config_name)
