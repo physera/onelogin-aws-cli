@@ -60,6 +60,16 @@ save_password = true
 [profile_test]""")
         self.assertTrue(cfg.section("profile_test").can_save_password)
 
+    def test_can_save_password_username_defaults_false(self):
+        cfg = self._helper_build_config("""[defaults]
+save_password = false""")
+        self.assertFalse(cfg.section("defaults").can_save_password)
+
+    def test_can_save_password_username_defaults_true(self):
+        cfg = self._helper_build_config("""[defaults]
+save_password = true""")
+        self.assertTrue(cfg.section("defaults").can_save_password)
+
     def test_initialise(self):
         str = StringIO()
         cfg = ConfigurationFile(str)
@@ -87,3 +97,30 @@ subdomain = mock_subdomain
         cf = self._helper_build_config("""[section]
 first=foo""")
         self.assertTrue(cf.is_initialised)
+
+        cf = self._helper_build_config("""[defaults]
+first=foo""")
+        self.assertTrue(cf.is_initialised)
+
+    def test_has_defaults(self):
+
+        content = StringIO()
+        cf = ConfigurationFile(content)
+        self.assertFalse(cf.has_defaults)
+
+        cf = self._helper_build_config("""[defaults]
+first=foo""")
+        self.assertTrue(cf.has_defaults)
+
+    def test_supports_default(self):
+
+        cf = self._helper_build_config("""[defaults]
+first=foo""")
+        self.assertEqual("defaults", cf.default_section)
+
+        cf = self._helper_build_config("""[defaults]
+first=foo
+
+[default]
+second=bar""")
+        self.assertEqual("defaults", cf.default_section)
