@@ -19,6 +19,10 @@ class MFACredentials(object):
     """
 
     def __init__(self):
+        self._devices = []
+        self.device = None
+        self._otp = None
+
         self.reset()
 
     @property
