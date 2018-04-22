@@ -1,12 +1,14 @@
 """
 Interactions with the user through the cli
 """
-from typing import List, Tuple
+from typing import Any, Callable, List, Tuple
 
 RolePrincipalPair = Tuple
 
 
-def user_choice(question: str, options: List, renderer=lambda x: x):
+def user_choice(question: str,
+                options: List[Any],
+                renderer: Callable[[Any], str]=lambda x: x):
     """
     Prompt a user with a question and a specific set of possible responses
     :param question: Specifying context for the user to select an option
