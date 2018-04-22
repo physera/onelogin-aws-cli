@@ -31,6 +31,14 @@ class TestUser_choice(TestCase):
         assert result == "world"
         assert "Invalid option" in output
 
+    def test_user_choice_no_options(self):
+        with self.assertRaises(Exception):
+            user_choice('one', [])
+
+    def test_user_choice_one_option(self):
+        result = user_choice('one', ['foo'])
+        self.assertEqual('foo', result)
+
     def test_user_role_prompt(self):
         mock_stdout = StringIO()
 
@@ -43,7 +51,15 @@ class TestUser_choice(TestCase):
                 ])
 
         self.assertEqual(('mock_role2', 'mock_principal_2'), selected_role)
-        self.assertEqual("""[1] mock_role1
+        self.assertEqual("""Pick a role:
+[1] mock_role1
 [2] mock_role2
 [3] mock_role3
 """, mock_stdout.getvalue())
+
+    def test_user_role_prompt_one_option(self):
+        selected_role = user_role_prompt([
+            ('mock_role1', 'mock_principal_1'),
+        ])
+
+        self.assertEqual(('mock_role1', 'mock_principal_1'), selected_role)

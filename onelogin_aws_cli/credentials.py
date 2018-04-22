@@ -9,6 +9,7 @@ import keyring
 from onelogin.api.models.device import Device
 
 from onelogin_aws_cli.configuration import Section
+from onelogin_aws_cli.userquery import user_choice
 
 
 class MFACredentials(object):
@@ -18,8 +19,8 @@ class MFACredentials(object):
     """
 
     def __init__(self):
-        self._device_index = None
         self._devices = []
+        self.device = None
         self._otp = None
 
         self.reset()
@@ -27,18 +28,12 @@ class MFACredentials(object):
     @property
     def has_device(self) -> bool:
         """True if the MFA has an MFA device selected waiting to be used"""
-        return (self._device_index is not None) and \
-               (self._device_index < len(self._devices))
+        return self.device is not None
 
     @property
     def has_otp(self) -> bool:
         """True if the MFA has an OTP waiting to be used"""
         return self._otp is not None
-
-    @property
-    def device(self) -> Device:
-        """Return the device selected by the user"""
-        return self._devices[self._device_index]
 
     @property
     def otp(self) -> str:
@@ -58,7 +53,7 @@ class MFACredentials(object):
         """Remove all state from this class"""
 
         self._devices = []
-        self._device_index = None
+        self.device = None
 
         self._otp = None
 
@@ -67,18 +62,11 @@ class MFACredentials(object):
 
         self._devices = devices
 
-        if len(self._devices) > 1:
-
-            for i, device in enumerate(self._devices):
-                print("{i}. {device}".format(
-                    i=i + 1,
-                    device=device.type
-                ))
-
-            device_num = input("Which OTP Device? ")
-            self._device_index = int(device_num) - 1
-        else:
-            self._device_index = 0
+        self.device = user_choice(
+            'Pick an OTP Device:',
+            self._devices,
+            lambda d: d.type,
+        )
 
     def prompt_token(self):
         """Ask the user for an OTP token"""
