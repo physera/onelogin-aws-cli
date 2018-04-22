@@ -34,13 +34,6 @@ class ConfigurationFile(configparser.ConfigParser):
 
     def load(self):
         self.read_file(self.file)
-        # For backwards compatibility, we check if they have a default
-        # section instead of a defaults section and do a little switcheroo as
-        # needed.
-        if self.has_section('default') and not self.has_defaults:
-            print("It looks like you're using a the deprecated 'default' "
-                  "section.\nConsider renaming the section to 'defaults'.")
-            self.default_section = 'default'
 
     def initialise(self, config_name='defaults'):
         """

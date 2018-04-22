@@ -118,10 +118,6 @@ first=foo""")
 first=foo""")
         self.assertEqual("defaults", cf.default_section)
 
-        cf = self._helper_build_config("""[default]
-second=bar""")
-        self.assertEqual("default", cf.default_section)
-
         cf = self._helper_build_config("""[defaults]
 first=foo
 
