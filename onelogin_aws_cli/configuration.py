@@ -23,9 +23,14 @@ class ConfigurationFile(configparser.ConfigParser):
             self.load()
 
     @property
+    def has_defaults(self) -> bool:
+        """True if the default section is non-empty"""
+        return len(self.items(self.default_section)) > 0
+
+    @property
     def is_initialised(self) -> bool:
         """True if there is at least one section"""
-        return (len(self.sections()) > 0)
+        return (len(self.sections()) > 0) or self.has_defaults
 
     def load(self):
         self.read_file(self.file)
