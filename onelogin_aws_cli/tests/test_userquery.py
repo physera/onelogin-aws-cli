@@ -39,6 +39,22 @@ class TestUser_choice(TestCase):
         result = user_choice('one', ['foo'])
         self.assertEqual('foo', result)
 
+    def test_user_choice_preselected(self):
+        result = user_choice('one', ['foo', 'bar'], saved_choice='bar')
+        self.assertEqual('bar', result)
+
+    def test_user_choice_bad_preselected(self):
+        mock_stdout = StringIO()
+
+        with patch('builtins.input', side_effect=['2']):
+            with contextlib.redirect_stdout(mock_stdout):
+                result = user_choice('one', ['foo', 'bar'], saved_choice='baz')
+
+        output = mock_stdout.getvalue()
+        assert result == "bar"
+        assert "Invalid option" not in output
+        assert "Ignoring invalid saved choice" in output
+
     def test_user_role_prompt(self):
         mock_stdout = StringIO()
 

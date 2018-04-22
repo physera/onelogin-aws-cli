@@ -31,7 +31,7 @@ class OneloginAWS(object):
         self.credentials = None
         self.duration_seconds = int(config['duration_seconds'])
         self.user_credentials = UserCredentials(config)
-        self.mfa = MFACredentials()
+        self.mfa = MFACredentials(config)
 
         base_uri_parts = self.config['base_uri'].split('.')
         self.ol_client = OneLoginClient(
@@ -113,7 +113,10 @@ class OneloginAWS(object):
         # If I have more than one role, ask the user which one they want,
         # otherwise just proceed
 
-        self.role_arn, self.principal_arn = user_role_prompt(self.all_roles)
+        self.role_arn, self.principal_arn = user_role_prompt(
+            self.all_roles,
+            saved_choice=self.config.get("role_arn"),
+        )
 
     def assume_role(self):
         """Perform an AWS SAML role assumption"""

@@ -11,7 +11,7 @@ from onelogin_aws_cli import MFACredentials
 class TestMFACredentials(TestCase):
 
     def setUp(self):
-        self.mfa = MFACredentials()
+        self.mfa = MFACredentials(dict())
 
     def test_has_device(self):
         self.assertFalse(self.mfa.has_device)
@@ -63,19 +63,30 @@ class TestMFACredentials(TestCase):
         self.assertIsNone(self.mfa.otp)
 
     def test_select_device(self):
-        self.mfa.select_device([
-            Device(dict(device_id='1'))
-        ])
+        devices = [
+            Device(dict(device_id='1', device_type='DeviceType1')),
+            Device(dict(device_id='2', device_type='DeviceType2')),
+            Device(dict(device_id='3', device_type='DeviceType3')),
+        ]
+
+        self.mfa.select_device(devices[:1])
         self.assertEqual(self.mfa.device.id, '1')
 
         with patch('builtins.input', side_effect=['3']):
-            self.mfa.select_device([
-                Device(dict(device_id='1')),
-                Device(dict(device_id='2')),
-                Device(dict(device_id='3'))
-            ])
+            self.mfa.select_device(devices)
 
         self.assertEqual(self.mfa.device.id, '3')
+
+        self.mfa._config["otp_device"] = "DeviceType2"
+
+        # Ignores invalid selection
+        self.mfa.select_device(devices[:1])
+        self.assertEqual(self.mfa.device.id, '1')
+
+        self.mfa.select_device(devices)
+        self.assertEqual(self.mfa.device.id, '2')
+
+        del self.mfa._config["otp_device"]
 
     def test_prompt_token(self):
         self.mfa.select_device([

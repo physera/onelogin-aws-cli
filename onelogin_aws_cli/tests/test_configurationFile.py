@@ -87,3 +87,13 @@ subdomain = mock_subdomain
         cf = self._helper_build_config("""[section]
 first=foo""")
         self.assertTrue(cf.is_initialised)
+
+    def test_section_get(self):
+        cfg = self._helper_build_config("""[profile_test]
+save_password = true""")
+        self.assertTrue(cfg.section("profile_test").get("save_password"))
+
+    def test_section_get_fallback(self):
+        cfg = self._helper_build_config("""[profile_test]
+""")
+        self.assertIsNone(cfg.section("profile_test").get("save_password"))
