@@ -13,6 +13,11 @@ class _MockSection(Namespace):
     def __getitem__(self, item):
         return self.__getattribute__(item)
 
+    def get(self, item):
+        if hasattr(self, item):
+            return self[item]
+        return None
+
 
 class TestOneloginSAML(TestCase):
     def setUp(self):

@@ -8,12 +8,19 @@ RolePrincipalPair = Tuple
 
 def user_choice(question: str,
                 options: List[Any],
-                renderer: Callable[[Any], str]=lambda x: x):
+                renderer: Callable[[Any], str]=lambda x: x,
+                saved_choice: str=None):
     """
     Prompt a user with a question and a specific set of possible responses
     :param question: Specifying context for the user to select an option
     :param options: A list of options for the user to select from
     """
+    if saved_choice:
+        for option in options:
+            if renderer(option) == saved_choice:
+                return option
+        print("Ignoring invalid saved choice '{}'".format(saved_choice))
+
     if len(options) == 1:
         return options[0]
 
@@ -38,7 +45,8 @@ def user_choice(question: str,
     return selection
 
 
-def user_role_prompt(all_roles: List[RolePrincipalPair]) -> RolePrincipalPair:
+def user_role_prompt(all_roles: List[RolePrincipalPair],
+                     saved_choice: str=None) -> RolePrincipalPair:
     """
     Prompt a user with a list of AWS IAM roles to choose from. If only 1 role
     is available, return that.
@@ -47,4 +55,5 @@ def user_role_prompt(all_roles: List[RolePrincipalPair]) -> RolePrincipalPair:
         "Pick a role:",
         all_roles,
         renderer=lambda role: role[0],
+        saved_choice=saved_choice,
     )

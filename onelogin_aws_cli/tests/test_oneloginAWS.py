@@ -29,6 +29,14 @@ class TestOneloginAWS(TestCase):
             username='mock-username',
             duration_seconds=2600
         ))
+        self.ol_with_role = OneloginAWS(dict(
+            base_uri="https://api.us.onelogin.com/",
+            client_id='mock-id',
+            client_secret='mock-secret',
+            username='mock-username',
+            duration_seconds=2600,
+            role_arn='arn:aws:iam::123456789012:role/OneLogin-MyRole1',
+        ))
 
     def test_init(self):
         mock_config = dict(
@@ -83,6 +91,27 @@ class TestOneloginAWS(TestCase):
 
         self.assertEqual(self.ROLE_PREFIX + "2", self.ol.role_arn)
         self.assertEqual(self.PRVD_PREFIX + "1", self.ol.principal_arn)
+
+    def test_get_role_peselected(self):
+        self.ol_with_role.saml = Namespace(
+            saml_response=self.SAML_SINGLE_ROLE,
+        )
+        self.ol_with_role.get_role()
+        # Should ignore a bad preselection.
+        self.assertEqual(self.ROLE_PREFIX, self.ol_with_role.role_arn)
+        self.assertEqual(self.PRVD_PREFIX, self.ol_with_role.principal_arn)
+
+    def test_get_role_multi_preselected(self):
+        self.ol_with_role.saml = Namespace(
+            saml_response=self.SAML_MULTI_ROLE,
+        )
+        self.ol_with_role.get_role()
+
+        self.assertEqual(self.ROLE_PREFIX + "1", self.ol_with_role.role_arn)
+        self.assertEqual(
+            self.PRVD_PREFIX + "1",
+            self.ol_with_role.principal_arn,
+        )
 
     def test_get_role_fail(self):
         self.ol.all_roles = []

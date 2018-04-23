@@ -18,10 +18,11 @@ class MFACredentials(object):
     retrieving of OTP's
     """
 
-    def __init__(self):
+    def __init__(self, config: Section):
         self._devices = []
         self.device = None
         self._otp = None
+        self._config = config
 
         self.reset()
 
@@ -65,7 +66,8 @@ class MFACredentials(object):
         self.device = user_choice(
             'Pick an OTP Device:',
             self._devices,
-            lambda d: d.type,
+            renderer=lambda d: d.type,
+            saved_choice=self._config.get("otp_device"),
         )
 
     def prompt_token(self):
