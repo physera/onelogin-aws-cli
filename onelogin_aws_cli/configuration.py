@@ -127,6 +127,6 @@ class Section(object):
         return self.config.has_option(self.section_name, item)
 
     def get(self, item, default=None):
-        if item in self:
-            return self[item]
+        if self.__contains__(item):
+            return self.__getitem__(item)
         return default
