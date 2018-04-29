@@ -112,6 +112,20 @@ class TestOneloginSAML(TestCase):
         self.assertEqual(self.ol.user_credentials.username, 'mock-username')
         self.assertEqual(self.ol.user_credentials.password, 'mock-password')
 
+    def test_username_unspecified(self):
+        ol = OneloginAWS(
+            _MockSection(
+                base_uri="https://api.us.onelogin.com/",
+                client_id='mock-id',
+                client_secret='mock-secret',
+                aws_app_id='mock-app-id',
+                subdomain='example',
+                can_save_password=False,
+                duration_seconds=2600
+            ),
+        )
+        self.assertIsNone(ol.user_credentials.username)
+
     def tearDown(self):
         """
         Reset MagicMocks
