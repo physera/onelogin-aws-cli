@@ -12,6 +12,14 @@ class ConfigurationFile(configparser.ConfigParser):
         duration_seconds=3600
     )
 
+    REQUIRED = [
+        'base_uri',
+        'client_id',
+        'client_secret',
+        'aws_app_id',
+        'subdomain',
+    ]
+
     def __init__(self, config_file=None):
         super().__init__(
             default_section='defaults',
@@ -93,6 +101,16 @@ class Section(object):
         self.config = config
         self.section_name = section_name
         self._overrides = {}
+
+    @property
+    def has_required(self) -> bool:
+        """
+        Returns true if the section (including the defaults fallback)
+        contains all the required keys.
+        """
+        return all([
+            self.__contains__(item) for item in ConfigurationFile.REQUIRED
+        ])
 
     @property
     def can_save_password(self) -> bool:

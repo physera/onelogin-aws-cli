@@ -18,12 +18,12 @@ def _load_config(parser, config_file: ConfigurationFile, args=sys.argv[1:]):
         config_file.file = fp
         config_file.load()
 
-    if (cli_args.configure or not config_file.is_initialised):
-        config_file.initialise(cli_args.config_name)
+        if (cli_args.configure or not config_file.is_initialised):
+            config_file.initialise(cli_args.config_name)
 
     config_section = config_file.section(cli_args.config_name)
 
-    if config_section is None:
+    if config_section is None or not config_section.has_required:
         sys.exit(
             "Configuration '{}' not defined. "
             "Please run 'onelogin-aws-login -c'".format(
