@@ -77,7 +77,9 @@ class ConfigurationFile(configparser.ConfigParser):
     def save(self):
         """Save this config to disk"""
         self.write(self.file)
-        print("Configuration written to '{}'".format(self.file.name))
+        print("Configuration written to '{}'".format(
+            self.file.name if hasattr(self.file, 'name') else self.file,
+        ))
 
     def section(self, section_name: str):
         """
