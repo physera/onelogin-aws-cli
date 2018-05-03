@@ -40,21 +40,21 @@ Note that `onelogin-aws-cli` requires python 3.
 
 ## Environment Variables
 
- - `AWS_SHARED_CREDENTIALS_FILE` - Specifies the location of the AWS credentials
- file to write credentials out to. See
- [Environment Variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html)
- for more information.
- - `ONELOGIN_AWS_CLI_CONFIG_NAME` - `onelogin-aws-cli` config section to use
- - `ONELOGIN_AWS_CLI_PROFILE` - Inject the credentials into an section with
- this title.
- - `ONELOGIN_AWS_CLI_USERNAME` - Username to be used to authenticate against
- OneLogin with.
- - `ONELOGIN_AWS_CLI_DURATION_SECONDS` - Length of the IAM STS Session in
- seconds.
- - `ONELOGIN_AWS_CLI_RENEW_SECONDS` - How often to re-authenticate the session
- in seconds.
- - `ONELOGIN_AWS_CLI_DEBUG` - Turn on debug mode
- 
+- `AWS_SHARED_CREDENTIALS_FILE` - Specifies the location of the AWS credentials
+  file to write credentials out to. See
+  [Environment Variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html)
+  for more information.
+- `ONELOGIN_AWS_CLI_CONFIG_NAME` - `onelogin-aws-cli` config section to use.
+- `ONELOGIN_AWS_CLI_DEBUG` - Turn on debug mode.
+- `ONELOGIN_AWS_CLI_PROFILE` - See the correspondig value in the
+  [configuration file](##configuration-file).
+- `ONELOGIN_AWS_CLI_USERNAME` - See the correspondig value in the
+  [configuration file](##configuration-file).
+- `ONELOGIN_AWS_CLI_DURATION_SECONDS` - See the correspondig value in the
+  [configuration file](##configuration-file).
+- `ONELOGIN_AWS_CLI_RENEW_SECONDS` - See the correspondig value in the
+  [configuration file](##configuration-file).
+
 ## Configuration File
 
 The configuration file is an `.ini` file with each section referring to a 
