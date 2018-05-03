@@ -64,9 +64,9 @@ other sections.
 
 ### Directives
 
-- `base_uri` - one of either `https://api.us.onelogin.com/` or `https://api.eu.onelogin.com/`
+- `base_uri` - One of either `https://api.us.onelogin.com/` or `https://api.eu.onelogin.com/`
   depending on your OneLogin account.
-- `subdomain` - the subdomain you authenticate against in OneLogin.  
+- `subdomain` - The subdomain you authenticate against in OneLogin.  
   This will be the first part of your onelogin domain.
   Eg, In `http://my_company.onelogin.com`, `my_company` would be the subdomain.
 - `username` - Username to be used to authenticate against OneLogin with.  
