@@ -84,7 +84,7 @@ other sections.
   See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
   for more details.
 - `duration_seconds` - Length of the IAM STS session in seconds.  
-  This cannot exceed the duration specified for the given role in AWS.
+  This cannot exceed the maximum duration specified in AWS for the given role.
 - `aws_app_id` - ID of the AWS App instance in your OneLogin account.  
   This ID can be found by logging in to your OneLogin web dashboard
   and navigating to `Administration` -> `APPS` -> `<Your app instance>`,
