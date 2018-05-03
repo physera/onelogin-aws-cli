@@ -47,13 +47,13 @@ Note that `onelogin-aws-cli` requires python 3.
 - `ONELOGIN_AWS_CLI_CONFIG_NAME` - `onelogin-aws-cli` config section to use.
 - `ONELOGIN_AWS_CLI_DEBUG` - Turn on debug mode.
 - `ONELOGIN_AWS_CLI_PROFILE` - See the correspondig value in the
-  [configuration file](##configuration-file).
+  [configuration file](#configuration-file).
 - `ONELOGIN_AWS_CLI_USERNAME` - See the correspondig value in the
-  [configuration file](##configuration-file).
+  [configuration file](#configuration-file).
 - `ONELOGIN_AWS_CLI_DURATION_SECONDS` - See the correspondig value in the
-  [configuration file](##configuration-file).
+  [configuration file](#configuration-file).
 - `ONELOGIN_AWS_CLI_RENEW_SECONDS` - See the correspondig value in the
-  [configuration file](##configuration-file).
+  [configuration file](#configuration-file).
 
 ## Configuration File
 
