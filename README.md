@@ -71,8 +71,6 @@ other sections.
   Eg, In `http://my_company.onelogin.com`, `my_company` would be the subdomain.
 - `username` - Username to be used to authenticate against OneLogin with.  
   Can also be set with the environment variable `ONELOGIN_AWS_CLI_USERNAME`.
-- `save_password`  - Flag indicating whether `onlogin-aws-cli` can save the
-  onelogin password to an OS keychain.  
   This functionality supports all keychains supported by
   [keyring](https://pypi.python.org/pypi/keyring).
 - `client_id` - Client ID for the user to use to authenticate against the
@@ -83,6 +81,10 @@ other sections.
   the OneLogin api.  
   See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
   for more details.
+- `save_password` - Flag indicating whether `onlogin-aws-cli` can save the
+  onelogin password to an OS keychain.  
+- `profile` - AWS CLI profile to store credentials in.  
+  This refers to an AWS CLI profile name defined in your `~./aws/config` file.
 - `duration_seconds` - Length of the IAM STS session in seconds.  
   This cannot exceed the maximum duration specified in AWS for the given role.
 - `renew_seconds` - How often to re-authenticate the session in seconds.
@@ -101,10 +103,12 @@ other sections.
 base_uri = https://api.us.onelogin.com/
 subdomain = mycompany
 username = john@mycompany.com
-save_password = yes
 client_id = f99ee51f00400649280db1028ffa3ca9b21b680f2189b238d342cc8158c401c7
 client_secret = a85234b6db01a29a493e2422d7930dffe6f4d3a826270a18838574f6b8ef7c3e
+save_password = yes
+profile = mycompany-onelogin
 duration_seconds = 3600
+renew_seconds = 60
 
 [testing]
 aws_app_id = 555029
