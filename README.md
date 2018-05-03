@@ -84,8 +84,8 @@ other sections.
   See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
   for more details.
 - `aws_app_id` - ID of the AWS App instance in your OneLogin account.  
-  This ID can be retrieved by going to Onelogin and navigating to
-  `Administration` -> `APPS` -> `<Your app instance>`,
+  This ID can be found by logging in to your OneLogin web dashboard
+  and navigating to `Administration` -> `APPS` -> `<Your app instance>`,
   and copying it from the URL in the address bar.
 - `role_arn` - AWS Role ARN to become after authenticating against OneLogin.  
   Specifying this will disable the display of available roles and the
