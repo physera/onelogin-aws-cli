@@ -85,6 +85,7 @@ other sections.
   for more details.
 - `duration_seconds` - Length of the IAM STS session in seconds.  
   This cannot exceed the maximum duration specified in AWS for the given role.
+- `renew_seconds` - How often to re-authenticate the session in seconds.
 - `aws_app_id` - ID of the AWS App instance in your OneLogin account.  
   This ID can be found by logging in to your OneLogin web dashboard
   and navigating to `Administration` -> `APPS` -> `<Your app instance>`,
