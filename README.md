@@ -87,7 +87,7 @@ other sections.
   This ID can be found by logging in to your OneLogin web dashboard
   and navigating to `Administration` -> `APPS` -> `<Your app instance>`,
   and copying it from the URL in the address bar.
-- `role_arn` - AWS Role ARN to become after authenticating against OneLogin.  
+- `role_arn` - AWS Role ARN to assume after authenticating against OneLogin.  
   Specifying this will disable the display of available roles and the
   interactive choice to select a role after authenticating.
 
@@ -112,11 +112,11 @@ aws_app_id = 555045
 aws_app_id = 555070
 
 [testing-admin]
-aws_app_id = 555070
+aws_app_id = 555029
 role_arn = arn:aws:iam::123456789123:role/Admin
 
 [staging-admin]
-aws_app_id = 555070
+aws_app_id = 555045
 role_arn = arn:aws:iam::123456789123:role/Admin
 
 [live-admin]
