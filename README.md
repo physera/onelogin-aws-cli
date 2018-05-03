@@ -124,8 +124,24 @@ aws_app_id = 555070
 role_arn = arn:aws:iam::123456789123:role/Admin
 ```
 
-The above configuration will allow you to have 3 different OneLogin
-applications which you can authenticate against with SAML. For example, to 
-authenticate against the `staging` AWS account, you could run:
+This example will let you select from 6 config names,
+that are variations of the same base values specified in `[defaults]`.
 
-    onelogin-aws-cli -C staging
+The first three, `testing`, `staging`, and `live`,
+all have different OneLogin application IDs.
+
+The latter three, `testing-admin`, `staging-admin`, and `live-admin`,
+also have `role_arn` specified,
+so they will automatically assume the role with that ARN.
+
+For example, to use the `staging` config, you could run:
+
+```shell
+$ onelogin-aws-cli -C staging
+```
+
+And to use the `live-admin` config, you could run:
+
+```shell
+$ onelogin-aws-cli -C live-admin
+```
