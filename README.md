@@ -64,22 +64,25 @@ other sections.
 
 ### Directives
 
- - `base_uri` - one of either `https://api.us.onelogin.com/` or `https://api.eu.onelogin.com/`
- depending on your OneLogin account.
- - `subdomain` - the subdomain you authenticate against in OneLogin. This will
- be the first part of your onelogin domain. Eg, In `http://my_company.onelogin.com`,
- `my_company` would be the subdomain.
- - `username` - Username to be used to authenticate against OneLogin with. Can
- also be set with the environment variable `ONELOGIN_AWS_CLI_USERNAME`.
- - `save_password`  - Flag indicating whether `onlogin-aws-cli` can save the
- onelogin password to an OS keychain. This functionality supports all keychains
- supported by [keyring](https://pypi.python.org/pypi/keyring).
- - `client_id` - Client ID for the user to use to authenticate against the 
- OneLogin api. See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
- for more details.
- - `client_secret` - Client Secret for the user to use to authenticate against
-  the OneLogin api. See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
- for more details.
+- `base_uri` - one of either `https://api.us.onelogin.com/` or `https://api.eu.onelogin.com/`
+  depending on your OneLogin account.
+- `subdomain` - the subdomain you authenticate against in OneLogin.  
+  This will be the first part of your onelogin domain.
+  Eg, In `http://my_company.onelogin.com`, `my_company` would be the subdomain.
+- `username` - Username to be used to authenticate against OneLogin with.  
+  Can also be set with the environment variable `ONELOGIN_AWS_CLI_USERNAME`.
+- `save_password`  - Flag indicating whether `onlogin-aws-cli` can save the
+  onelogin password to an OS keychain.  
+  This functionality supports all keychains supported by
+  [keyring](https://pypi.python.org/pypi/keyring).
+- `client_id` - Client ID for the user to use to authenticate against the
+  OneLogin api.  
+  See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
+  for more details.
+- `client_secret` - Client Secret for the user to use to authenticate against
+  the OneLogin api.  
+  See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
+  for more details.
 - `aws_app_id` - ID of the AWS App instance in your OneLogin account.  
   This ID can be retrieved by going to Onelogin and navigating to
   `Administration` -> `APPS` -> `<Your app instance>`,
