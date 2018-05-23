@@ -95,6 +95,7 @@ other sections.
 - `role_arn` - AWS Role ARN to assume after authenticating against OneLogin.  
   Specifying this will disable the display of available roles and the
   interactive choice to select a role after authenticating.
+- `otp_device` - Allow the automatic selection of an OTP device. This value is the human readable string name for the device. Eg, `OneLogin Protect`, `Yubico YubiKey`, etc
 
 ### Example
 
