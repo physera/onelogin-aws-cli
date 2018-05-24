@@ -80,6 +80,12 @@ class OneloginAWS(object):
         self.saml = saml_resp
 
     def get_ip_address(self):
+        # if ip address has been hard coded in config file, use that
+        ip_address = self.config.get('ip_address')
+        if ip_address is not None:
+            return ip_address
+
+        # otherwise get ip address dynamically from api
         uri = self.config.get('ip_address_api_uri')
 
         # if option has not been configured
