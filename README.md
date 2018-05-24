@@ -95,6 +95,10 @@ other sections.
 - `role_arn` - AWS Role ARN to assume after authenticating against OneLogin.  
   Specifying this will disable the display of available roles and the
   interactive choice to select a role after authenticating.
+- `ip_address` - An IP address to send to OneLogin.
+  Relevant when using OneLogin Policies with an IP whitelist.
+- `ip_address_api_uri` - An API endpoint that returns the current IP over HTTP.
+  Relevant when using OneLogin Policies with an IP whitelist.
 
 ### Example
 
