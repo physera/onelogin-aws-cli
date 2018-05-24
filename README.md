@@ -96,6 +96,10 @@ other sections.
   Specifying this will disable the display of available roles and the
   interactive choice to select a role after authenticating.
 - `otp_device` - Allow the automatic selection of an OTP device. This value is the human readable string name for the device. Eg, `OneLogin Protect`, `Yubico YubiKey`, etc
+- `ip_address` - An IP address to send to OneLogin.
+  Relevant when using OneLogin Policies with an IP whitelist.
+- `ip_address_api_uri` - An API endpoint that returns the current IP over HTTP.
+  Relevant when using OneLogin Policies with an IP whitelist.
 
 ### Example
 
