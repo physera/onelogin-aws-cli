@@ -1,59 +1,87 @@
-# onelogin-aws-cli-assume-role
-Assume an AWS Role and cache credentials using Onelogin
+
+# onelogin-aws-cli
+
+A CLI utility that helps with using AWS CLI when using AWS Roles and OneLogin authentication.
 
 [![Build Status](https://travis-ci.org/physera/onelogin-aws-cli.svg?branch=master)](https://travis-ci.org/physera/onelogin-aws-cli)
 [![codecov](https://codecov.io/gh/physera/onelogin-aws-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/physera/onelogin-aws-cli)
 
-This package provides a script to login to Onelogin and use a SAML connection
-to AWS to assume a role. More details on setting up SAML for AWS can be found
-at [Onelogin](https://support.onelogin.com/hc/en-us/articles/201174164-Configuring-SAML-for-Amazon-Web-Services-AWS-Single-Role).
 
-To install, use pip
+This package provides a CLI utility program that:
+
+- Authenticates against OneLogin.
+- Fetches a list of available Roles in AWS for a given OneLogin AWS App.
+- Allows the user to select a Role to assume.
+- Saves credentials for the assumed role in the AWS CLI Shared Credentials File.
+
+In order to be able to use this program, you must first
+[Configure SAML for AWS in OneLogin][onelogin-configuring-saml-for-aws].
+
+Note that while the repo and the pip package are called `onelogin-aws-cli`,
+the installed program is called `onelogin-aws-login`.
+
+
+
+## Installation
+
+To install, use pip:
 
 ```shell
-pip install onelogin-aws-cli
+$ pip install onelogin-aws-cli
 ```
+
+Note that `onelogin-aws-cli` requires Python 3.
+
+Note that it is not recommended to install Python packages globally
+on your system.
+[Pyenv][pyenv-github] is a great tool for managing your Python environments.
+
+
+
+## Interactive configuration
 
 To configure the script, simply run the configuration:
 
 ```shell
-onelogin-aws-login -c
+$ onelogin-aws-login -c
 ```
-Once installed and configured, just run onelogin-aws-login and you'll be asked for your credentials and to choose which role you want to assume.
+Once installed and configured, just run `onelogin-aws-login` and you'll be asked for your credentials and to choose which role you want to assume.
 
 ```shell
 $ onelogin-aws-login
 Onelogin Username: myuser@mycompany.com
 Onelogin Password:
-OTP Token: 579114
-
-Please choose the role you would like to assume:
-[ 0 ]:  arn:aws:iam::166878887401:role/onelogin-test-ec2
-[ 1 ]:  arn:aws:iam::166878887401:role/onelogin-test-s3
-[ 2 ]:  arn:aws:iam::772123451421:role/onelogin-test-s3
-Selection:
-2
+Google Authenticator Token: 579114
+Pick a role:
+[0]: arn:aws:iam::166878887401:role/onelogin-test-ec2
+[1]: arn:aws:iam::166878887401:role/onelogin-test-s3
+[2]: arn:aws:iam::772123451421:role/onelogin-test-s3
+? 2
 Credentials cached in '/Users/myuser/.aws/credentials'
+Expires at 2018-05-24 15:15:41+00:00
 Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.com
 ```
-Note that `onelogin-aws-cli` requires python 3.
+
+
 
 ## Environment Variables
 
-- `AWS_SHARED_CREDENTIALS_FILE` - Specifies the location of the AWS credentials
-  file to write credentials out to. See
-  [Environment Variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html)
+- `AWS_SHARED_CREDENTIALS_FILE` - Location of the AWS credentials file
+  to write credentials to.  
+  See [AWS CLI Environment Variables](aws-cli-environment-variables)
   for more information.
 - `ONELOGIN_AWS_CLI_CONFIG_NAME` - `onelogin-aws-cli` config section to use.
 - `ONELOGIN_AWS_CLI_DEBUG` - Turn on debug mode.
-- `ONELOGIN_AWS_CLI_PROFILE` - See the correspondig value in the
+- `ONELOGIN_AWS_CLI_PROFILE` - See the corresponding value in the
   [configuration file](#configuration-file).
-- `ONELOGIN_AWS_CLI_USERNAME` - See the correspondig value in the
+- `ONELOGIN_AWS_CLI_USERNAME` - See the corresponding value in the
   [configuration file](#configuration-file).
-- `ONELOGIN_AWS_CLI_DURATION_SECONDS` - See the correspondig value in the
+- `ONELOGIN_AWS_CLI_DURATION_SECONDS` - See the corresponding value in the
   [configuration file](#configuration-file).
-- `ONELOGIN_AWS_CLI_RENEW_SECONDS` - See the correspondig value in the
+- `ONELOGIN_AWS_CLI_RENEW_SECONDS` - See the corresponding value in the
   [configuration file](#configuration-file).
+
+
 
 ## Configuration File
 
@@ -95,7 +123,9 @@ other sections.
 - `role_arn` - AWS Role ARN to assume after authenticating against OneLogin.  
   Specifying this will disable the display of available roles and the
   interactive choice to select a role after authenticating.
-- `otp_device` - Allow the automatic selection of an OTP device. This value is the human readable string name for the device. Eg, `OneLogin Protect`, `Yubico YubiKey`, etc
+- `otp_device` - Allow the automatic selection of an OTP device.  
+  This value is the human readable string name for the device.
+  Eg, `OneLogin Protect`, `Yubico YubiKey`, etc
 
 ### Example
 
@@ -146,11 +176,17 @@ so they will automatically assume the role with that ARN.
 For example, to use the `staging` config, you could run:
 
 ```shell
-$ onelogin-aws-cli -C staging
+$ onelogin-aws-login -C staging
 ```
 
 And to use the `live-admin` config, you could run:
 
 ```shell
-$ onelogin-aws-cli -C live-admin
+$ onelogin-aws-login -C live-admin
 ```
+
+
+
+[onelogin-configuring-saml-for-aws]: https://support.onelogin.com/hc/en-us/articles/201174164-Configuring-SAML-for-Amazon-Web-Services-AWS-Single-Role
+[aws-cli-environment-variables]: https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html
+[pyenv-github]: https://github.com/pyenv/pyenv
