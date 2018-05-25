@@ -78,9 +78,6 @@ Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.c
   [configuration file](#configuration-file).
 - `ONELOGIN_AWS_CLI_DURATION_SECONDS` - See the corresponding value in the
   [configuration file](#configuration-file).
-- `ONELOGIN_AWS_CLI_RENEW_SECONDS` - See the corresponding value in the
-  [configuration file](#configuration-file).
-
 
 
 ## Configuration File
@@ -115,8 +112,7 @@ other sections.
   This refers to an AWS CLI profile name defined in your `~./aws/config` file.
 - `duration_seconds` - Length of the IAM STS session in seconds.  
   This cannot exceed the maximum duration specified in AWS for the given role.
-- `renew_seconds` - How often to re-authenticate the session in seconds.
-- `aws_app_id` - ID of the AWS App instance in your OneLogin account.  
+- `aws_app_id` - ID of the AWS App instance in your OneLogin account.
   This ID can be found by logging in to your OneLogin web dashboard
   and navigating to `Administration` -> `APPS` -> `<Your app instance>`,
   and copying it from the URL in the address bar.
@@ -139,7 +135,6 @@ client_secret = a85234b6db01a29a493e2422d7930dffe6f4d3a826270a18838574f6b8ef7c3e
 save_password = yes
 profile = mycompany-onelogin
 duration_seconds = 3600
-renew_seconds = 60
 
 [testing]
 aws_app_id = 555029
