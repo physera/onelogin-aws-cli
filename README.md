@@ -146,6 +146,7 @@ save_password = yes
 profile = mycompany-onelogin
 duration_seconds = 3600
 renew_seconds = 60
+auto_determine_ip_address = yes
 
 [testing]
 aws_app_id = 555029
