@@ -50,7 +50,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
             '-C', 'my_config',
             '--profile', 'my_profile',
             '-u', 'my_username',
-            '--renew-seconds', '30',
             '-c',
             '-d', '43200',
         ])
@@ -58,32 +57,15 @@ class TestOneLoginAWSArgumentParser(TestCase):
         self.assertEqual(args.config_name, 'my_config')
         self.assertEqual(args.profile, 'my_profile')
         self.assertEqual(args.username, 'my_username')
-        self.assertEqual(args.renew_seconds, 30)
         self.assertTrue(args.configure)
         self.assertEqual(args.duration_seconds, 43200)
 
-    def test_legacy_renew_seconds(self):
-        parser = OneLoginAWSArgumentParser()
-        args = parser.parse_args([
-            '--renewSeconds', '30'
-        ])
-
-        self.assertEqual(args.renew_seconds_legacy, 30)
-
-        with self.assertRaises(SystemExit) as cm:
-            parser.parse_args([
-                '--renewSeconds', '30',
-                '--renew-seconds', '30',
-            ])
-
-        self.assertEqual(cm.exception.code, 2)
 
     def test_environment_variable(self):
         environ['ONELOGIN_AWS_CLI_CONFIG_NAME'] = 'mock-config'
         environ['ONELOGIN_AWS_CLI_PROFILE'] = 'mock-profile'
         environ['ONELOGIN_AWS_CLI_USERNAME'] = 'mock-username'
         environ['ONELOGIN_AWS_CLI_DURATION_SECONDS'] = '10'
-        environ['ONELOGIN_AWS_CLI_RENEW_SECONDS'] = '10'
 
         parser = OneLoginAWSArgumentParser()
 
@@ -92,11 +74,9 @@ class TestOneLoginAWSArgumentParser(TestCase):
         self.assertEqual('mock-config', args.config_name)
         self.assertEqual('mock-profile', args.profile)
         self.assertEqual('mock-username', args.username)
-        self.assertEqual(10, args.renew_seconds)
         self.assertEqual(10, args.duration_seconds)
 
         del environ['ONELOGIN_AWS_CLI_CONFIG_NAME']
         del environ['ONELOGIN_AWS_CLI_PROFILE']
         del environ['ONELOGIN_AWS_CLI_USERNAME']
         del environ['ONELOGIN_AWS_CLI_DURATION_SECONDS']
-        del environ['ONELOGIN_AWS_CLI_RENEW_SECONDS']
