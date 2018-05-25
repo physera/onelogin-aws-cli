@@ -60,7 +60,6 @@ class TestOneLoginAWSArgumentParser(TestCase):
         self.assertTrue(args.configure)
         self.assertEqual(args.duration_seconds, 43200)
 
-
     def test_environment_variable(self):
         environ['ONELOGIN_AWS_CLI_CONFIG_NAME'] = 'mock-config'
         environ['ONELOGIN_AWS_CLI_PROFILE'] = 'mock-profile'
