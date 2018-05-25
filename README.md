@@ -126,6 +126,12 @@ other sections.
 - `otp_device` - Allow the automatic selection of an OTP device.  
   This value is the human readable string name for the device.
   Eg, `OneLogin Protect`, `Yubico YubiKey`, etc
+- `ip_address` - The client IP address to send to OneLogin.
+  Relevant when using OneLogin Policies with an IP whitelist.
+  If this is specified, `auto_determine_ip_address` is not used.
+- `auto_determine_ip_address` - Automatically determine the client IP address.
+  Relevant when using OneLogin Policies with an IP whitelist.
+  Can be used without specifying `ip_address`.
 
 ### Example
 
