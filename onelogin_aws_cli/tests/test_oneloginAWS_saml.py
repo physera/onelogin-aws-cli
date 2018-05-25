@@ -33,7 +33,8 @@ class TestOneloginSAML(TestCase):
                 subdomain='example',
                 can_save_password=False,
                 username='mock-username',
-                duration_seconds=2600
+                duration_seconds=2600,
+                auto_determine_ip_address=False,
             ),
         )
 
@@ -62,8 +63,11 @@ class TestOneloginSAML(TestCase):
         self.assertEqual(self.ol.saml, 'mock-saml-response')
 
         self.get_saml_assertion_mock.assert_called_with(
-            'mock-username', 'mock-password',
-            'mock-app-id', 'example'
+            username_or_email='mock-username',
+            password='mock-password',
+            app_id='mock-app-id',
+            subdomain='example',
+            ip_address=None,
         )
 
         self.get_saml_assertion_verifying_mock.assert_called_with(
@@ -93,8 +97,11 @@ class TestOneloginSAML(TestCase):
         self.assertEqual(self.ol.saml, 'mock-saml-response')
 
         self.get_saml_assertion_mock.assert_called_with(
-            'mock-username', 'mock-password',
-            'mock-app-id', 'example'
+            username_or_email='mock-username',
+            password='mock-password',
+            app_id='mock-app-id',
+            subdomain='example',
+            ip_address=None,
         )
 
         self.get_saml_assertion_verifying_mock.assert_called_with(
@@ -121,7 +128,8 @@ class TestOneloginSAML(TestCase):
                 aws_app_id='mock-app-id',
                 subdomain='example',
                 can_save_password=False,
-                duration_seconds=2600
+                duration_seconds=2600,
+                auto_determine_ip_address=False,
             ),
         )
         self.assertIsNone(ol.user_credentials.username)
