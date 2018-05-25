@@ -27,7 +27,9 @@ class TestOneloginAWS(TestCase):
             client_id='mock-id',
             client_secret='mock-secret',
             username='mock-username',
-            duration_seconds=2600
+            duration_seconds=2600,
+            ip_address='1.2.3.4',
+            auto_determine_ip_address=False
         ))
         self.ol_with_role = OneloginAWS(dict(
             base_uri="https://api.us.onelogin.com/",
@@ -50,6 +52,12 @@ class TestOneloginAWS(TestCase):
 
         self.assertEqual(mock_config, ol.config)
         self.assertEqual('mock-username', ol.user_credentials.username)
+
+    def test_get_ip_address(self):
+        self.ol.saml = Namespace(saml_response=self.SAML_SINGLE_ROLE)
+        ip_address = self.ol.get_ip_address()
+
+        self.assertEqual('1.2.3.4', ip_address)
 
     def test_get_arns(self):
         self.ol.saml = Namespace(saml_response=self.SAML_SINGLE_ROLE)
