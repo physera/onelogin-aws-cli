@@ -1,5 +1,7 @@
 """OneLogin/AWS Business logic"""
 
+from typing import Optional
+
 import configparser
 import xml.etree.ElementTree as ElementTree
 
@@ -80,7 +82,14 @@ class OneloginAWS(object):
 
         self.saml = saml_resp
 
-    def get_ip_address(self):
+    def get_ip_address(self) -> Optional[str]:
+        """
+        Get the client IP address.
+        Uses either the `ip_address` in config,
+        or if `auto_determine_ip_address` is specified in config,
+        the ipify service is used to dynamically lookup the IP address.
+        """
+
         # if ip address has been hard coded in config file, use that
         ip_address = self.config.get('ip_address')
         if ip_address is not None:
