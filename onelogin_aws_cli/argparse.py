@@ -48,23 +48,6 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
             version="%(prog)s " + version
         )
 
-        renew_seconds_group = self.add_mutually_exclusive_group()
-
-        renew_seconds_group.add_argument(
-            '-r', '--renew-seconds', type=int,
-            action=EnvDefault, required=False,
-            help='Auto-renew credentials after this many seconds'
-        )
-
-        renew_seconds_group.add_argument(
-            # Help is suppressed as this is replaced by the POSIX friendlier
-            # version above. This is here for legacy compliance and will
-            # be deprecated.
-            '--renewSeconds', type=int, help=argparse.SUPPRESS,
-            action=EnvDefault, required=False,
-            dest='renew_seconds_legacy'
-        )
-
         self.add_argument(
             '-c', '--configure', dest='configure', action='store_true',
             help='Configure OneLogin and AWS settings', default=False
