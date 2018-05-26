@@ -1,5 +1,6 @@
 """Static User Configuration models"""
 import configparser
+from typing import Optional
 
 from onelogin_aws_cli.userquery import user_choice
 
@@ -143,7 +144,18 @@ class Section(object):
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> Optional[str, bool]:
+        """
+        Single location to handle the precedence of configurations.
+        The precedence chain is:
+          - overrides
+          - configuration functions
+          - config files/cli options/environment variables
+          - class level defaults
+
+        :param item: name of the configuration to get.
+        :return:
+        """
         # Is it in the overrides
         if item in self._overrides:
             return self._overrides[item]
