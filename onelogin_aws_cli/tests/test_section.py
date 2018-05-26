@@ -9,14 +9,16 @@ class TestSection(TestCase):
 
     def test___contains__true(self):
         sec = Section('mock-section', Namespace(
-            has_option=MagicMock(return_value=True)
+            has_option=MagicMock(return_value=True),
+            getboolean=lambda item: item,
         ))
         self.assertTrue('mock' in sec)
 
     def test___contains__false(self):
         sec = Section('mock-section', Namespace(
             has_option=MagicMock(return_value=False),
-            DEFAULTS=dict()
+            DEFAULTS=dict(),
+            getboolean=lambda item: item,
         ))
         self.assertFalse('mock' in sec)
 
@@ -49,7 +51,9 @@ class TestSection(TestCase):
         self.assertTrue(sec.get('has_required'))
 
     def test__has_cast_handler(self):
-        sec = Section('mock-section', None)
+        sec = Section('mock-section', MagicMock(
+            getboolean=lambda item: item,
+        ))
 
         self.assertTrue(sec._has_cast_handler('can_mock'))
 
