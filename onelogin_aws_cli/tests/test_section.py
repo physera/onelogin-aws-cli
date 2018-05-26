@@ -47,3 +47,11 @@ class TestSection(TestCase):
         ))
 
         self.assertTrue(sec.get('has_required'))
+
+    def test__has_cast_handler(self):
+        sec = Section('mock-section', None)
+
+        self.assertTrue(sec._has_cast_handler('can_mock'))
+
+        self.assertFalse(sec._has_cast_handler('cannot_mock'))
+        self.assertFalse(sec._has_cast_handler('wont_mock'))

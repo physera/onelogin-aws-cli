@@ -1,6 +1,6 @@
 """Static User Configuration models"""
 import configparser
-from typing import Optional
+from typing import Optional, Union
 
 from onelogin_aws_cli.userquery import user_choice
 
@@ -115,24 +115,6 @@ class Section(object):
             self.__contains__(item) for item in ConfigurationFile.REQUIRED
         ])
 
-    def _get_can_save_password(self) -> bool:
-        """
-        If the user has specified that the password can be saved to the system
-        keychain
-        :return:
-        """
-        return self.config.getboolean(
-            self.section_name, "save_password",
-            fallback=self.config.DEFAULTS['save_password']
-        )
-
-    @property
-    def auto_determine_ip_address(self):
-        return self.config.getboolean(
-            self.section_name,
-            "auto_determine_ip_address",
-        )
-
     def set_overrides(self, overrides: dict):
         """
         Specify a dictionary values which take precedence over the existing
@@ -141,10 +123,36 @@ class Section(object):
         """
         self._overrides = {k: v for k, v in overrides.items() if v is not None}
 
+    def _has_cast_handler(self, item) -> bool:
+        """
+        Checks if the property has a format assuming it has a cast handler
+
+        If an attribute starts with `can_` it will be assumed to be cast as boolean,
+        and the key will be item with `can_` removed from the suffix.
+
+        :param item:
+        :return:
+        """
+        handler_prefixes = ['can_']
+        for prefix in handler_prefixes:
+            if item.startswith(prefix):
+                return True
+
+    def _cast_handler(self, item) -> Optional[bool]:
+        """Casts the item from string to a type"""
+
+        handler_prefixes = {
+            'can_': self.config.getboolean
+        }
+        for prefix, handler in handler_prefixes.items():
+            if item.startswith(prefix):
+                key = item[len(prefix):]
+                return handler(self.section_name, key)
+
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
 
-    def __getitem__(self, item) -> Optional[str, bool]:
+    def __getitem__(self, item) -> Optional[Union[str, bool]]:
         """
         Single location to handle the precedence of configurations.
         The precedence chain is:
@@ -161,6 +169,9 @@ class Section(object):
             return self._overrides[item]
 
         # Do we have a private handler function?
+        if self._has_cast_handler(item):
+            return self._cast_handler(item)
+
         func = "_get_" + item
         if hasattr(self, func) and callable(getattr(self, func)):
             return getattr(self, func)()
@@ -177,6 +188,7 @@ class Section(object):
         return self.config.has_option(self.section_name, item) or \
                hasattr(self, func) and callable(getattr(self, func)) or \
                self.config.has_option(self.section_name, item) or \
+               self._has_cast_handler(item) or \
                item in self.config.DEFAULTS
 
     def get(self, item, default=None):

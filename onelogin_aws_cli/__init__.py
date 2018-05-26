@@ -96,7 +96,7 @@ class OneloginAWS(object):
             return ip_address
 
         # if auto determine is enabled, use ipify to lookup the ip
-        if self.config.auto_determine_ip_address:
+        if self.config.get('can_auto_determine_ip_address'):
             ip_address = ipify.get_ip()
             return ip_address
 
