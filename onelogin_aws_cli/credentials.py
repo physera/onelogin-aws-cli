@@ -133,7 +133,7 @@ class UserCredentials(object):
         # Do we have a password?
         if not self.has_password:
             # Can we load the password from os keychain?
-            if self.configuration.can_save_password:
+            if self.configuration.get('can_save_password'):
 
                 # Load the password from OS keychain
                 self._load_password_from_keychain()

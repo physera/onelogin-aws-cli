@@ -105,8 +105,7 @@ class Section(object):
         self.section_name = section_name
         self._overrides = {}
 
-    @property
-    def has_required(self) -> bool:
+    def _get_has_required(self) -> bool:
         """
         Returns true if the section (including the defaults fallback)
         contains all the required keys.
@@ -115,8 +114,7 @@ class Section(object):
             self.__contains__(item) for item in ConfigurationFile.REQUIRED
         ])
 
-    @property
-    def can_save_password(self) -> bool:
+    def _get_can_save_password(self) -> bool:
         """
         If the user has specified that the password can be saved to the system
         keychain
@@ -146,18 +144,28 @@ class Section(object):
         self.config.set(self.section_name, key, value)
 
     def __getitem__(self, item):
+        # Is it in the overrides
         if item in self._overrides:
             return self._overrides[item]
 
+        # Do we have a private handler function?
+        func = "_get_" + item
+        if hasattr(self, func) and callable(getattr(self, func)):
+            return getattr(self, func)()
+
+        # Is it in the configuration?
         if self.config.has_option(self.section_name, item):
             return self.config.get(self.section_name, item)
 
+        # Is it in the class level defaults?
         return self.config.DEFAULTS[item]
 
     def __contains__(self, item):
-        return (item in self._overrides) or \
-            self.config.has_option(self.section_name, item) or \
-            item in self.config.DEFAULTS
+        func = "_get_" + item
+        return self.config.has_option(self.section_name, item) or \
+               hasattr(self, func) and callable(getattr(self, func)) or \
+               self.config.has_option(self.section_name, item) or \
+               item in self.config.DEFAULTS
 
     def get(self, item, default=None):
         if self.__contains__(item):
