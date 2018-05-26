@@ -106,6 +106,10 @@ class Section(object):
         self.section_name = section_name
         self._overrides = {}
 
+        self._cast_handler_mappings = {
+            'can_': self.config.getboolean
+        }
+
     def _get_has_required(self) -> bool:
         """
         Returns true if the section (including the defaults fallback)
@@ -133,18 +137,15 @@ class Section(object):
         :param item:
         :return:
         """
-        handler_prefixes = ['can_']
-        for prefix in handler_prefixes:
+
+        for prefix in self._cast_handler_mappings.keys():
             if item.startswith(prefix):
                 return True
 
     def _cast_handler(self, item) -> Optional[bool]:
         """Casts the item from string to a type"""
 
-        handler_prefixes = {
-            'can_': self.config.getboolean
-        }
-        for prefix, handler in handler_prefixes.items():
+        for prefix, handler in self._cast_handler_mappings.items():
             if item.startswith(prefix):
                 key = item[len(prefix):]
                 return handler(self.section_name, key)
