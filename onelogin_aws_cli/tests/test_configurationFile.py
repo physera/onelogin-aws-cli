@@ -14,7 +14,7 @@ save_password = true
 
 [profile_test]
 save_password = true""")
-        self.assertTrue(cfg.section("profile_test").can_save_password)
+        self.assertTrue(cfg.section("profile_test").get('can_save_password'))
 
     def test_can_save_password_username_false(self):
         cfg = helper.build_config("""[defaults]
@@ -22,7 +22,7 @@ save_password = false
 
 [profile_test]
 save_password = false""")
-        self.assertFalse(cfg.section("profile_test").can_save_password)
+        self.assertFalse(cfg.section("profile_test").get('can_save_password'))
 
     def test_can_save_password_username_xor_1(self):
         cfg = helper.build_config("""[defaults]
@@ -30,7 +30,7 @@ save_password = false
 
 [profile_test]
 save_password = true""")
-        self.assertTrue(cfg.section("profile_test").can_save_password)
+        self.assertTrue(cfg.section("profile_test").get('can_save_password'))
 
     def test_can_save_password_username_xor_2(self):
         cfg = helper.build_config("""[defaults]
@@ -38,21 +38,21 @@ save_password = true
 
 [profile_test]
 save_password = false""")
-        self.assertFalse(cfg.section("profile_test").can_save_password)
+        self.assertFalse(cfg.section("profile_test").get('can_save_password'))
 
     def test_can_save_password_username_inherit_true(self):
         cfg = helper.build_config("""[defaults]
 save_password = false
 
 [profile_test]""")
-        self.assertFalse(cfg.section("profile_test").can_save_password)
+        self.assertFalse(cfg.section("profile_test").get('can_save_password'))
 
     def test_can_save_password_username_inherit_false(self):
         cfg = helper.build_config("""[defaults]
 save_password = true
 
 [profile_test]""")
-        self.assertTrue(cfg.section("profile_test").can_save_password)
+        self.assertTrue(cfg.section("profile_test").get('can_save_password'))
 
     def test_can_save_password_username_defaults_false(self):
         cfg = helper.build_config("""[defaults]
