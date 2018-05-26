@@ -131,8 +131,9 @@ class Section(object):
         """
         Checks if the property has a format assuming it has a cast handler
 
-        If an attribute starts with `can_` it will be assumed to be cast as boolean,
-        and the key will be item with `can_` removed from the suffix.
+        If an attribute starts with `can_` it will be assumed to be cast as
+        boolean, and the key will be item with `can_` removed from the
+        suffix.
 
         :param item:
         :return:
