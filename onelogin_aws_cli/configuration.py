@@ -139,17 +139,15 @@ class Section(object):
         :return:
         """
 
-        for prefix in self._cast_handler_mappings.keys():
-            if item.startswith(prefix):
-                return True
+        return any([item.startswith(prefix)
+                    for prefix in self._cast_handler_mappings.keys()])
 
     def _cast_handler(self, item) -> Optional[bool]:
         """Casts the item from string to a type"""
 
         for prefix, handler in self._cast_handler_mappings.items():
             if item.startswith(prefix):
-                key = item[len(prefix):]
-                return handler(self.section_name, key)
+                return handler(self.section_name, item[len(prefix):])
 
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
