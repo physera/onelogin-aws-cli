@@ -57,12 +57,12 @@ save_password = true
     def test_can_save_password_username_defaults_false(self):
         cfg = helper.build_config("""[defaults]
 save_password = false""")
-        self.assertFalse(cfg.section("defaults").can_save_password)
+        self.assertFalse(cfg.section("defaults").get('can_save_password'))
 
     def test_can_save_password_username_defaults_true(self):
         cfg = helper.build_config("""[defaults]
 save_password = true""")
-        self.assertTrue(cfg.section("defaults").can_save_password)
+        self.assertTrue(cfg.section("defaults").get('can_save_password'))
 
     def test_initialise(self):
         str = StringIO()

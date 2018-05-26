@@ -39,11 +39,11 @@ class TestSection(TestCase):
             has_option=MagicMock(side_effect=lambda s, x: x != 'base_uri')
         ))
 
-        self.assertFalse(sec.has_required)
+        self.assertFalse(sec.get('has_required'))
 
     def test_has_required_true(self):
         sec = Section('mock-section', MagicMock(
             has_option=MagicMock(return_value=True)
         ))
 
-        self.assertTrue(sec.has_required)
+        self.assertTrue(sec.get('has_required'))
