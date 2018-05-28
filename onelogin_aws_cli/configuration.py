@@ -122,8 +122,10 @@ class Section(object):
         keychain
         :return:
         """
-        return self.config.getboolean(self.section_name, "save_password",
-                                      fallback=self.config.DEFAULTS['save_password'])
+        return self.config.getboolean(
+            self.section_name, "save_password",
+            fallback=self.config.DEFAULTS['save_password']
+        )
 
     def set_overrides(self, overrides: dict):
         """

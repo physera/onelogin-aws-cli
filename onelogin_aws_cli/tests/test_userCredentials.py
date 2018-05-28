@@ -28,7 +28,7 @@ username = mock_user
     def test_load_password_can_save_fail(self):
         cfg = helper.build_config("""[test-section]
 username = mock_user
-save_password = true        
+save_password = true
 """)
         sec = cfg.section("test-section")
 
