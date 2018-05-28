@@ -110,7 +110,7 @@ save_password = true""")
     def test_section_get_fallback(self):
         cfg = self._helper_build_config("""[profile_test]
 """)
-        self.assertIsNone(cfg.section("profile_test").get("save_password"))
+        self.assertFalse(cfg.section("profile_test").get("save_password"))
 
     def test_has_defaults(self):
 
