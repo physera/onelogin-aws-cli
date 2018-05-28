@@ -80,7 +80,7 @@ to use the log in functionality
 ## Environment Variables
 
 - `AWS_SHARED_CREDENTIALS_FILE` - Location of the AWS credentials file
-  to write credentials to.
+  to write credentials to.  
   See [AWS CLI Environment Variables](aws-cli-environment-variables)
   for more information.
 - `ONELOGIN_AWS_CLI_CONFIG_NAME` - `onelogin-aws-cli` config section to use.
@@ -104,35 +104,35 @@ other sections.
 
 - `base_uri` - One of either `https://api.us.onelogin.com/` or `https://api.eu.onelogin.com/`
   depending on your OneLogin account.
-- `subdomain` - The subdomain you authenticate against in OneLogin.
+- `subdomain` - The subdomain you authenticate against in OneLogin.  
   This will be the first part of your onelogin domain.
   Eg, In `http://my_company.onelogin.com`, `my_company` would be the subdomain.
-- `username` - Username to be used to authenticate against OneLogin with.
+- `username` - Username to be used to authenticate against OneLogin with.  
   Can also be set with the environment variable `ONELOGIN_AWS_CLI_USERNAME`.
   This functionality supports all keychains supported by
   [keyring](https://pypi.python.org/pypi/keyring).
 - `client_id` - Client ID for the user to use to authenticate against the
-  OneLogin api.
+  OneLogin api.  
   See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
   for more details.
 - `client_secret` - Client Secret for the user to use to authenticate against
-  the OneLogin api.
+  the OneLogin api.  
   See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
   for more details.
 - `save_password` - Flag indicating whether `onlogin-aws-cli` can save the
   onelogin password to an OS keychain.
-- `profile` - AWS CLI profile to store credentials in.
+- `profile` - AWS CLI profile to store credentials in.  
   This refers to an AWS CLI profile name defined in your `~./aws/config` file.
-- `duration_seconds` - Length of the IAM STS session in seconds.
+- `duration_seconds` - Length of the IAM STS session in seconds.  
   This cannot exceed the maximum duration specified in AWS for the given role.
 - `aws_app_id` - ID of the AWS App instance in your OneLogin account.
   This ID can be found by logging in to your OneLogin web dashboard
   and navigating to `Administration` -> `APPS` -> `<Your app instance>`,
   and copying it from the URL in the address bar.
-- `role_arn` - AWS Role ARN to assume after authenticating against OneLogin.
+- `role_arn` - AWS Role ARN to assume after authenticating against OneLogin.  
   Specifying this will disable the display of available roles and the
   interactive choice to select a role after authenticating.
-- `otp_device` - Allow the automatic selection of an OTP device.
+- `otp_device` - Allow the automatic selection of an OTP device.  
   This value is the human readable string name for the device.
   Eg, `OneLogin Protect`, `Yubico YubiKey`, etc
 
