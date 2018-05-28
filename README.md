@@ -108,7 +108,7 @@ or the environment variable `ONELOGIN_AWS_CLI_CONFIG_NAME`.
 
 If no config name is provided, the `[defaults]` section is used automatically.
 
-All other section automatically inherit from the `[defaults]` section,
+All other sections automatically inherit from the `[defaults]` section,
 and can define any additional directives as desired.
 
 ### Directives
