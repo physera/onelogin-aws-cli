@@ -66,3 +66,30 @@ save_password = true
         creds._load_password_from_keychain.assert_called_once_with()
         creds._prompt_user_password.assert_called_once_with()
         creds._save_password_to_keychain.assert_called_once_with()
+
+    def test_load_password_reset(self):
+        cfg = helper.build_config("""[test-section]
+username = mock_user
+save_password = true
+""")
+        sec = cfg.section("test-section")
+        sec.set_overrides({
+            'reset_password': True
+        })
+
+        creds = UserCredentials(sec)
+
+        def create_password():
+            creds.password = "mock"
+
+        creds._load_password_from_keychain = MagicMock(
+            side_effect=create_password)
+        creds._prompt_user_password = MagicMock(side_effect=create_password)
+        creds._save_password_to_keychain = MagicMock()
+
+        creds.load_password()
+
+        creds._load_password_from_keychain.assert_called_once_with()
+        creds._prompt_user_password.assert_called_once_with()
+
+        creds._save_password_to_keychain.assert_called_once_with()
