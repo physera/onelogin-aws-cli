@@ -15,7 +15,8 @@ class TestSection(TestCase):
 
     def test___contains__false(self):
         sec = Section('mock-section', Namespace(
-            has_option=MagicMock(return_value=False)
+            has_option=MagicMock(return_value=False),
+            DEFAULTS=dict()
         ))
         self.assertFalse('mock' in sec)
 

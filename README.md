@@ -63,6 +63,19 @@ Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.c
 ```
 
 
+## Usage
+
+There are two mode of operation for the utility: configure and log in. Specify
+the option `--configure` to enable the configuration of the utility and omit it
+to use the log in functionality
+
+### CLI Options
+
+ - `--configure` - Starts an interactive session which will prompt the user for
+        values to fill out a configuration.
+ - `--reset-password` - Forces a prompt for the user to re-enter their password
+        even if the value is saved to the OS keychain.
+
 
 ## Environment Variables
 
@@ -82,8 +95,8 @@ Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.c
 
 ## Configuration File
 
-The configuration file is an `.ini` file with each section referring to a 
-OneLogin AWS application which can be authenticated against. There is also a 
+The configuration file is an `.ini` file with each section referring to a
+OneLogin AWS application which can be authenticated against. There is also a
 special section called `[defaults]` which has values to be used as defaults in
 other sections.
 
@@ -107,7 +120,7 @@ other sections.
   See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
   for more details.
 - `save_password` - Flag indicating whether `onlogin-aws-cli` can save the
-  onelogin password to an OS keychain.  
+  onelogin password to an OS keychain.
 - `profile` - AWS CLI profile to store credentials in.  
   This refers to an AWS CLI profile name defined in your `~./aws/config` file.
 - `duration_seconds` - Length of the IAM STS session in seconds.  

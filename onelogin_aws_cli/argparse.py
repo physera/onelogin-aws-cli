@@ -42,6 +42,12 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
                  '/03/longer-role-sessions/'
         )
 
+        self.add_argument(
+            '--reset-password', dest='reset_password', action='store_true',
+            help='Prompt the user for password even if the password is '
+                 'stored in the OS keychain.', default=False,
+        )
+
         version = pkg_resources.get_distribution(__package__).version
         self.add_argument(
             '-v', '--version', action='version',
