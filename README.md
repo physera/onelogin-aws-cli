@@ -46,7 +46,7 @@ and cache the credentials in the AWS CLI Shared Credentials File.
 
 For every required piece of information, the program will present interactive
 inputs, unless that value has already been provided through either
-[command line parameters](#command-line-paramters),
+[command line parameters](#command-line-parameters),
 [environment variables](#environment-variables),
 or [configuration file directives](#configuration-file).
 
