@@ -9,6 +9,7 @@ class ConfigurationFile(configparser.ConfigParser):
 
     DEFAULTS = dict(
         save_password=False,
+        reset_password=False,
         duration_seconds=3600
     )
 
@@ -121,7 +122,10 @@ class Section(object):
         keychain
         :return:
         """
-        return self.config.getboolean(self.section_name, "save_password")
+        return self.config.getboolean(
+            self.section_name, "save_password",
+            fallback=self.config.DEFAULTS['save_password']
+        )
 
     def set_overrides(self, overrides: dict):
         """
@@ -138,13 +142,15 @@ class Section(object):
         if item in self._overrides:
             return self._overrides[item]
 
-        if item in self:
+        if self.config.has_option(self.section_name, item):
             return self.config.get(self.section_name, item)
 
         return self.config.DEFAULTS[item]
 
     def __contains__(self, item):
-        return self.config.has_option(self.section_name, item)
+        return (item in self._overrides) or \
+            self.config.has_option(self.section_name, item) or \
+            item in self.config.DEFAULTS
 
     def get(self, item, default=None):
         if self.__contains__(item):

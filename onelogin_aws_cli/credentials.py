@@ -128,6 +128,7 @@ class UserCredentials(object):
         """
 
         save_password = False
+        reset_password = self.configuration.get('reset_password')
 
         # Do we have a password?
         if not self.has_password:
@@ -138,7 +139,7 @@ class UserCredentials(object):
                 self._load_password_from_keychain()
 
                 # Could not find password in OS keychain
-                if not self.has_password:
+                if not self.has_password or reset_password:
                     # Ask user for password
                     self._prompt_user_password()
                     # Remember to save password

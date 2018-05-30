@@ -1,21 +1,15 @@
+from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
 
-from io import StringIO
-
 from onelogin_aws_cli.configuration import ConfigurationFile
+from onelogin_aws_cli.tests import helper
 
 
 class TestConfigurationFile(TestCase):
 
-    def _helper_build_config(self, config_content: str):
-        str = StringIO()
-        str.write(config_content)
-        str.seek(0)
-        return ConfigurationFile(str)
-
     def test_can_save_password_username_true(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = true
 
 [profile_test]
@@ -23,7 +17,7 @@ save_password = true""")
         self.assertTrue(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_false(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = false
 
 [profile_test]
@@ -31,7 +25,7 @@ save_password = false""")
         self.assertFalse(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_xor_1(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = false
 
 [profile_test]
@@ -39,7 +33,7 @@ save_password = true""")
         self.assertTrue(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_xor_2(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = true
 
 [profile_test]
@@ -47,26 +41,26 @@ save_password = false""")
         self.assertFalse(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_inherit_true(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = false
 
 [profile_test]""")
         self.assertFalse(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_inherit_false(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = true
 
 [profile_test]""")
         self.assertTrue(cfg.section("profile_test").can_save_password)
 
     def test_can_save_password_username_defaults_false(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = false""")
         self.assertFalse(cfg.section("defaults").can_save_password)
 
     def test_can_save_password_username_defaults_true(self):
-        cfg = self._helper_build_config("""[defaults]
+        cfg = helper.build_config("""[defaults]
 save_password = true""")
         self.assertTrue(cfg.section("defaults").can_save_password)
 
@@ -89,46 +83,43 @@ subdomain = mock_subdomain
 """, str.getvalue())
 
     def test_is_initialised(self):
-
         content = StringIO()
         cf = ConfigurationFile(content)
         self.assertFalse(cf.is_initialised)
 
-        cf = self._helper_build_config("""[section]
+        cf = helper.build_config("""[section]
 first=foo""")
         self.assertTrue(cf.is_initialised)
 
-        cf = self._helper_build_config("""[defaults]
+        cf = helper.build_config("""[defaults]
 first=foo""")
         self.assertTrue(cf.is_initialised)
 
     def test_section_get(self):
-        cfg = self._helper_build_config("""[profile_test]
+        cfg = helper.build_config("""[profile_test]
 save_password = true""")
         self.assertTrue(cfg.section("profile_test").get("save_password"))
 
     def test_section_get_fallback(self):
-        cfg = self._helper_build_config("""[profile_test]
+        cfg = helper.build_config("""[profile_test]
 """)
-        self.assertIsNone(cfg.section("profile_test").get("save_password"))
+        self.assertFalse(cfg.section("profile_test").get("save_password"))
 
     def test_has_defaults(self):
-
         content = StringIO()
         cf = ConfigurationFile(content)
         self.assertFalse(cf.has_defaults)
 
-        cf = self._helper_build_config("""[defaults]
+        cf = helper.build_config("""[defaults]
 first=foo""")
         self.assertTrue(cf.has_defaults)
 
     def test_supports_default(self):
-
-        cf = self._helper_build_config("""[defaults]
+        cf = helper.build_config("""[defaults]
 first=foo""")
         self.assertEqual("defaults", cf.default_section)
 
-        cf = self._helper_build_config("""[defaults]
+        cf = helper.build_config("""[defaults]
 first=foo
 
 [default]

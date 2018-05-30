@@ -38,17 +38,17 @@ on your system.
 
 
 
-## Interactive Configuration
 
-To configure the script, simply run the configuration:
+## Usage
 
-```shell
-$ onelogin-aws-login -c
-```
+Running `onelogin-aws-login`  will perform the authentication against OneLogin,
+and cache the credentials in the AWS CLI Shared Credentials File.
 
-Once installed and configured,
-just run `onelogin-aws-login` and you'll be asked for
-your credentials and to choose which role you want to assume.
+For every required piece of information, the program will present interactive
+inputs, unless that value has already been provided through either
+[command line parameters](#command-line-paramters),
+[environment variables](#environment-variables),
+or [configuration file directives](#configuration-file).
 
 ```shell
 $ onelogin-aws-login
@@ -65,11 +65,28 @@ Expires at 2018-05-24 15:15:41+00:00
 Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.com
 ```
 
+### Interactive Configuration
 
+Passing the `-c` or `--configure` command line parameter will start an
+interactive configuration, that presents a series of interactive inputs to
+gather the required pieces of information,
+and save them to the [configuration file](#configuration-file) automatically.
 
-## Command Line Parameters
+```shell
+$ onelogin-aws-login -c
+```
+
+This is a special mode of operation for this program,
+and it is typically only used once, after installing the program.
+
+However, note that it only supports a basic use case.
+More advanced use cases will require manual editing of the configuration file.
+
+### Command Line Parameters
 
 - `-c`, `--configure` - Start interactive configuration.
+- `--reset-password` - Forces a prompt for the user to re-enter their password
+  even if the value is saved to the OS keychain.
 - `-C`, `--config-name` - Config section to use.
 - `--profile` - See the corresponding directive in the
   [configuration file](#configuration-file).
@@ -79,9 +96,7 @@ Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.c
   [configuration file](#configuration-file).
 - `-v`, `--version` - Print the currently installed version.
 
-
-
-## Environment Variables
+### Environment Variables
 
 - `AWS_SHARED_CREDENTIALS_FILE` - Location of the AWS credentials file
   to write credentials to.  
@@ -211,7 +226,7 @@ $ onelogin-aws-login -C live-admin
 
 #### Run tests
 
-```
+```shell
 $ python setup.py nosetests
 ```
 
