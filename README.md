@@ -1,11 +1,11 @@
 
 # onelogin-aws-cli
 
-A CLI utility that helps with using AWS CLI when using AWS Roles and OneLogin authentication.
+A CLI utility that helps with using AWS CLI
+when using AWS Roles and OneLogin authentication.
 
 [![Build Status](https://travis-ci.org/physera/onelogin-aws-cli.svg?branch=master)](https://travis-ci.org/physera/onelogin-aws-cli)
 [![codecov](https://codecov.io/gh/physera/onelogin-aws-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/physera/onelogin-aws-cli)
-
 
 This package provides a CLI utility program that:
 
@@ -38,14 +38,17 @@ on your system.
 
 
 
-## Interactive configuration
 
-To configure the script, simply run the configuration:
+## Usage
 
-```shell
-$ onelogin-aws-login -c
-```
-Once installed and configured, just run `onelogin-aws-login` and you'll be asked for your credentials and to choose which role you want to assume.
+Running `onelogin-aws-login`  will perform the authentication against OneLogin,
+and cache the credentials in the AWS CLI Shared Credentials File.
+
+For every required piece of information, the program will present interactive
+inputs, unless that value has already been provided through either
+[command line parameters](#command-line-parameters),
+[environment variables](#environment-variables),
+or [configuration file directives](#configuration-file).
 
 ```shell
 $ onelogin-aws-login
@@ -53,79 +56,103 @@ Onelogin Username: myuser@mycompany.com
 Onelogin Password:
 Google Authenticator Token: 579114
 Pick a role:
-[0]: arn:aws:iam::166878887401:role/onelogin-test-ec2
-[1]: arn:aws:iam::166878887401:role/onelogin-test-s3
-[2]: arn:aws:iam::772123451421:role/onelogin-test-s3
-? 2
+[1]: arn:aws:iam::166878887401:role/onelogin-test-ec2
+[2]: arn:aws:iam::166878887401:role/onelogin-test-s3
+[3]: arn:aws:iam::772123451421:role/onelogin-test-s3
+? 3
 Credentials cached in '/Users/myuser/.aws/credentials'
 Expires at 2018-05-24 15:15:41+00:00
 Use aws cli with --profile 772123451421:role/onelogin-test-s3/myuser@mycompany.com
 ```
 
+### Interactive Configuration
 
-## Usage
+Passing the `-c` or `--configure` command line parameter will start an
+interactive configuration, that presents a series of interactive inputs to
+gather the required pieces of information,
+and save them to the [configuration file](#configuration-file) automatically.
 
-There are two mode of operation for the utility: configure and log in. Specify
-the option `--configure` to enable the configuration of the utility and omit it
-to use the log in functionality
+```shell
+$ onelogin-aws-login -c
+```
 
-### CLI Options
+This is a special mode of operation for this program,
+and it is typically only used once, after installing the program.
 
- - `--configure` - Starts an interactive session which will prompt the user for
-        values to fill out a configuration.
- - `--reset-password` - Forces a prompt for the user to re-enter their password
-        even if the value is saved to the OS keychain.
+However, note that it only supports a basic use case.
+More advanced use cases will require manual editing of the configuration file.
 
+### Command Line Parameters
 
-## Environment Variables
+- `-c`, `--configure` - Start interactive configuration.
+- `--reset-password` - Forces a prompt for the user to re-enter their password
+  even if the value is saved to the OS keychain.
+- `-C`, `--config-name` - Config section to use.
+- `--profile` - See the corresponding directive in the
+  [configuration file](#configuration-file).
+- `-u`, `--username` - See the corresponding directive in the
+  [configuration file](#configuration-file).
+- `-d`, `--duration-seconds` - See the corresponding directive in the
+  [configuration file](#configuration-file).
+- `-v`, `--version` - Print the currently installed version.
+
+### Environment Variables
 
 - `AWS_SHARED_CREDENTIALS_FILE` - Location of the AWS credentials file
   to write credentials to.  
-  See [AWS CLI Environment Variables](aws-cli-environment-variables)
+  See [AWS CLI Environment Variables][aws-cli-environment-variables]
   for more information.
-- `ONELOGIN_AWS_CLI_CONFIG_NAME` - `onelogin-aws-cli` config section to use.
+- `ONELOGIN_AWS_CLI_CONFIG_NAME` - Config section to use.
 - `ONELOGIN_AWS_CLI_DEBUG` - Turn on debug mode.
-- `ONELOGIN_AWS_CLI_PROFILE` - See the corresponding value in the
+- `ONELOGIN_AWS_CLI_PROFILE` - See the corresponding directive in the
   [configuration file](#configuration-file).
-- `ONELOGIN_AWS_CLI_USERNAME` - See the corresponding value in the
+- `ONELOGIN_AWS_CLI_USERNAME` - See the corresponding directive in the
   [configuration file](#configuration-file).
-- `ONELOGIN_AWS_CLI_DURATION_SECONDS` - See the corresponding value in the
+- `ONELOGIN_AWS_CLI_DURATION_SECONDS` - See the corresponding directive in the
   [configuration file](#configuration-file).
+
 
 
 ## Configuration File
 
-The configuration file is an `.ini` file with each section referring to a
-OneLogin AWS application which can be authenticated against. There is also a
-special section called `[defaults]` which has values to be used as defaults in
-other sections.
+The configuration file is located at `~/.onelogin-aws.config`.  
+
+It is an `.ini` file where each section defines a config name,
+which can be provided using either the command line parameter `--config-name`
+or the environment variable `ONELOGIN_AWS_CLI_CONFIG_NAME`.
+
+If no config name is provided, the `[defaults]` section is used automatically.
+
+All other sections automatically inherit from the `[defaults]` section,
+and can define any additional directives as desired.
 
 ### Directives
 
-- `base_uri` - One of either `https://api.us.onelogin.com/` or `https://api.eu.onelogin.com/`
-  depending on your OneLogin account.
+- `base_uri` - OneLogin API base URI.  
+  One of either `https://api.us.onelogin.com/`,
+  or `https://api.eu.onelogin.com/` depending on your OneLogin account.
 - `subdomain` - The subdomain you authenticate against in OneLogin.  
   This will be the first part of your onelogin domain.
   Eg, In `http://my_company.onelogin.com`, `my_company` would be the subdomain.
 - `username` - Username to be used to authenticate against OneLogin with.  
   Can also be set with the environment variable `ONELOGIN_AWS_CLI_USERNAME`.
-  This functionality supports all keychains supported by
-  [keyring](https://pypi.python.org/pypi/keyring).
 - `client_id` - Client ID for the user to use to authenticate against the
   OneLogin api.  
-  See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
+  See [Working with API Credentials][onelogin-working-with-api-credentials]
   for more details.
 - `client_secret` - Client Secret for the user to use to authenticate against
   the OneLogin api.  
-  See [Working with API Credentials](https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials)
+  See [Working with API Credentials][onelogin-working-with-api-credentials]
   for more details.
 - `save_password` - Flag indicating whether `onlogin-aws-cli` can save the
-  onelogin password to an OS keychain.
+  onelogin password to an OS keychain.  
+  This functionality supports all keychains supported by
+  [keyring][keyring-pypi].
 - `profile` - AWS CLI profile to store credentials in.  
-  This refers to an AWS CLI profile name defined in your `~./aws/config` file.
+  This refers to an AWS CLI profile name defined in your `~/.aws/config` file.
 - `duration_seconds` - Length of the IAM STS session in seconds.  
   This cannot exceed the maximum duration specified in AWS for the given role.
-- `aws_app_id` - ID of the AWS App instance in your OneLogin account.
+- `aws_app_id` - ID of the AWS App instance in your OneLogin account.  
   This ID can be found by logging in to your OneLogin web dashboard
   and navigating to `Administration` -> `APPS` -> `<Your app instance>`,
   and copying it from the URL in the address bar.
@@ -195,6 +222,18 @@ $ onelogin-aws-login -C live-admin
 
 
 
+## Developing onelogin-aws-cli
+
+#### Run tests
+
+```shell
+$ python setup.py nosetests
+```
+
+
+
 [onelogin-configuring-saml-for-aws]: https://support.onelogin.com/hc/en-us/articles/201174164-Configuring-SAML-for-Amazon-Web-Services-AWS-Single-Role
+[onelogin-working-with-api-credentials]: https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials
 [aws-cli-environment-variables]: https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html
 [pyenv-github]: https://github.com/pyenv/pyenv
+[keyring-pypi]: https://pypi.python.org/pypi/keyring
