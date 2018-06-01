@@ -127,6 +127,13 @@ class Section(object):
             fallback=self.config.DEFAULTS['save_password']
         )
 
+    @property
+    def auto_determine_ip_address(self):
+        return self.config.getboolean(
+            self.section_name,
+            "auto_determine_ip_address",
+        )
+
     def set_overrides(self, overrides: dict):
         """
         Specify a dictionary values which take precedence over the existing

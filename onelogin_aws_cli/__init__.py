@@ -1,11 +1,16 @@
 """OneLogin/AWS Business logic"""
 
+from typing import Optional
+
 import configparser
 import xml.etree.ElementTree as ElementTree
 
 import base64
 import boto3
 import os
+
+import ipify
+
 from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
@@ -49,10 +54,11 @@ class OneloginAWS(object):
         self.user_credentials.load_credentials()
 
         saml_resp = self.ol_client.get_saml_assertion(
-            self.user_credentials.username,
-            self.user_credentials.password,
-            self.config['aws_app_id'],
-            self.config['subdomain']
+            username_or_email=self.user_credentials.username,
+            password=self.user_credentials.password,
+            app_id=self.config['aws_app_id'],
+            subdomain=self.config['subdomain'],
+            ip_address=self.get_ip_address(),
         )
 
         if saml_resp is None:
@@ -60,6 +66,7 @@ class OneloginAWS(object):
                 error=self.ol_client.error,
                 desc=self.ol_client.error_description
             ))
+
         if saml_resp.mfa:
             if not self.mfa.ready():
                 self.mfa.select_device(saml_resp.mfa.devices)
@@ -74,6 +81,24 @@ class OneloginAWS(object):
             )
 
         self.saml = saml_resp
+
+    def get_ip_address(self) -> Optional[str]:
+        """
+        Get the client IP address.
+        Uses either the `ip_address` in config,
+        or if `auto_determine_ip_address` is specified in config,
+        the ipify service is used to dynamically lookup the IP address.
+        """
+
+        # if ip address has been hard coded in config file, use that
+        ip_address = self.config.get('ip_address')
+        if ip_address is not None:
+            return ip_address
+
+        # if auto determine is enabled, use ipify to lookup the ip
+        if self.config.auto_determine_ip_address:
+            ip_address = ipify.get_ip()
+            return ip_address
 
     def get_arns(self):
         """Extract the IAM Role ARNs from the SAML Assertion"""

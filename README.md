@@ -162,6 +162,12 @@ and can define any additional directives as desired.
 - `otp_device` - Allow the automatic selection of an OTP device.  
   This value is the human readable string name for the device.
   Eg, `OneLogin Protect`, `Yubico YubiKey`, etc
+- `ip_address` - The client IP address to send to OneLogin.
+  Relevant when using OneLogin Policies with an IP whitelist.
+  If this is specified, `auto_determine_ip_address` is not used.
+- `auto_determine_ip_address` - Automatically determine the client IP address.
+  Relevant when using OneLogin Policies with an IP whitelist.
+  Can be used without specifying `ip_address`.
 
 ### Example
 
@@ -175,6 +181,7 @@ client_secret = a85234b6db01a29a493e2422d7930dffe6f4d3a826270a18838574f6b8ef7c3e
 save_password = yes
 profile = mycompany-onelogin
 duration_seconds = 3600
+auto_determine_ip_address = yes
 
 [testing]
 aws_app_id = 555029
