@@ -128,7 +128,7 @@ class UserCredentials(object):
         """
 
         save_password = False
-        reset_password = self.configuration.get('reset_password')
+        reset_password = self.configuration.get('can_reset_password')
 
         # Do we have a password?
         if not self.has_password:
