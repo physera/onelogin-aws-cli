@@ -187,11 +187,16 @@ class Section(object):
 
     def __contains__(self, item):
         func = "_get_" + item
-        return self.config.has_option(self.section_name, item) or \
-               hasattr(self, func) and callable(getattr(self, func)) or \
-               self.config.has_option(self.section_name, item) or \
-               self._has_cast_handler(item) or \
-               item in self.config.DEFAULTS
+
+        has_item_defined = self.config.has_option(self.section_name, raw_item)
+        has_custom_handler = hasattr(self, func) and callable(getattr(self, func))
+        has_cast_handler = self._has_cast_handler(item)
+        has_default_value = raw_item in self.config.DEFAULTS
+
+        return has_item_defined or \
+               has_custom_handler or \
+               has_cast_handler or \
+               has_default_value
 
     def get(self, item, default=None):
         if self.__contains__(item):
