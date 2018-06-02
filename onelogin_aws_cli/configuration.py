@@ -107,7 +107,9 @@ class Section(object):
         self._overrides = {}
 
         self._cast_handler_mappings = {
-            'can_': self.config.getboolean
+            'can_': lambda i: self.config.getboolean(
+                self.section_name, i, fallback=False
+            ),
         }
 
     def _get_has_required(self) -> bool:
@@ -147,7 +149,7 @@ class Section(object):
 
         for prefix, handler in self._cast_handler_mappings.items():
             if item.startswith(prefix):
-                return handler(self.section_name, item[len(prefix):])
+                return handler(item[len(prefix):])
 
     def __setitem__(self, key, value):
         self.config.set(self.section_name, key, value)
