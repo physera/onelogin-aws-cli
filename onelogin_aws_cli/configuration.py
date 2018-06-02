@@ -166,9 +166,14 @@ class Section(object):
         :param item: name of the configuration to get.
         :return:
         """
+
+        raw_item = item
+        for prefix in self._cast_handler_mappings.keys():
+            raw_item = item[item.startswith(prefix) and len(prefix):]
+
         # Is it in the overrides
-        if item in self._overrides:
-            return self._overrides[item]
+        if raw_item in self._overrides:
+            return self._overrides[raw_item]
 
         # Do we have a private handler function?
         if self._has_cast_handler(item):
@@ -179,24 +184,26 @@ class Section(object):
             return getattr(self, func)()
 
         # Is it in the configuration?
-        if self.config.has_option(self.section_name, item):
-            return self.config.get(self.section_name, item)
+        if self.config.has_option(self.section_name, raw_item):
+            return self.config.get(self.section_name, raw_item)
 
         # Is it in the class level defaults?
-        return self.config.DEFAULTS[item]
+        return self.config.DEFAULTS[raw_item]
 
     def __contains__(self, item):
         func = "_get_" + item
+        for prefix in self._cast_handler_mappings.keys():
+            raw_item = item[item.startswith(prefix) and len(prefix):]
 
         has_item_defined = self.config.has_option(self.section_name, raw_item)
-        has_custom_handler = hasattr(self, func) and callable(getattr(self, func))
+        has_handler = hasattr(self, func) and callable(getattr(self, func))
         has_cast_handler = self._has_cast_handler(item)
         has_default_value = raw_item in self.config.DEFAULTS
 
         return has_item_defined or \
-               has_custom_handler or \
-               has_cast_handler or \
-               has_default_value
+            has_handler or \
+            has_cast_handler or \
+            has_default_value
 
     def get(self, item, default=None):
         if self.__contains__(item):
