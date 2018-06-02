@@ -10,6 +10,7 @@ class TestSection(TestCase):
     def test___contains__true(self):
         sec = Section('mock-section', Namespace(
             has_option=MagicMock(return_value=True),
+            DEFAULTS=dict(),
             getboolean=lambda item: item,
         ))
         self.assertTrue('mock' in sec)
