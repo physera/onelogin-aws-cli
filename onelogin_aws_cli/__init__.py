@@ -94,12 +94,12 @@ class OneloginAWS(object):
                     else:
                         self.mfa.prompt_token()
                         saml_resp = self.ol_client.\
-                                get_saml_assertion_verifying(
-                                    self.config['aws_app_id'],
-                                    self.mfa.device.id,
-                                    saml_resp.mfa.state_token,
-                                    self.mfa.otp,
-                                )
+                            get_saml_assertion_verifying(
+                                self.config['aws_app_id'],
+                                self.mfa.device.id,
+                                saml_resp.mfa.state_token,
+                                self.mfa.otp,
+                            )
 
         self.saml = saml_resp
 
