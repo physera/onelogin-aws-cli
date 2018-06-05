@@ -17,6 +17,9 @@ from onelogin_aws_cli.configuration import Section
 from onelogin_aws_cli.credentials import MFACredentials, UserCredentials
 from onelogin_aws_cli.userquery import user_role_prompt
 
+import time
+
+
 CONFIG_FILENAME = ".onelogin-aws.config"
 DEFAULT_CONFIG_PATH = os.path.join(os.path.expanduser("~"), CONFIG_FILENAME)
 
@@ -71,14 +74,29 @@ class OneloginAWS(object):
             if not self.mfa.ready():
                 self.mfa.select_device(saml_resp.mfa.devices)
                 if not self.mfa.has_otp:
-                    self.mfa.prompt_token()
-
-            saml_resp = self.ol_client.get_saml_assertion_verifying(
-                self.config['aws_app_id'],
-                self.mfa.device.id,
-                saml_resp.mfa.state_token,
-                self.mfa.otp
-            )
+                    if self.mfa.device.type == 'OneLogin Protect':
+                        print("Send OTP now using OneLogin Protect or respond "
+                              "to push notification or enter below")
+                        while True:
+                            saml_verif = self.ol_client.get_saml_assertion_verifying(
+                                self.config['aws_app_id'],
+                                self.mfa.device.id,
+                                saml_resp.mfa.state_token,
+                            )
+                            if saml_verif and saml_verif.type != 'pending':
+                                print("OTP verification received")
+                                break
+                            print("OTP verification still pending. Retrying in 3 seconds...")
+                            time.sleep(3)
+                        saml_resp = saml_verif
+                    else:
+                        self.mfa.prompt_token()
+                        saml_resp = self.ol_client.get_saml_assertion_verifying(
+                            self.config['aws_app_id'],
+                            self.mfa.device.id,
+                            saml_resp.mfa.state_token,
+                            self.mfa.otp,
+                        )
 
         self.saml = saml_resp
 
