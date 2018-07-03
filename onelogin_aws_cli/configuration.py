@@ -10,7 +10,8 @@ class ConfigurationFile(configparser.ConfigParser):
     DEFAULTS = dict(
         save_password=False,
         reset_password=False,
-        duration_seconds=3600
+        duration_seconds=3600,
+        auto_determine_ip_address=False
     )
 
     REQUIRED = [
