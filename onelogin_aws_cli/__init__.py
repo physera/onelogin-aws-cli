@@ -181,7 +181,8 @@ class OneloginAWS(object):
         cred_config[name] = {
             "aws_access_key_id": creds["AccessKeyId"],
             "aws_secret_access_key": creds["SecretAccessKey"],
-            "aws_session_token": creds["SessionToken"]
+            "aws_session_token": creds["SessionToken"],
+            "region": self.config['region']
         }
 
         with open(cred_file, "w") as cred_config_file:

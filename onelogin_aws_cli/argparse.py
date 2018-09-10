@@ -28,6 +28,13 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
         )
 
         self.add_argument(
+            '--region',
+            action=EnvDefault, required=False,
+            default=None,
+            help='Specify default region for AWS profile being updated'
+        )
+
+        self.add_argument(
             '-u', '--username',
             action=EnvDefault, required=False,
             help='Specify OneLogin username'
