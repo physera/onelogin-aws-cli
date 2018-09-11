@@ -178,12 +178,15 @@ class OneloginAWS(object):
         if "profile" in self.config:
             name = self.config["profile"]
 
-        cred_config[name] = {
-            "aws_access_key_id": creds["AccessKeyId"],
-            "aws_secret_access_key": creds["SecretAccessKey"],
-            "aws_session_token": creds["SessionToken"],
-            "region": self.config['region']
-        }
+        # Set each value specifically instead of overwriting the entire
+        # profile block in case they have other parameters defined
+        cred_config[name]['aws_access_key_id'] = creds["AccessKeyId"]
+        cred_config[name]['aws_secret_access_key'] = creds["SecretAccessKey"]
+        cred_config[name]['aws_session_token'] = creds["SessionToken"]
+        
+        # Set region for this profile if passed in via configuration
+        if self.config['region']:
+            cred_config[name]['region'] = self.config['region']
 
         with open(cred_file, "w") as cred_config_file:
             cred_config.write(cred_config_file)
