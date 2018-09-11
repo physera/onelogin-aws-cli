@@ -20,7 +20,6 @@ class ConfigurationFile(configparser.ConfigParser):
         'client_secret',
         'aws_app_id',
         'subdomain',
-        'region'
     ]
 
     def __init__(self, config_file=None):
