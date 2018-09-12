@@ -187,7 +187,7 @@ class OneloginAWS(object):
         cred_config[name]['aws_access_key_id'] = creds["AccessKeyId"]
         cred_config[name]['aws_secret_access_key'] = creds["SecretAccessKey"]
         cred_config[name]['aws_session_token'] = creds["SessionToken"]
-        
+
         # Set region for this profile if passed in via configuration
         if self.config['region']:
             cred_config[name]['region'] = self.config['region']
