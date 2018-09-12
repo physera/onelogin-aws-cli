@@ -178,6 +178,10 @@ class OneloginAWS(object):
         if "profile" in self.config:
             name = self.config["profile"]
 
+        # Initialize the profile block if it is undefined
+        if name not in cred_config:
+            cred_config[name] = {}
+
         # Set each value specifically instead of overwriting the entire
         # profile block in case they have other parameters defined
         cred_config[name]['aws_access_key_id'] = creds["AccessKeyId"]
