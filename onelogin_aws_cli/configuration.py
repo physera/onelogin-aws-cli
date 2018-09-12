@@ -11,7 +11,8 @@ class ConfigurationFile(configparser.ConfigParser):
         save_password=False,
         reset_password=False,
         duration_seconds=3600,
-        auto_determine_ip_address=False
+        auto_determine_ip_address=False,
+        region=None
     )
 
     REQUIRED = [
