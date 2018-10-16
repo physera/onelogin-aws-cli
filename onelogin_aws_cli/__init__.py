@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ElementTree
 import base64
 import boto3
 import os
+import re
 
 import ipify
 
@@ -172,8 +173,10 @@ class OneloginAWS(object):
 
         # Update with new credentials
         name = self.credentials["AssumedRoleUser"]["Arn"]
-        if name.startswith("arn:aws:sts::"):
-            name = name[13:]
+        m = re.search('(arn\:aws([\w-]*)\:sts\:\:)(.*)', name)
+
+        if m is not None:
+            name = m.group(3)
         name = name.replace(":assumed-role", "")
         if "profile" in self.config:
             name = self.config["profile"]
