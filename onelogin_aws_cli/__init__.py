@@ -149,6 +149,8 @@ class OneloginAWS(object):
 
         if not self.role_arn:
             self.get_role()
+        if self.config['region']:
+            self.sts_client = boto3.client("sts", region_name=self.config["region"])
         res = self.sts_client.assume_role_with_saml(
             RoleArn=self.role_arn,
             PrincipalArn=self.principal_arn,
