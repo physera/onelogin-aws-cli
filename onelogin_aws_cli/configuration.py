@@ -11,7 +11,8 @@ class ConfigurationFile(configparser.ConfigParser):
         save_password=False,
         reset_password=False,
         duration_seconds=3600,
-        auto_determine_ip_address=False
+        auto_determine_ip_address=False,
+        region=None
     )
 
     REQUIRED = [
@@ -71,7 +72,7 @@ class ConfigurationFile(configparser.ConfigParser):
               "https://admin.us.onelogin.com/apps")
         config_section['aws_app_id'] = input("Onelogin App ID for AWS: ")
         print("\nOnelogin subdomain is 'company' for login domain of "
-              "'comany.onelogin.com'")
+              "'company.onelogin.com'")
         config_section['subdomain'] = input("Onelogin subdomain: ")
 
         self.save()

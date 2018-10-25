@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ElementTree
 import base64
 import boto3
 import os
+import re
 
 import ipify
 
@@ -159,6 +160,8 @@ class OneloginAWS(object):
 
         if not self.role_arn:
             self.get_role()
+        if self.config['region']:
+            self.sts_client = boto3.client("sts", region_name=self.config["region"])
         res = self.sts_client.assume_role_with_saml(
             RoleArn=self.role_arn,
             PrincipalArn=self.principal_arn,
@@ -183,17 +186,27 @@ class OneloginAWS(object):
 
         # Update with new credentials
         name = self.credentials["AssumedRoleUser"]["Arn"]
-        if name.startswith("arn:aws:sts::"):
-            name = name[13:]
+        m = re.search('(arn\:aws([\w-]*)\:sts\:\:)(.*)', name)
+
+        if m is not None:
+            name = m.group(3)
         name = name.replace(":assumed-role", "")
         if "profile" in self.config:
             name = self.config["profile"]
 
-        cred_config[name] = {
-            "aws_access_key_id": creds["AccessKeyId"],
-            "aws_secret_access_key": creds["SecretAccessKey"],
-            "aws_session_token": creds["SessionToken"]
-        }
+        # Initialize the profile block if it is undefined
+        if name not in cred_config:
+            cred_config[name] = {}
+
+        # Set each value specifically instead of overwriting the entire
+        # profile block in case they have other parameters defined
+        cred_config[name]['aws_access_key_id'] = creds["AccessKeyId"]
+        cred_config[name]['aws_secret_access_key'] = creds["SecretAccessKey"]
+        cred_config[name]['aws_session_token'] = creds["SessionToken"]
+
+        # Set region for this profile if passed in via configuration
+        if self.config['region']:
+            cred_config[name]['region'] = self.config['region']
 
         with open(cred_file, "w") as cred_config_file:
             cred_config.write(cred_config_file)
