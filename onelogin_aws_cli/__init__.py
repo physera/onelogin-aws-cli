@@ -46,6 +46,19 @@ class OneloginAWS(object):
             base_uri_parts[1],
         )
 
+    def check_for_errors(self, response):
+        """
+        Throw exceptions that the OneLogin API should have thrown
+        """
+
+        if self.ol_client.error is None:
+            return response
+
+        raise Exception("Onelogin Error: '{error}' '{desc}'".format(
+            error=self.ol_client.error,
+            desc=self.ol_client.error_description
+        ))
+
     def get_saml_assertion(self):
         """
         Retrieve users credentials and get the SAML assertion from Onelogin,
@@ -54,19 +67,15 @@ class OneloginAWS(object):
 
         self.user_credentials.load_credentials()
 
-        saml_resp = self.ol_client.get_saml_assertion(
-            username_or_email=self.user_credentials.username,
-            password=self.user_credentials.password,
-            app_id=self.config['aws_app_id'],
-            subdomain=self.config['subdomain'],
-            ip_address=self.get_ip_address(),
+        saml_resp = self.check_for_errors(
+            self.ol_client.get_saml_assertion(
+                username_or_email=self.user_credentials.username,
+                password=self.user_credentials.password,
+                app_id=self.config['aws_app_id'],
+                subdomain=self.config['subdomain'],
+                ip_address=self.get_ip_address(),
+            )
         )
-
-        if saml_resp is None:
-            raise Exception("Onelogin Error: '{error}' '{desc}'".format(
-                error=self.ol_client.error,
-                desc=self.ol_client.error_description
-            ))
 
         if saml_resp.mfa:
             if not self.mfa.ready():
@@ -74,11 +83,13 @@ class OneloginAWS(object):
                 if not self.mfa.has_otp:
                     self.mfa.prompt_token()
 
-            saml_resp = self.ol_client.get_saml_assertion_verifying(
-                self.config['aws_app_id'],
-                self.mfa.device.id,
-                saml_resp.mfa.state_token,
-                self.mfa.otp
+            saml_resp = self.check_for_errors(
+                self.ol_client.get_saml_assertion_verifying(
+                    self.config['aws_app_id'],
+                    self.mfa.device.id,
+                    saml_resp.mfa.state_token,
+                    self.mfa.otp
+                )
             )
 
         self.saml = saml_resp
