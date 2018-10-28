@@ -51,7 +51,10 @@ class TestOneloginSAML(TestCase):
         )
         self.ol.ol_client = Namespace(
             get_saml_assertion=self.get_saml_assertion_mock,
-            get_saml_assertion_verifying=self.get_saml_assertion_verifying_mock
+            get_saml_assertion_verifying=(
+                self.get_saml_assertion_verifying_mock
+            ),
+            error=None,
         )
 
     @mock.patch('getpass.getpass')
