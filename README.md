@@ -36,8 +36,19 @@ Note that it is not recommended to install Python packages globally
 on your system.
 [Pyenv][pyenv-github] is a great tool for managing your Python environments.
 
+Another possibility is to install from source using pip:
 
+```shell
+$ cd onelogin-aws-cli
+$ pip3 install .
+```
 
+Yet another is to install using pipx:
+
+```shell
+$ cd onelogin-aws-cli
+$ pipx install --verbose --spec . onelogin-aws-cli
+```
 
 ## Usage
 

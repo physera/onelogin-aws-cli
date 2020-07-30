@@ -12,7 +12,6 @@ import re
 
 from requests import get
 
-
 from onelogin.api.client import OneLoginClient
 
 from onelogin_aws_cli.configuration import Section
