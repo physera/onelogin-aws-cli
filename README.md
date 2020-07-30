@@ -234,10 +234,10 @@ $ onelogin-aws-login -C live-admin
 #### Run tests
 
 ```shell
-$ python setup.py nosetests
+$ pipenv install
+$ pipenv shell
+(onelogin-aws-cli) bash-3.2$ python setup.py nosetests
 ```
-
-
 
 [onelogin-configuring-saml-for-aws]: https://support.onelogin.com/hc/en-us/articles/201174164-Configuring-SAML-for-Amazon-Web-Services-AWS-Single-Role
 [onelogin-working-with-api-credentials]: https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials

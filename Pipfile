@@ -9,7 +9,7 @@ verify_ssl = true
 "boto3" = "*"
 onelogin = "*"
 keyring = "*"
-ipify = "*"
+requests = "*"
 
 [requires]
-python_version = ">=3.5"
+python_version = "3.8"

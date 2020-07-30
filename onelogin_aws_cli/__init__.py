@@ -10,7 +10,8 @@ import boto3
 import os
 import re
 
-import ipify
+from requests import get
+
 
 from onelogin.api.client import OneLoginClient
 
@@ -109,7 +110,7 @@ class OneloginAWS(object):
 
         # if auto determine is enabled, use ipify to lookup the ip
         if self.config.auto_determine_ip_address:
-            ip_address = ipify.get_ip()
+            ip_address = get('https://api.ipify.org').text
             return ip_address
 
     def get_arns(self):

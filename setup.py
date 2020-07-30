@@ -33,7 +33,7 @@ setuptools.setup(
         'boto3',
         'onelogin',
         'keyring',
-        'ipify',
+        'requests',
     ],
     setup_requires=['nose>=1.0'],
     entry_points={
