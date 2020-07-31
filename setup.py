@@ -1,7 +1,7 @@
 import setuptools
 
 PACKAGE_NAME = 'onelogin_aws_cli'
-VERSION = '0.1.16'
+VERSION = '0.1.17'
 
 setuptools.setup(
     name=PACKAGE_NAME,
@@ -33,7 +33,7 @@ setuptools.setup(
         'boto3',
         'onelogin',
         'keyring',
-        'ipify',
+        'requests',
     ],
     setup_requires=['nose>=1.0'],
     entry_points={
