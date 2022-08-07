@@ -1,0 +1,59 @@
+name: Static Analysis
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+env:
+  CI: 1
+  VENV: .venv
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
+      - name: Flake8
+        run: $VENV/bin/python -m flake8 onelogin_aws_cli
+        shell: bash
+
+  tests:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.10']
+        fail-fast: false
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - name: Setup Environment - Python ${{ matrix.python-version }}
+        uses: ./.github/actions/setup-env
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run Test
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          $VENV/bin/python -m pytest --junit-xml=artifacts/junit_${{ matrix.python-version }}.xml --cov --cov-report=xml:artifacts/coverage_${{ matrix.python-version }}.xml
+      - name: Report Test Results
+        shell: bash
+        if: always() && ${{ matrix.python-version }} == "3.7"
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: artifacts/junit_${{ matrix.python-version }}.xml
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
+      - name: Build
+        run: $VENV/bin/python -m build
+        shell: bash

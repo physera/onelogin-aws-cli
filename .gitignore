@@ -13,6 +13,7 @@ build/
 develop-eggs/
 dist/
 downloads/
+artifacts/
 eggs/
 .eggs/
 lib/
@@ -79,6 +80,7 @@ celerybeat-schedule
 .env
 
 # virtualenv
+*.venv
 venv/
 ENV/
 

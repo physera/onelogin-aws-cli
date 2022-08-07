@@ -1,0 +1,26 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+env:
+  CI: 1
+  VENV: .venv
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
+      - name: Build
+        run: $VENV/bin/python -m build
+        shell: bash
+      - name: Release
+        run: $VENV/bin/python -m twine upload --skip-existing dist/*.whl
+        shell: bash
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: 'fill this in from secrets'
