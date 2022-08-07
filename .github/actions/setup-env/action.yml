@@ -25,10 +25,9 @@ runs:
       uses: actions/setup-python@v4.2.0
       with:
         python-version: ${{ steps.detect-python.outputs.version }}
-        cache: 'pip'
     - name: Install Dependencies
       run: |
         python -m venv $VENV
         . $VENV/bin/activate
-        pip install .[test]
+        pip install ".[test]"
       shell: bash

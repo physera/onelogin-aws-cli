@@ -216,7 +216,6 @@ python -m twine upload --skip-existing dist/*.whl
 
 It is recommended to trigger the release via the GitHub release workflow. Go to GitHub actions and manually trigger Release.
 
-
 [onelogin-configuring-saml-for-aws]: https://support.onelogin.com/hc/en-us/articles/201174164-Configuring-SA-for-Amazon-Web-Services-AWS-Single-Role
 [onelogin-working-with-api-credentials]: https://developers.onelogin.com/api-docs/1/getting-started/working-with-api-credentials
 [aws-cli-environment-variables]: https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html

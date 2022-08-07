@@ -28,7 +28,6 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.7', '3.10']
-        fail-fast: false
     steps:
       - uses: actions/checkout@v3.0.2
       - name: Setup Environment - Python ${{ matrix.python-version }}
@@ -41,8 +40,7 @@ jobs:
           mkdir -p artifacts
           $VENV/bin/python -m pytest --junit-xml=artifacts/junit_${{ matrix.python-version }}.xml --cov --cov-report=xml:artifacts/coverage_${{ matrix.python-version }}.xml
       - name: Report Test Results
-        shell: bash
-        if: always() && ${{ matrix.python-version }} == "3.7"
+        if: (success() || failure()) && ${{ matrix.python-version }} == "3.7"
         uses: mikepenz/action-junit-report@v3
         with:
           report_paths: artifacts/junit_${{ matrix.python-version }}.xml
