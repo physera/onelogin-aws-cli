@@ -1,0 +1,34 @@
+name: setup-env
+description: Initializes environment.
+inputs:
+  python-version:
+    description: Override Python Version
+    required: false
+    default: ''
+outputs:
+  python-version:
+    value: ${{ steps.detect-python.outputs.version }}
+    description: Detected Python version.
+runs:
+  using: "composite"
+  steps:
+    - name: Detect Python Version
+      id: detect-python
+      run: |
+        if [[ -z "${{ inputs.python-version }}" ]]; then
+          echo "::set-output name=version::$(cat .python-version | tr -d '\n')"
+        else
+          echo "::set-output name=version::${{ inputs.python-version }}"
+        fi
+      shell: bash
+    - name: Install Python
+      uses: actions/setup-python@v4.2.0
+      with:
+        python-version: ${{ steps.detect-python.outputs.version }}
+        cache: 'pip'
+    - name: Install Dependencies
+      run: |
+        python -m venv $VENV
+        . $VENV/bin/activate
+        pip install .[test]
+      shell: bash

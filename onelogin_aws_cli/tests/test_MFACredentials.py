@@ -70,21 +70,21 @@ class TestMFACredentials(TestCase):
         ]
 
         self.mfa.select_device(devices[:1])
-        self.assertEqual(self.mfa.device.id, '1')
+        self.assertEqual(self.mfa.device.id, 1)
 
         with patch('builtins.input', side_effect=['3']):
             self.mfa.select_device(devices)
 
-        self.assertEqual(self.mfa.device.id, '3')
+        self.assertEqual(self.mfa.device.id, 3)
 
         self.mfa._config["otp_device"] = "DeviceType2"
 
         # Ignores invalid selection
         self.mfa.select_device(devices[:1])
-        self.assertEqual(self.mfa.device.id, '1')
+        self.assertEqual(self.mfa.device.id, 1)
 
         self.mfa.select_device(devices)
-        self.assertEqual(self.mfa.device.id, '2')
+        self.assertEqual(self.mfa.device.id, 2)
 
         del self.mfa._config["otp_device"]
 
