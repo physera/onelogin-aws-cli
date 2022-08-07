@@ -39,6 +39,8 @@ To install from source, clone this repository and run:
 $ pip install .
 ```
 
+**NOTE**: Although the pip package is titled "onelogin-aws-cli", the installed binary is named "onelogin-aws-login" (i.e. login, not cli).
+
 ## Usage
 
 Running `onelogin-aws-login` will perform the authentication against OneLogin and cache the credentials in the AWS CLI Shared Credentials file.
