@@ -2,10 +2,9 @@
 Collections of entrypoints
 """
 import sys
-
 from os import environ
 
-from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
+from onelogin_aws_cli import OneloginAWS
 from onelogin_aws_cli.argparse import OneLoginAWSArgumentParser
 from onelogin_aws_cli.configuration import ConfigurationFile
 
@@ -13,7 +12,7 @@ from onelogin_aws_cli.configuration import ConfigurationFile
 def _load_config(parser, config_file: ConfigurationFile, args=sys.argv[1:]):
     cli_args = parser.parse_args(args)
 
-    with open(DEFAULT_CONFIG_PATH, 'a+') as fp:
+    with open(cli_args.config_path, 'a+') as fp:
         fp.seek(0, 0)
         config_file.file = fp
         config_file.load()

@@ -7,6 +7,8 @@ import os
 
 import pkg_resources
 
+from onelogin_aws_cli import DEFAULT_CONFIG_PATH, OneloginAWS
+
 
 class OneLoginAWSArgumentParser(argparse.ArgumentParser):
     """Argument Parser separated into daemon and cli tool"""
@@ -55,15 +57,22 @@ class OneLoginAWSArgumentParser(argparse.ArgumentParser):
                  'stored in the OS keychain.', default=False,
         )
 
-        version = pkg_resources.get_distribution(__package__).version
         self.add_argument(
-            '-v', '--version', action='version',
-            version="%(prog)s " + version
+            '--config-path',
+            action=EnvDefault, required=False,
+            dest='config_path', default=DEFAULT_CONFIG_PATH,
+            help='Specify the configuration file path'
         )
 
         self.add_argument(
             '-c', '--configure', dest='configure', action='store_true',
             help='Configure OneLogin and AWS settings', default=False
+        )
+
+        version = pkg_resources.get_distribution(__package__).version
+        self.add_argument(
+            '-v', '--version', action='version',
+            version="%(prog)s " + version
         )
 
 
