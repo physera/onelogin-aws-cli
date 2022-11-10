@@ -31,7 +31,7 @@ setuptools.setup(
     py_modules=[PACKAGE_NAME],
     install_requires=[
         'boto3',
-        'onelogin',
+        'onelogin>=2.0,<3.0',
         'keyring',
         'requests',
     ],
